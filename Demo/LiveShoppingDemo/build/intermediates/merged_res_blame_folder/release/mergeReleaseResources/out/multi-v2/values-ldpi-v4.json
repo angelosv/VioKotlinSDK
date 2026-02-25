@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.reachu.liveshopping.LiveShoppingDemo-mergeReleaseResources-97:/values-ldpi-v4/values-ldpi-v4.xml",
+            "map": [
+                {
+                    "source": "/Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/res/values-ldpi-v4/values-ldpi-v4.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "63",
+                        "endOffsets": "114"
+                    }
+                }
+            ]
+        }
+    ]
+}

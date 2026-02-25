@@ -1,0 +1,37 @@
+{
+  "apiKey": "your-reachu-api-key-here",
+  "environment": "production",
+  "theme": {
+    "name": "Brand Theme Example",
+    "mode": "automatic",
+    "lightColors": {
+      "primary": "#FF6B35",
+      "secondary": "#004E89"
+    },
+    "darkColors": {
+      "primary": "#FF8A5B",
+      "background": "#000000",
+      "surface": "#0D0D0F"
+    }
+  },
+  "cart": {
+    "floatingCartPosition": "bottomRight",
+    "floatingCartDisplayMode": "full",
+    "floatingCartSize": "medium",
+    "autoSaveCart": true,
+    "showCartNotifications": true,
+    "enableGuestCheckout": true
+  },
+  "network": {
+    "timeout": 30.0,
+    "retryAttempts": 3,
+    "enableCaching": true,
+    "enableLogging": false
+  },
+  "ui": {
+    "enableAnimations": true,
+    "showProductBrands": true,
+    "enableHapticFeedback": true
+  }
+}
+

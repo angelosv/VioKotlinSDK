@@ -1,0 +1,1147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 8.12.3" type="incidents">
+
+    <incident
+        id="DefaultLocale"
+        severity="warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/checkout/VioCheckoutOverlay.kt"
+            line="272"
+            column="46"
+            startOffset="13408"
+            endLine="272"
+            endColumn="95"
+            endOffset="13457"/>
+    </incident>
+
+    <incident
+        id="DefaultLocale"
+        severity="warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/checkout/VioCheckoutOverlay.kt"
+            line="295"
+            column="31"
+            startOffset="14362"
+            endLine="295"
+            endColumn="63"
+            endOffset="14394"/>
+    </incident>
+
+    <incident
+        id="DefaultLocale"
+        severity="warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/checkout/VioCheckoutOverlay.kt"
+            line="308"
+            column="27"
+            startOffset="14946"
+            endLine="308"
+            endColumn="56"
+            endOffset="14975"/>
+    </incident>
+
+    <incident
+        id="DefaultLocale"
+        severity="warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/cart/VioFloatingCartIndicator.kt"
+            line="163"
+            column="47"
+            startOffset="6501"
+            endLine="163"
+            endColumn="91"
+            endOffset="6545"/>
+    </incident>
+
+    <incident
+        id="DefaultLocale"
+        severity="warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/cart/VioFloatingCartIndicator.kt"
+            line="272"
+            column="47"
+            startOffset="9990"
+            endLine="272"
+            endColumn="91"
+            endOffset="10034"/>
+    </incident>
+
+    <incident
+        id="DefaultLocale"
+        severity="warning"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/VioProductCardModels.kt"
+            line="143"
+            column="32"
+            startOffset="5181"
+            endLine="143"
+            endColumn="62"
+            endOffset="5211"/>
+    </incident>
+
+    <incident
+        id="AndroidGradlePluginVersion"
+        severity="warning"
+        message="A newer version of Gradle than 8.13 is available: 8.14.4">
+        <fix-replace
+            description="Update to 8.14.4"
+            oldString="8.13"
+            replacement="8.14.4"
+            priority="0"/>
+        <location
+            file="$HOME/Desktop/IQPlus/ReachuKotlinSDK/gradle/wrapper/gradle-wrapper.properties"
+            line="3"
+            column="17"
+            startOffset="81"
+            endLine="3"
+            endColumn="79"
+            endOffset="143"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of `compileSdkVersion` than 34 is available: 36">
+        <fix-replace
+            description="Set compileSdkVersion to 36"
+            oldString="34"
+            replacement="36"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="14"
+            column="5"
+            startOffset="344"
+            endLine="14"
+            endColumn="20"
+            endOffset="359"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.7.0 is available: 2.10.0">
+        <fix-replace
+            description="Change to 2.10.0"
+            family="Update versions"
+            oldString="2.7.0"
+            replacement="2.10.0"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="53"
+            column="20"
+            startOffset="1543"
+            endLine="53"
+            endColumn="68"
+            endOffset="1591"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.core:core-ktx than 1.13.1 is available: 1.17.0">
+        <fix-replace
+            description="Change to 1.17.0"
+            family="Update versions"
+            oldString="1.13.1"
+            replacement="1.17.0"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="54"
+            column="20"
+            startOffset="1612"
+            endLine="54"
+            endColumn="51"
+            endOffset="1643"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of androidx.test:core-ktx than 1.5.0 is available: 1.7.0">
+        <fix-replace
+            description="Change to 1.7.0"
+            family="Update versions"
+            oldString="1.5.0"
+            replacement="1.7.0"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="75"
+            column="24"
+            startOffset="2745"
+            endLine="75"
+            endColumn="54"
+            endOffset="2775"/>
+    </incident>
+
+    <incident
+        id="NewerVersionAvailable"
+        severity="warning"
+        message="A newer version of org.jetbrains.kotlinx:kotlinx-coroutines-core than 1.7.3 is available: 1.10.2">
+        <fix-replace
+            description="Change to 1.10.2"
+            family="Update versions"
+            oldString="1.7.3"
+            replacement="1.10.2"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="56"
+            column="20"
+            startOffset="1665"
+            endLine="56"
+            endColumn="73"
+            endOffset="1718"/>
+    </incident>
+
+    <incident
+        id="NewerVersionAvailable"
+        severity="warning"
+        message="A newer version of org.jetbrains.kotlinx:kotlinx-serialization-json than 1.6.3 is available: 1.10.0">
+        <fix-replace
+            description="Change to 1.10.0"
+            family="Update versions"
+            oldString="1.6.3"
+            replacement="1.10.0"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="57"
+            column="20"
+            startOffset="1739"
+            endLine="57"
+            endColumn="76"
+            endOffset="1795"/>
+    </incident>
+
+    <incident
+        id="NewerVersionAvailable"
+        severity="warning"
+        message="A newer version of com.fasterxml.jackson.module:jackson-module-kotlin than 2.16.1 is available: 2.21.0">
+        <fix-replace
+            description="Change to 2.21.0"
+            family="Update versions"
+            oldString="2.16.1"
+            replacement="2.21.0"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="58"
+            column="20"
+            startOffset="1816"
+            endLine="58"
+            endColumn="79"
+            endOffset="1875"/>
+    </incident>
+
+    <incident
+        id="NewerVersionAvailable"
+        severity="warning"
+        message="A newer version of com.fasterxml.jackson.core:jackson-databind than 2.16.1 is available: 2.21.0">
+        <fix-replace
+            description="Change to 2.21.0"
+            family="Update versions"
+            oldString="2.16.1"
+            replacement="2.21.0"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="59"
+            column="20"
+            startOffset="1896"
+            endLine="59"
+            endColumn="72"
+            endOffset="1948"/>
+    </incident>
+
+    <incident
+        id="NewerVersionAvailable"
+        severity="warning"
+        message="A newer version of com.fasterxml.jackson.datatype:jackson-datatype-jsr310 than 2.16.1 is available: 2.21.0">
+        <fix-replace
+            description="Change to 2.21.0"
+            family="Update versions"
+            oldString="2.16.1"
+            replacement="2.21.0"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="60"
+            column="20"
+            startOffset="1969"
+            endLine="60"
+            endColumn="83"
+            endOffset="2032"/>
+    </incident>
+
+    <incident
+        id="NewerVersionAvailable"
+        severity="warning"
+        message="A newer version of io.socket:socket.io-client than 2.1.0 is available: 2.1.2">
+        <fix-replace
+            description="Change to 2.1.2"
+            family="Update versions"
+            oldString="2.1.0"
+            replacement="2.1.2"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="61"
+            column="20"
+            startOffset="2053"
+            endLine="61"
+            endColumn="54"
+            endOffset="2087"/>
+    </incident>
+
+    <incident
+        id="NewerVersionAvailable"
+        severity="warning"
+        message="A newer version of io.coil-kt:coil-compose than 2.6.0 is available: 2.7.0">
+        <fix-replace
+            description="Change to 2.7.0"
+            family="Update versions"
+            oldString="2.6.0"
+            replacement="2.7.0"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="62"
+            column="20"
+            startOffset="2108"
+            endLine="62"
+            endColumn="51"
+            endOffset="2139"/>
+    </incident>
+
+    <incident
+        id="NewerVersionAvailable"
+        severity="warning"
+        message="A newer version of io.coil-kt:coil-svg than 2.6.0 is available: 2.7.0">
+        <fix-replace
+            description="Change to 2.7.0"
+            family="Update versions"
+            oldString="2.6.0"
+            replacement="2.7.0"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="63"
+            column="20"
+            startOffset="2160"
+            endLine="63"
+            endColumn="47"
+            endOffset="2187"/>
+    </incident>
+
+    <incident
+        id="NewerVersionAvailable"
+        severity="warning"
+        message="A newer version of org.junit:junit-bom than 5.10.1 is available: 6.0.3">
+        <fix-replace
+            description="Change to 6.0.3"
+            family="Update versions"
+            oldString="5.10.1"
+            replacement="6.0.3"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="66"
+            column="24"
+            startOffset="2241"
+            endLine="66"
+            endColumn="62"
+            endOffset="2279"/>
+    </incident>
+
+    <incident
+        id="NewerVersionAvailable"
+        severity="warning"
+        message="A newer version of org.jetbrains.kotlinx:kotlinx-coroutines-test than 1.7.3 is available: 1.10.2">
+        <fix-replace
+            description="Change to 1.10.2"
+            family="Update versions"
+            oldString="1.7.3"
+            replacement="1.10.2"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="69"
+            column="24"
+            startOffset="2412"
+            endLine="69"
+            endColumn="77"
+            endOffset="2465"/>
+    </incident>
+
+    <incident
+        id="NewerVersionAvailable"
+        severity="warning"
+        message="A newer version of org.junit.vintage:junit-vintage-engine than 5.10.1 is available: 6.0.3">
+        <fix-replace
+            description="Change to 6.0.3"
+            family="Update versions"
+            oldString="5.10.1"
+            replacement="6.0.3"
+            priority="0"/>
+        <location
+            file="${:library*projectDir}/build.gradle.kts"
+            line="76"
+            column="21"
+            startOffset="2797"
+            endLine="76"
+            endColumn="68"
+            endOffset="2844"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioLiveUI/Components/LiveStreamLayoutsCompose.kt"
+            line="61"
+            column="5"
+            startOffset="2683"
+            endLine="61"
+            endColumn="13"
+            endOffset="2691"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioLiveUI/Components/LiveStreamLayoutsCompose.kt"
+            line="128"
+            column="5"
+            startOffset="5196"
+            endLine="128"
+            endColumn="13"
+            endOffset="5204"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioLiveUI/Components/LiveStreamLayoutsCompose.kt"
+            line="171"
+            column="5"
+            startOffset="6898"
+            endLine="171"
+            endColumn="13"
+            endOffset="6906"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioLiveUI/Components/RLiveBottomTabsCompose.kt"
+            line="39"
+            column="5"
+            startOffset="1593"
+            endLine="39"
+            endColumn="13"
+            endOffset="1601"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioLiveUI/Components/RLiveLikesComponentCompose.kt"
+            line="30"
+            column="5"
+            startOffset="1170"
+            endLine="30"
+            endColumn="13"
+            endOffset="1178"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioLiveUI/Components/RLiveProductsComponentCompose.kt"
+            line="43"
+            column="5"
+            startOffset="1890"
+            endLine="43"
+            endColumn="13"
+            endOffset="1898"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioLiveUI/Components/RLiveProductsGridOverlayCompose.kt"
+            line="52"
+            column="5"
+            startOffset="2319"
+            endLine="52"
+            endColumn="13"
+            endOffset="2327"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioLiveUI/Components/RLiveShowFullScreenOverlayCompose.kt"
+            line="54"
+            column="5"
+            startOffset="2395"
+            endLine="54"
+            endColumn="13"
+            endOffset="2403"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioLiveUI/Components/RLiveShowOverlayCompose.kt"
+            line="64"
+            column="5"
+            startOffset="2912"
+            endLine="64"
+            endColumn="13"
+            endOffset="2920"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioEngagementUI/Components/RStatPreviewCard.kt"
+            line="36"
+            column="5"
+            startOffset="1455"
+            endLine="36"
+            endColumn="13"
+            endOffset="1463"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioEngagementUI/Components/RTimelineEventCard.kt"
+            line="40"
+            column="5"
+            startOffset="1639"
+            endLine="40"
+            endColumn="13"
+            endOffset="1647"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/common/SponsorBadge.kt"
+            line="36"
+            column="5"
+            startOffset="1417"
+            endLine="36"
+            endColumn="13"
+            endOffset="1425"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioEngagementUI/Components/VioEngagementContestCard.kt"
+            line="52"
+            column="5"
+            startOffset="2195"
+            endLine="52"
+            endColumn="13"
+            endOffset="2203"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioEngagementUI/Components/VioEngagementContestOverlay.kt"
+            line="80"
+            column="5"
+            startOffset="3395"
+            endLine="80"
+            endColumn="13"
+            endOffset="3403"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioEngagementUI/Components/VioEngagementPollCard.kt"
+            line="52"
+            column="5"
+            startOffset="2254"
+            endLine="52"
+            endColumn="13"
+            endOffset="2262"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioEngagementUI/Components/VioEngagementPollOverlay.kt"
+            line="81"
+            column="5"
+            startOffset="3273"
+            endLine="81"
+            endColumn="13"
+            endOffset="3281"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioEngagementUI/Components/VioEngagementProductCard.kt"
+            line="48"
+            column="5"
+            startOffset="2064"
+            endLine="48"
+            endColumn="13"
+            endOffset="2072"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioEngagementUI/Components/VioEngagementProductGridCard.kt"
+            line="49"
+            column="5"
+            startOffset="2169"
+            endLine="49"
+            endColumn="13"
+            endOffset="2177"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioEngagementUI/Components/VioEngagementProductOverlay.kt"
+            line="46"
+            column="5"
+            startOffset="1924"
+            endLine="46"
+            endColumn="13"
+            endOffset="1932"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/cart/VioFloatingCartIndicator.kt"
+            line="69"
+            column="5"
+            startOffset="3065"
+            endLine="69"
+            endColumn="13"
+            endOffset="3073"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/product/VioProductBanner.kt"
+            line="47"
+            column="5"
+            startOffset="2045"
+            endLine="47"
+            endColumn="13"
+            endOffset="2053"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/product/VioProductCard.kt"
+            line="81"
+            column="5"
+            startOffset="3608"
+            endLine="81"
+            endColumn="13"
+            endOffset="3616"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/product/VioProductCard.kt"
+            line="122"
+            column="5"
+            startOffset="5053"
+            endLine="122"
+            endColumn="13"
+            endOffset="5061"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/product/VioProductCard.kt"
+            line="208"
+            column="5"
+            startOffset="8409"
+            endLine="208"
+            endColumn="13"
+            endOffset="8417"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/product/VioProductCarousel.kt"
+            line="51"
+            column="5"
+            startOffset="2167"
+            endLine="51"
+            endColumn="13"
+            endOffset="2175"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/product/VioProductSpotlight.kt"
+            line="37"
+            column="5"
+            startOffset="1505"
+            endLine="37"
+            endColumn="13"
+            endOffset="1513"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/product/VioProductStore.kt"
+            line="53"
+            column="5"
+            startOffset="2277"
+            endLine="53"
+            endColumn="13"
+            endOffset="2285"/>
+    </incident>
+
+    <incident
+        id="ModifierParameter"
+        severity="warning"
+        message="Modifier parameter should be the first optional parameter">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/feedback/VioToastOverlay.kt"
+            line="58"
+            column="5"
+            startOffset="2283"
+            endLine="58"
+            endColumn="13"
+            endOffset="2291"/>
+    </incident>
+
+    <incident
+        id="StateFlowValueCalledInComposition"
+        severity="error"
+        message="StateFlow.value should not be called within composition">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/cart/VioFloatingCartIndicator.kt"
+            line="72"
+            column="50"
+            startOffset="3186"
+            endLine="72"
+            endColumn="55"
+            endOffset="3191"/>
+    </incident>
+
+    <incident
+        id="StateFlowValueCalledInComposition"
+        severity="error"
+        message="StateFlow.value should not be called within composition">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/product/VioProductDetailOverlay.kt"
+            line="145"
+            column="54"
+            startOffset="5893"
+            endLine="145"
+            endColumn="59"
+            endOffset="5898"/>
+    </incident>
+
+    <incident
+        id="StateFlowValueCalledInComposition"
+        severity="error"
+        message="StateFlow.value should not be called within composition">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/product/VioProductSlider.kt"
+            line="96"
+            column="45"
+            startOffset="4154"
+            endLine="96"
+            endColumn="50"
+            endOffset="4159"/>
+    </incident>
+
+    <incident
+        id="StateFlowValueCalledInComposition"
+        severity="error"
+        message="StateFlow.value should not be called within composition">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/theme/VioTheme.kt"
+            line="57"
+            column="51"
+            startOffset="2396"
+            endLine="57"
+            endColumn="56"
+            endOffset="2401"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableDoubleStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableDoubleStateOf"
+            replacement="androidx.compose.runtime.mutableDoubleStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Managers/CartManager.kt"
+                startOffset="2613"
+                endOffset="2627"/>
+        </fix-replace>
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Managers/CartManager.kt"
+            line="59"
+            column="30"
+            startOffset="2613"
+            endLine="59"
+            endColumn="44"
+            endOffset="2627"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableDoubleStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableDoubleStateOf"
+            replacement="androidx.compose.runtime.mutableDoubleStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Managers/CartManager.kt"
+                startOffset="2661"
+                endOffset="2675"/>
+        </fix-replace>
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Managers/CartManager.kt"
+            line="60"
+            column="29"
+            startOffset="2661"
+            endLine="60"
+            endColumn="43"
+            endOffset="2675"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableDoubleStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableDoubleStateOf"
+            replacement="androidx.compose.runtime.mutableDoubleStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Managers/CartManager.kt"
+                startOffset="2714"
+                endOffset="2728"/>
+        </fix-replace>
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Managers/CartManager.kt"
+            line="61"
+            column="34"
+            startOffset="2714"
+            endLine="61"
+            endColumn="48"
+            endOffset="2728"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableDoubleStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableDoubleStateOf"
+            replacement="androidx.compose.runtime.mutableDoubleStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Managers/CartManager.kt"
+                startOffset="2762"
+                endOffset="2776"/>
+        </fix-replace>
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Managers/CartManager.kt"
+            line="62"
+            column="29"
+            startOffset="2762"
+            endLine="62"
+            endColumn="43"
+            endOffset="2776"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableDoubleStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableDoubleStateOf"
+            replacement="androidx.compose.runtime.mutableDoubleStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Managers/CartManager.kt"
+                startOffset="3418"
+                endOffset="3432"/>
+        </fix-replace>
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Managers/CartManager.kt"
+            line="74"
+            column="34"
+            startOffset="3418"
+            endLine="74"
+            endColumn="48"
+            endOffset="3432"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableDoubleStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableDoubleStateOf"
+            replacement="androidx.compose.runtime.mutableDoubleStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/checkout/VioCheckoutOverlay.kt"
+                startOffset="3408"
+                endOffset="3422"/>
+        </fix-replace>
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/checkout/VioCheckoutOverlay.kt"
+            line="77"
+            column="33"
+            startOffset="3408"
+            endLine="77"
+            endColumn="47"
+            endOffset="3422"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableFloatStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableFloatStateOf"
+            replacement="androidx.compose.runtime.mutableFloatStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioEngagementUI/Components/VioEngagementCardBase.kt"
+                startOffset="2955"
+                endOffset="2969"/>
+        </fix-replace>
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioEngagementUI/Components/VioEngagementCardBase.kt"
+            line="69"
+            column="54"
+            startOffset="2955"
+            endLine="69"
+            endColumn="68"
+            endOffset="2969"/>
+    </incident>
+
+    <incident
+        id="AutoboxingStateCreation"
+        severity="informational"
+        message="Prefer `mutableFloatStateOf` instead of `mutableStateOf`">
+        <fix-replace
+            description="Replace with mutableFloatStateOf"
+            replacement="androidx.compose.runtime.mutableFloatStateOf"
+            shortenNames="true"
+            priority="0">
+            <range
+                file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/product/VioProductSlider.kt"
+                startOffset="6624"
+                endOffset="6638"/>
+        </fix-replace>
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/product/VioProductSlider.kt"
+            line="147"
+            column="40"
+            startOffset="6624"
+            endLine="147"
+            endColumn="54"
+            endOffset="6638"/>
+    </incident>
+
+    <incident
+        id="UseOfNonLambdaOffsetOverload"
+        severity="warning"
+        message="State backed values should use the lambda overload of Modifier.offset">
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioUI/Components/compose/feedback/VioToastOverlay.kt"
+            line="83"
+            column="14"
+            startOffset="3101"
+            endLine="83"
+            endColumn="20"
+            endOffset="3107"/>
+    </incident>
+
+    <incident
+        id="UseKtx"
+        severity="warning"
+        message="Use the KTX extension function `String.toColorInt` instead?">
+        <fix-replace
+            description="Replace with the toColorInt extension function"
+            family="Replace with the toColorInt extension function"
+            robot="true"
+            independent="true"
+            oldString="android.graphics.Color.parseColor(VioColors.primary)"
+            replacement="VioColors.primary.toColorInt()"
+            reformat="value"
+            imports="androidx.core.graphics.toColorInt"
+            priority="0">
+            <range
+                file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioDesignSystem/Components/RCustomLoader.kt"
+                startOffset="787"
+                endOffset="839"/>
+        </fix-replace>
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioDesignSystem/Components/RCustomLoader.kt"
+            line="28"
+            column="26"
+            startOffset="787"
+            endLine="28"
+            endColumn="78"
+            endOffset="839"/>
+    </incident>
+
+    <incident
+        id="UseKtx"
+        severity="warning"
+        message="Use the KTX extension function `String.toColorInt` instead?">
+        <fix-replace
+            description="Replace with the toColorInt extension function"
+            family="Replace with the toColorInt extension function"
+            robot="true"
+            independent="true"
+            oldString="android.graphics.Color.parseColor(VioColors.primary)"
+            replacement="VioColors.primary.toColorInt()"
+            reformat="value"
+            imports="androidx.core.graphics.toColorInt"
+            priority="0">
+            <range
+                file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioDesignSystem/Components/RCustomLoader.kt"
+                startOffset="2083"
+                endOffset="2135"/>
+        </fix-replace>
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioDesignSystem/Components/RCustomLoader.kt"
+            line="70"
+            column="26"
+            startOffset="2083"
+            endLine="70"
+            endColumn="78"
+            endOffset="2135"/>
+    </incident>
+
+    <incident
+        id="UseKtx"
+        severity="warning"
+        message="Use the KTX extension function `String.toColorInt` instead?">
+        <fix-replace
+            description="Replace with the toColorInt extension function"
+            family="Replace with the toColorInt extension function"
+            robot="true"
+            independent="true"
+            oldString="android.graphics.Color.parseColor(VioColors.primary)"
+            replacement="VioColors.primary.toColorInt()"
+            reformat="value"
+            imports="androidx.core.graphics.toColorInt"
+            priority="0">
+            <range
+                file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioDesignSystem/Components/RCustomLoader.kt"
+                startOffset="3148"
+                endOffset="3200"/>
+        </fix-replace>
+        <location
+            file="${:library*debug*MAIN*sourceProvider*0*javaDir*1}/io/reachu/VioDesignSystem/Components/RCustomLoader.kt"
+            line="104"
+            column="26"
+            startOffset="3148"
+            endLine="104"
+            endColumn="78"
+            endOffset="3200"/>
+    </incident>
+
+</incidents>

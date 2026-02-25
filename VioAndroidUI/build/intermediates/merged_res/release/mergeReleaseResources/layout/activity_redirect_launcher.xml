@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/klarna_msdk_redirect_launcher_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/klarna_msdk_surface_color"
+    android:padding="@dimen/klarna_msdk_content_padding"
+    android:visibility="invisible"
+    tools:visibility="visible">
+
+    <ImageView
+        android:id="@+id/klarna_msdk_redirect_launcher_close"
+        android:layout_width="@dimen/klarna_msdk_icon_imageview_size"
+        android:layout_height="@dimen/klarna_msdk_icon_imageview_size"
+        android:contentDescription="@string/klarna_msdk_content_description_close"
+        android:padding="@dimen/klarna_msdk_icon_padding"
+        android:src="@drawable/klarna_msdk_icon_close"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/klarna_msdk_on_surface_color"
+        tools:visibility="visible" />
+
+    <ProgressBar
+        android:id="@+id/klarna_msdk_redirect_launcher_progress_indicator"
+        android:layout_width="@dimen/klarna_msdk_icon_size"
+        android:layout_height="@dimen/klarna_msdk_icon_size"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/klarna_msdk_pink"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

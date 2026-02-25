@@ -1,0 +1,42 @@
+[
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/interpolator-v21/m3_sys_motion_easing_standard_decelerate.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/interpolator-v21/m3_sys_motion_easing_standard_decelerate.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/interpolator-v21/m3_sys_motion_easing_linear.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/interpolator-v21/m3_sys_motion_easing_linear.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/interpolator-v21/mtrl_fast_out_slow_in.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/interpolator-v21/mtrl_fast_out_slow_in.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/interpolator-v21/mtrl_linear_out_slow_in.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/interpolator-v21/mtrl_linear_out_slow_in.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/interpolator-v21/m3_sys_motion_easing_emphasized_accelerate.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/interpolator-v21/m3_sys_motion_easing_emphasized_accelerate.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/interpolator-v21/m3_sys_motion_easing_standard_accelerate.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/interpolator-v21/m3_sys_motion_easing_standard_accelerate.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/interpolator-v21/m3_sys_motion_easing_standard.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/interpolator-v21/m3_sys_motion_easing_standard.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/interpolator-v21/m3_sys_motion_easing_emphasized_decelerate.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/interpolator-v21/m3_sys_motion_easing_emphasized_decelerate.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/interpolator-v21/mtrl_fast_out_linear_in.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/interpolator-v21/mtrl_fast_out_linear_in.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/interpolator-v21/m3_sys_motion_easing_emphasized.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/interpolator-v21/m3_sys_motion_easing_emphasized.xml"
+    }
+]

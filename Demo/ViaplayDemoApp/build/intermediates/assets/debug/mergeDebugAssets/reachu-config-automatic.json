@@ -1,0 +1,154 @@
+{
+  "apiKey": "your-reachu-api-key-here",
+  "environment": "production",
+  "theme": {
+    "name": "Automatic Theme",
+    "mode": "automatic",
+    "lightColors": {
+      "primary": "#007AFF",
+      "secondary": "#5856D6",
+      "success": "#34C759",
+      "warning": "#FF9500",
+      "error": "#FF3B30",
+      "info": "#007AFF",
+      "background": "#F2F2F7",
+      "surface": "#FFFFFF",
+      "surfaceSecondary": "#F9F9F9",
+      "textPrimary": "#000000",
+      "textSecondary": "#8E8E93",
+      "textTertiary": "#C7C7CC",
+      "border": "#E5E5EA",
+      "borderSecondary": "#D1D1D6"
+    },
+    "darkColors": {
+      "primary": "#0A84FF",
+      "secondary": "#5E5CE6",
+      "success": "#32D74B",
+      "warning": "#FF9F0A",
+      "error": "#FF453A",
+      "info": "#0A84FF",
+      "background": "#000000",
+      "surface": "#1C1C1E",
+      "surfaceSecondary": "#2C2C2E",
+      "textPrimary": "#FFFFFF",
+      "textSecondary": "#8E8E93",
+      "textTertiary": "#48484A",
+      "border": "#38383A",
+      "borderSecondary": "#48484A"
+    }
+  },
+  "cart": {
+    "floatingCartPosition": "bottomRight",
+    "floatingCartDisplayMode": "full",
+    "floatingCartSize": "medium",
+    "autoSaveCart": true,
+    "showCartNotifications": true,
+    "enableGuestCheckout": true
+  },
+  "network": {
+    "timeout": 30.0,
+    "retryAttempts": 3,
+    "enableCaching": true,
+    "enableLogging": false
+  },
+  "ui": {
+    "enableAnimations": true,
+    "showProductBrands": true,
+    "enableHapticFeedback": true
+  },
+  "liveShow": {
+    "tipio": {
+      "apiKey": "your-tipio-api-key-here",
+      "baseUrl": "https://api.tipio.no",
+      "enableWebhooks": true,
+      "webhookSecret": "your-webhook-secret"
+    },
+    "vimeo": {
+      "apiKey": "your-vimeo-api-key",
+      "accessToken": "your-vimeo-access-token",
+      "baseUrl": "https://api.vimeo.com",
+      "enableEmbedPlayer": true
+    },
+    "realTime": {
+      "webSocketUrl": "wss://ws.reachu.com",
+      "autoReconnect": true,
+      "heartbeatInterval": 30,
+      "maxReconnectAttempts": 5,
+      "componentCacheTimeout": 300,
+      "autoRefreshInterval": 60
+    },
+    "components": {
+      "enableDynamicComponents": true,
+      "maxConcurrentComponents": 5,
+      "defaultAnimationDuration": 0.3,
+      "enableOfflineCache": true,
+      "preloadNextComponents": true
+    },
+    "streaming": {
+      "autoJoinChat": true,
+      "enableAutoplay": false,
+      "videoQuality": "auto",
+      "enablePictureInPicture": true,
+      "enableFullscreen": true,
+      "showStreamControls": true,
+      "muteByDefault": false
+    },
+    "chat": {
+      "enableChat": true,
+      "enableChatModeration": true,
+      "maxChatMessageLength": 200,
+      "enableEmojis": true,
+      "enableChatNotifications": false,
+      "chatRefreshInterval": 2.0,
+      "enableUserMentions": true,
+      "enableChatHistory": true,
+      "showChatAvatars": true
+    },
+    "shopping": {
+      "enableShoppingDuringStream": true,
+      "showProductOverlays": true,
+      "enableQuickBuy": true,
+      "productOverlayDuration": 10.0,
+      "enableProductNotifications": true,
+      "integrateLiveCart": true,
+      "specialPricingEnabled": true,
+      "countdownEnabled": true
+    },
+    "ui": {
+      "playerAspectRatio": "16:9",
+      "enableLiveIndicator": true,
+      "showViewerCount": true,
+      "enableShareButton": true,
+      "layout": {
+        "defaultLayout": "fullScreenOverlay",
+        "enableLayoutSwitching": true,
+        "miniPlayerPosition": "bottomRight"
+      },
+      "branding": {
+        "liveIndicatorColor": "#FF0000",
+        "accentColor": "#0A84FF",
+        "overlayBackgroundOpacity": 0.75,
+        "gradientOverlay": false,
+        "cardBackgroundColor": "#1C1C1E",
+        "highlightColor": "#0A84FF",
+        "shadowColor": "#000000",
+        "shadowOpacity": 0.3
+      },
+      "animations": {
+        "enableEntryAnimations": true,
+        "enableExitAnimations": true,
+        "componentTransitionDuration": 0.3,
+        "fadeInDuration": 0.5,
+        "slideAnimationEnabled": true
+      }
+    },
+    "notifications": {
+      "enableStreamNotifications": true,
+      "enableProductNotifications": true,
+      "enableComponentNotifications": true,
+      "notificationSound": true,
+      "showNotificationBadges": true
+    }
+  }
+}
+

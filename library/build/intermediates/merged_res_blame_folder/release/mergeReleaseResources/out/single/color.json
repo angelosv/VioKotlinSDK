@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "io.reachu.library-release-44:/color/vector_tint_theme_color.xml",
+        "source": "io.reachu.library-ui-release-32:/color/vector_tint_theme_color.xml"
+    },
+    {
+        "merged": "io.reachu.library-release-44:/color/vector_tint_color.xml",
+        "source": "io.reachu.library-ui-release-32:/color/vector_tint_color.xml"
+    }
+]

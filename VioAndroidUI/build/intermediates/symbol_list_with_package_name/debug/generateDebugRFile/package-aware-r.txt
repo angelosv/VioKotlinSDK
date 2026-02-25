@@ -1,0 +1,11 @@
+io.reachu.VioUI
+drawable ic_klarna
+drawable ic_stripe
+drawable ic_vipps
+id btn_close
+id btn_pay
+id klarna_container
+id progress_loading
+id tv_loading
+layout activity_klarna_native
+xml network_security_config

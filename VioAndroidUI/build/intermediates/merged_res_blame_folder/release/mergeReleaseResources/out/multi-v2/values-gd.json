@@ -1,0 +1,34 @@
+{
+    "logs": [
+        {
+            "outputFile": "io.reachu.VioUI.VioAndroidUI-mergeReleaseResources-93:/values-gd/values-gd.xml",
+            "map": [
+                {
+                    "source": "/Users/root1/.gradle/caches/8.13/transforms/bbdbbda94076c3202f6d41ee0122dbf4/transformed/hcaptcha-20.49.0/res/values-gd/values-gd.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "89",
+                        "endOffsets": "140"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "io.reachu.VioUI.VioAndroidUI-release-95:/values-gd/values-gd.xml",
+            "map": [
+                {
+                    "source": "/Users/root1/.gradle/caches/8.13/transforms/bbdbbda94076c3202f6d41ee0122dbf4/transformed/hcaptcha-20.49.0/res/values-gd/values-gd.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "89",
+                        "endOffsets": "140"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/menu/stripe_payment_auth_web_view_menu.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-payments-core-20.49.0-39:/menu/stripe_payment_auth_web_view_menu.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/menu/stripe_add_payment_method.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-payments-core-20.49.0-39:/menu/stripe_add_payment_method.xml"
+    }
+]

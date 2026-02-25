@@ -1,0 +1,16 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/library/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest13009077884581611611.xml:2:13-83
+INJECTED from /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/library/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest13009077884581611611.xml:2:13-83
+	package
+		INJECTED from /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/library/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest13009077884581611611.xml
+	xmlns:android
+		ADDED from /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/library/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest13009077884581611611.xml:2:23-81
+uses-sdk
+INJECTED from /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/library/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest13009077884581611611.xml reason: use-sdk injection requested
+INJECTED from /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/library/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest13009077884581611611.xml
+INJECTED from /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/library/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest13009077884581611611.xml
+	android:targetSdkVersion
+		INJECTED from /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/library/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest13009077884581611611.xml
+	android:minSdkVersion
+		INJECTED from /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/library/build/intermediates/tmp/ProcessLibraryManifest/release/tempAndroidManifest13009077884581611611.xml

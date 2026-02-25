@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.reachu.liveshopping.LiveShoppingDemo-debug-101:/xml_data_extraction_rules.xml.flat",
+        "source": "com.reachu.liveshopping.LiveShoppingDemo-main-103:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.reachu.liveshopping.LiveShoppingDemo-debug-101:/xml_backup_rules.xml.flat",
+        "source": "com.reachu.liveshopping.LiveShoppingDemo-main-103:/xml/backup_rules.xml"
+    }
+]

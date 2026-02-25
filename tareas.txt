@@ -1,0 +1,12 @@
+1. Agregar y actualizar documentación del Kotlin SDK
+Importante: Alan debe agregar y actualizar la documentación a medida que avance en las demás tareas.
+Incluir
+docs/README.md: URLs vio.live, ejemplos actualizados
+KDoc en clases públicas (VioConfiguration, VioColors, etc.)
+Guía de migración Reachu → Vio
+Nuevos nombres de clases y módulos
+Criterios de aceptación
+[ ] docs/README.md actualizado
+[ ] KDoc en clases principales
+[ ] Guía de migración Reachu→Vio
+[ ] Sin referencias reachu.io en docs

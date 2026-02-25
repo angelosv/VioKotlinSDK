@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/drawable-anydpi-v21/ic_call_answer_video_low.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-core-1.13.1-79:/drawable-anydpi-v21/ic_call_answer_video_low.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/drawable-anydpi-v21/ic_call_answer_video.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-core-1.13.1-79:/drawable-anydpi-v21/ic_call_answer_video.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/drawable-anydpi-v21/ic_call_decline.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-core-1.13.1-79:/drawable-anydpi-v21/ic_call_decline.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/drawable-anydpi-v21/ic_call_answer.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-core-1.13.1-79:/drawable-anydpi-v21/ic_call_answer.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/drawable-anydpi-v21/logo_klarna_single_inapp_sdk.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-klarna-core-2.10.0-36:/drawable-anydpi-v21/logo_klarna_single_inapp_sdk.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/drawable-anydpi-v21/klarna_msdk_icon_close.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-klarna-core-2.10.0-36:/drawable-anydpi-v21/klarna_msdk_icon_close.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/drawable-anydpi-v21/ic_call_answer_low.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-core-1.13.1-79:/drawable-anydpi-v21/ic_call_answer_low.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/drawable-anydpi-v21/badge_klarna_inapp_sdk.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-klarna-core-2.10.0-36:/drawable-anydpi-v21/badge_klarna_inapp_sdk.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/drawable-anydpi-v21/ic_call_decline_low.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-core-1.13.1-79:/drawable-anydpi-v21/ic_call_decline_low.xml"
+    }
+]

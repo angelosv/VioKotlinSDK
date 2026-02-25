@@ -1,0 +1,599 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.reachu.liveshopping"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:5:5-67
+11-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:5:22-64
+12
+13    <!-- See https://developer.android.com/training/package-visibility/declaring for more details. -->
+14    <queries>
+14-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:8:5-12:15
+15
+16        <!-- Added to check if Chrome is installed for browser-based payment authentication (e.g. 3DS1). -->
+17        <package android:name="com.android.chrome" />
+17-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:11:9-54
+17-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:11:18-51
+18        <package android:name="com.myklarnamobile" />
+18-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:16:9-54
+18-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:16:18-51
+19
+20        <intent>
+20-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:18:9-20:18
+21            <action android:name="android.support.customtabs.action.CustomTabsService" />
+21-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:19:13-90
+21-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:19:21-87
+22        </intent> <!-- Needs to be explicitly declared on Android R+ -->
+23        <package android:name="com.google.android.apps.maps" />
+23-->[com.google.android.gms:play-services-maps:18.0.2] /Users/root1/.gradle/caches/8.13/transforms/eddfe585b9e82ef909d25f958c55e8dd/transformed/play-services-maps-18.0.2/AndroidManifest.xml:33:9-64
+23-->[com.google.android.gms:play-services-maps:18.0.2] /Users/root1/.gradle/caches/8.13/transforms/eddfe585b9e82ef909d25f958c55e8dd/transformed/play-services-maps-18.0.2/AndroidManifest.xml:33:18-61
+24    </queries>
+25
+26    <uses-feature
+26-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:23:5-25:36
+27        android:name="android.hardware.camera"
+27-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:24:9-47
+28        android:required="false" />
+28-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:25:9-33
+29    <uses-feature
+29-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:26:5-28:36
+30        android:name="android.hardware.camera.autofocus"
+30-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:27:9-57
+31        android:required="false" />
+31-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:28:9-33
+32
+33    <uses-permission android:name="android.permission.CAMERA" />
+33-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:30:5-65
+33-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:30:22-62
+34    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+34-->[com.stripe:stripe-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/05b93451ed473fdd20d419f2981d8528/transformed/stripe-core-20.49.0/AndroidManifest.xml:7:5-79
+34-->[com.stripe:stripe-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/05b93451ed473fdd20d419f2981d8528/transformed/stripe-core-20.49.0/AndroidManifest.xml:7:22-76
+35
+36    <uses-feature
+36-->[com.google.android.gms:play-services-maps:18.0.2] /Users/root1/.gradle/caches/8.13/transforms/eddfe585b9e82ef909d25f958c55e8dd/transformed/play-services-maps-18.0.2/AndroidManifest.xml:26:5-28:35
+37        android:glEsVersion="0x00020000"
+37-->[com.google.android.gms:play-services-maps:18.0.2] /Users/root1/.gradle/caches/8.13/transforms/eddfe585b9e82ef909d25f958c55e8dd/transformed/play-services-maps-18.0.2/AndroidManifest.xml:27:9-41
+38        android:required="true" />
+38-->[com.google.android.gms:play-services-maps:18.0.2] /Users/root1/.gradle/caches/8.13/transforms/eddfe585b9e82ef909d25f958c55e8dd/transformed/play-services-maps-18.0.2/AndroidManifest.xml:28:9-32
+39
+40    <permission
+40-->[androidx.core:core:1.13.1] /Users/root1/.gradle/caches/8.13/transforms/d69528e09f5d90e87ad74f17c3562704/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+41        android:name="com.reachu.liveshopping.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+41-->[androidx.core:core:1.13.1] /Users/root1/.gradle/caches/8.13/transforms/d69528e09f5d90e87ad74f17c3562704/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+42        android:protectionLevel="signature" />
+42-->[androidx.core:core:1.13.1] /Users/root1/.gradle/caches/8.13/transforms/d69528e09f5d90e87ad74f17c3562704/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+43
+44    <uses-permission android:name="com.reachu.liveshopping.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+44-->[androidx.core:core:1.13.1] /Users/root1/.gradle/caches/8.13/transforms/d69528e09f5d90e87ad74f17c3562704/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+44-->[androidx.core:core:1.13.1] /Users/root1/.gradle/caches/8.13/transforms/d69528e09f5d90e87ad74f17c3562704/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+45
+46    <application
+46-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:7:5-25:19
+47        android:allowBackup="true"
+47-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:8:9-35
+48        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+48-->[androidx.core:core:1.13.1] /Users/root1/.gradle/caches/8.13/transforms/d69528e09f5d90e87ad74f17c3562704/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+49        android:dataExtractionRules="@xml/data_extraction_rules"
+49-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:9:9-65
+50        android:debuggable="true"
+51        android:extractNativeLibs="false"
+52        android:fullBackupContent="@xml/backup_rules"
+52-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:10:9-54
+53        android:label="Live Shopping Demo"
+53-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:11:9-43
+54        android:supportsRtl="true"
+54-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:12:9-35
+55        android:theme="@style/Theme.ReachuDemo"
+55-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:13:9-48
+56        android:usesCleartextTraffic="true" >
+56-->[:VioAndroidUI] /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/VioAndroidUI/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:9:18-53
+57        <activity
+57-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:16:9-24:20
+58            android:name="com.reachu.liveshopping.MainActivity"
+58-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:17:13-41
+59            android:exported="true"
+59-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:18:13-36
+60            android:theme="@style/Theme.ReachuDemo" >
+60-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:19:13-52
+61            <intent-filter>
+61-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:20:13-23:29
+62                <action android:name="android.intent.action.MAIN" />
+62-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:21:17-69
+62-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:21:25-66
+63
+64                <category android:name="android.intent.category.LAUNCHER" />
+64-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:22:17-77
+64-->/Users/root1/Desktop/IQPlus/ReachuKotlinSDK/Demo/LiveShoppingDemo/src/main/AndroidManifest.xml:22:27-74
+65            </intent-filter>
+66        </activity>
+67        <activity
+67-->[:VioAndroidUI] /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/VioAndroidUI/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:10:9-15:47
+68            android:name="io.reachu.VioUI.KlarnaNativeActivity"
+68-->[:VioAndroidUI] /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/VioAndroidUI/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:11:13-64
+69            android:configChanges="orientation|screenSize|keyboardHidden"
+69-->[:VioAndroidUI] /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/VioAndroidUI/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:12:13-74
+70            android:exported="false"
+70-->[:VioAndroidUI] /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/VioAndroidUI/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:13:13-37
+71            android:hardwareAccelerated="true"
+71-->[:VioAndroidUI] /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/VioAndroidUI/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:14:13-47
+72            android:launchMode="singleTask" />
+72-->[:VioAndroidUI] /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/VioAndroidUI/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:15:13-44
+73        <activity
+73-->[:VioAndroidUI] /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/VioAndroidUI/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:16:9-19:72
+74            android:name="io.reachu.VioUI.KlarnaWebActivity"
+74-->[:VioAndroidUI] /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/VioAndroidUI/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:17:13-61
+75            android:exported="false"
+75-->[:VioAndroidUI] /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/VioAndroidUI/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:18:13-37
+76            android:theme="@style/Theme.MaterialComponents.DayNight" />
+76-->[:VioAndroidUI] /Users/root1/Desktop/IQPlus/ReachuKotlinSDK/VioAndroidUI/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml:19:13-69
+77        <activity
+77-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:8:9-11:69
+78            android:name="com.stripe.android.paymentsheet.PaymentSheetActivity"
+78-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:9:13-80
+79            android:exported="false"
+79-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:10:13-37
+80            android:theme="@style/StripePaymentSheetDefaultTheme" />
+80-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:11:13-66
+81        <activity
+81-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:12:9-15:69
+82            android:name="com.stripe.android.paymentsheet.PaymentOptionsActivity"
+82-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:13:13-82
+83            android:exported="false"
+83-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:14:13-37
+84            android:theme="@style/StripePaymentSheetDefaultTheme" />
+84-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:15:13-66
+85        <activity
+85-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:16:9-19:69
+86            android:name="com.stripe.android.customersheet.CustomerSheetActivity"
+86-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:17:13-82
+87            android:exported="false"
+87-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:18:13-37
+88            android:theme="@style/StripePaymentSheetDefaultTheme" />
+88-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:19:13-66
+89        <activity
+89-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:20:9-23:69
+90            android:name="com.stripe.android.paymentsheet.addresselement.AddressElementActivity"
+90-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:21:13-97
+91            android:exported="false"
+91-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:22:13-37
+92            android:theme="@style/StripePaymentSheetDefaultTheme" />
+92-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:23:13-66
+93        <activity
+93-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:24:9-27:69
+94            android:name="com.stripe.android.paymentsheet.paymentdatacollection.bacs.BacsMandateConfirmationActivity"
+94-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:25:13-118
+95            android:exported="false"
+95-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:26:13-37
+96            android:theme="@style/StripePaymentSheetDefaultTheme" />
+96-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:27:13-66
+97        <activity
+97-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:28:9-31:69
+98            android:name="com.stripe.android.paymentsheet.paymentdatacollection.polling.PollingActivity"
+98-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:29:13-105
+99            android:exported="false"
+99-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:30:13-37
+100            android:theme="@style/StripePaymentSheetDefaultTheme" />
+100-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:31:13-66
+101        <activity
+101-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:32:9-35:69
+102            android:name="com.stripe.android.paymentsheet.ui.SepaMandateActivity"
+102-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:33:13-82
+103            android:exported="false"
+103-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:34:13-37
+104            android:theme="@style/StripePaymentSheetDefaultTheme" />
+104-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:35:13-66
+105        <activity
+105-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:36:9-39:68
+106            android:name="com.stripe.android.paymentsheet.ExternalPaymentMethodProxyActivity"
+106-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:37:13-94
+107            android:exported="false"
+107-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:38:13-37
+108            android:theme="@style/StripePayLauncherDefaultTheme" />
+108-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:39:13-65
+109        <activity
+109-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:40:9-42:69
+110            android:name="com.stripe.android.paymentsheet.paymentdatacollection.cvcrecollection.CvcRecollectionActivity"
+110-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:41:13-121
+111            android:theme="@style/StripePaymentSheetDefaultTheme" />
+111-->[com.stripe:paymentsheet:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/39ad60ab420e692532b623b9cd04f77d/transformed/paymentsheet-20.49.0/AndroidManifest.xml:42:13-66
+112        <activity
+112-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:8:9-13:61
+113            android:name="com.stripe.android.link.LinkForegroundActivity"
+113-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:9:13-74
+114            android:autoRemoveFromRecents="true"
+114-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:10:13-49
+115            android:configChanges="orientation|keyboard|keyboardHidden|screenLayout|screenSize|smallestScreenSize"
+115-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:11:13-115
+116            android:launchMode="singleTop"
+116-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:12:13-43
+117            android:theme="@style/StripeTransparentTheme" />
+117-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:13:13-58
+118        <activity
+118-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:14:9-31:20
+119            android:name="com.stripe.android.link.LinkRedirectHandlerActivity"
+119-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:15:13-79
+120            android:autoRemoveFromRecents="true"
+120-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:16:13-49
+121            android:exported="true"
+121-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:17:13-36
+122            android:launchMode="singleInstance"
+122-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:18:13-48
+123            android:theme="@style/StripeTransparentTheme" >
+123-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:19:13-58
+124            <intent-filter>
+124-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:20:13-30:29
+125                <action android:name="android.intent.action.VIEW" />
+125-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:21:17-69
+125-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:21:25-66
+126
+127                <category android:name="android.intent.category.DEFAULT" />
+127-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:23:17-76
+127-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:23:27-73
+128                <category android:name="android.intent.category.BROWSABLE" />
+128-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:24:17-78
+128-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:24:27-75
+129
+130                <data
+130-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:26:17-29:51
+131                    android:host="complete"
+131-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:27:21-44
+132                    android:path="/com.reachu.liveshopping"
+132-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:28:21-53
+133                    android:scheme="link-popup" />
+133-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:29:21-48
+134            </intent-filter>
+135        </activity>
+136        <activity
+136-->[com.stripe:payments-ui-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/3df501c8a1214f0add210a2edf214266/transformed/payments-ui-core-20.49.0/AndroidManifest.xml:8:9-11:69
+137            android:name="com.stripe.android.ui.core.cardscan.CardScanActivity"
+137-->[com.stripe:payments-ui-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/3df501c8a1214f0add210a2edf214266/transformed/payments-ui-core-20.49.0/AndroidManifest.xml:9:13-80
+138            android:exported="false"
+138-->[com.stripe:payments-ui-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/3df501c8a1214f0add210a2edf214266/transformed/payments-ui-core-20.49.0/AndroidManifest.xml:10:13-37
+139            android:theme="@style/StripePaymentSheetDefaultTheme" />
+139-->[com.stripe:payments-ui-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/3df501c8a1214f0add210a2edf214266/transformed/payments-ui-core-20.49.0/AndroidManifest.xml:11:13-66
+140        <activity
+140-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:15:9-18:57
+141            android:name="com.stripe.android.view.AddPaymentMethodActivity"
+141-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:16:13-76
+142            android:exported="false"
+142-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:17:13-37
+143            android:theme="@style/StripeDefaultTheme" />
+143-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:18:13-54
+144        <activity
+144-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:19:9-22:57
+145            android:name="com.stripe.android.view.PaymentMethodsActivity"
+145-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:20:13-74
+146            android:exported="false"
+146-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:21:13-37
+147            android:theme="@style/StripeDefaultTheme" />
+147-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:22:13-54
+148        <activity
+148-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:23:9-26:57
+149            android:name="com.stripe.android.view.PaymentFlowActivity"
+149-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:24:13-71
+150            android:exported="false"
+150-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:25:13-37
+151            android:theme="@style/StripeDefaultTheme" />
+151-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:26:13-54
+152        <activity
+152-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:27:9-30:57
+153            android:name="com.stripe.android.view.PaymentAuthWebViewActivity"
+153-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:28:13-78
+154            android:exported="false"
+154-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:29:13-37
+155            android:theme="@style/StripeDefaultTheme" />
+155-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:30:13-54
+156        <activity
+156-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:31:9-34:61
+157            android:name="com.stripe.android.view.PaymentRelayActivity"
+157-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:32:13-72
+158            android:exported="false"
+158-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:33:13-37
+159            android:theme="@style/StripeTransparentTheme" />
+159-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:34:13-58
+160        <!--
+161        Set android:launchMode="singleTop" so that the StripeBrowserLauncherActivity instance that
+162        launched the browser Activity will also handle the return URL deep link.
+163        -->
+164        <activity
+164-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:40:9-44:61
+165            android:name="com.stripe.android.payments.StripeBrowserLauncherActivity"
+165-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:41:13-85
+166            android:exported="false"
+166-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:42:13-37
+167            android:launchMode="singleTask"
+167-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:43:13-44
+168            android:theme="@style/StripeTransparentTheme" />
+168-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:44:13-58
+169        <activity
+169-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:45:9-62:20
+170            android:name="com.stripe.android.payments.StripeBrowserProxyReturnActivity"
+170-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:46:13-88
+171            android:exported="true"
+171-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:47:13-36
+172            android:launchMode="singleTask"
+172-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:48:13-44
+173            android:theme="@style/StripeTransparentTheme" >
+173-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:49:13-58
+174            <intent-filter>
+174-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:50:13-61:29
+175                <action android:name="android.intent.action.VIEW" />
+175-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:21:17-69
+175-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:21:25-66
+176
+177                <category android:name="android.intent.category.DEFAULT" />
+177-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:23:17-76
+177-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:23:27-73
+178                <category android:name="android.intent.category.BROWSABLE" />
+178-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:24:17-78
+178-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:24:27-75
+179
+180                <!-- Must match `DefaultReturnUrl#value`. -->
+181                <data
+181-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:26:17-29:51
+182                    android:host="payment_return_url"
+182-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:27:21-44
+183                    android:path="/com.reachu.liveshopping"
+183-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:28:21-53
+184                    android:scheme="stripesdk" />
+184-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:29:21-48
+185            </intent-filter>
+186        </activity>
+187        <activity
+187-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:63:9-66:57
+188            android:name="com.stripe.android.payments.core.authentication.threeds2.Stripe3ds2TransactionActivity"
+188-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:64:13-114
+189            android:exported="false"
+189-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:65:13-37
+190            android:theme="@style/StripeDefaultTheme" />
+190-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:66:13-54
+191        <activity
+191-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:67:9-70:66
+192            android:name="com.stripe.android.googlepaylauncher.GooglePayLauncherActivity"
+192-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:68:13-90
+193            android:exported="false"
+193-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:69:13-37
+194            android:theme="@style/StripeGooglePayDefaultTheme" />
+194-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:70:13-63
+195        <activity
+195-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:71:9-74:66
+196            android:name="com.stripe.android.googlepaylauncher.GooglePayPaymentMethodLauncherActivity"
+196-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:72:13-103
+197            android:exported="false"
+197-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:73:13-37
+198            android:theme="@style/StripeGooglePayDefaultTheme" />
+198-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:74:13-63
+199        <activity
+199-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:75:9-78:68
+200            android:name="com.stripe.android.payments.paymentlauncher.PaymentLauncherConfirmationActivity"
+200-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:76:13-107
+201            android:exported="false"
+201-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:77:13-37
+202            android:theme="@style/StripePayLauncherDefaultTheme" />
+202-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:78:13-65
+203        <activity
+203-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:79:9-82:61
+204            android:name="com.stripe.android.payments.bankaccount.ui.CollectBankAccountActivity"
+204-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:80:13-97
+205            android:exported="false"
+205-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:81:13-37
+206            android:theme="@style/StripeTransparentTheme" />
+206-->[com.stripe:payments-core:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/71be0099339c91a71b847e8b75453b24/transformed/payments-core-20.49.0/AndroidManifest.xml:82:13-58
+207        <activity
+207-->[com.stripe:stripe-3ds2-android:6.1.8] /Users/root1/.gradle/caches/8.13/transforms/7ca9c1fb2a63480242265ad1504f51bb/transformed/stripe-3ds2-android-6.1.8/AndroidManifest.xml:8:9-11:54
+208            android:name="com.stripe.android.stripe3ds2.views.ChallengeActivity"
+208-->[com.stripe:stripe-3ds2-android:6.1.8] /Users/root1/.gradle/caches/8.13/transforms/7ca9c1fb2a63480242265ad1504f51bb/transformed/stripe-3ds2-android-6.1.8/AndroidManifest.xml:9:13-81
+209            android:exported="false"
+209-->[com.stripe:stripe-3ds2-android:6.1.8] /Users/root1/.gradle/caches/8.13/transforms/7ca9c1fb2a63480242265ad1504f51bb/transformed/stripe-3ds2-android-6.1.8/AndroidManifest.xml:10:13-37
+210            android:theme="@style/Stripe3DS2Theme" />
+210-->[com.stripe:stripe-3ds2-android:6.1.8] /Users/root1/.gradle/caches/8.13/transforms/7ca9c1fb2a63480242265ad1504f51bb/transformed/stripe-3ds2-android-6.1.8/AndroidManifest.xml:11:13-51
+211        <activity
+211-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:33:9-38:86
+212            android:name="com.klarna.mobile.sdk.activity.KlarnaRedirectLauncherActivity"
+212-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:34:13-89
+213            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
+213-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:35:13-115
+214            android:exported="false"
+214-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:36:13-37
+215            android:launchMode="singleTask"
+215-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:37:13-44
+216            android:theme="@style/Theme.AppCompat.RedirectLauncher_KlarnaInAppSDK" />
+216-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:38:13-83
+217        <activity
+217-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:39:9-41:40
+218            android:name="com.klarna.mobile.sdk.activity.KlarnaRedirectReceiverActivity"
+218-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:40:13-89
+219            android:exported="false" />
+219-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:41:13-37
+220        <activity
+220-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:42:9-55:20
+221            android:name="com.klarna.mobile.sdk.activity.KlarnaAuthenticationRedirectReceiverActivity"
+221-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:43:13-103
+222            android:exported="true" >
+222-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:44:13-36
+223            <intent-filter>
+223-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:45:13-54:29
+224                <action android:name="android.intent.action.VIEW" />
+224-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:21:17-69
+224-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:21:25-66
+225
+226                <category android:name="android.intent.category.DEFAULT" />
+226-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:23:17-76
+226-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:23:27-73
+227                <category android:name="android.intent.category.BROWSABLE" />
+227-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:24:17-78
+227-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:24:27-75
+228
+229                <data
+229-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:26:17-29:51
+230                    android:host="com.reachu.liveshopping"
+230-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:27:21-44
+231                    android:scheme="@string/authentication_redirect_url_scheme" />
+231-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:29:21-48
+232            </intent-filter>
+233        </activity>
+234        <activity
+234-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:56:9-71:20
+235            android:name="com.klarna.mobile.sdk.activity.KlarnaReturnReceiverActivity"
+235-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:57:13-87
+236            android:excludeFromRecents="true"
+236-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:58:13-46
+237            android:exported="true"
+237-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:59:13-36
+238            android:theme="@style/Theme.AppCompat.ReturnReceiver_KlarnaMobileSDK" >
+238-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:60:13-82
+239            <intent-filter>
+239-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:61:13-70:29
+240                <action android:name="android.intent.action.VIEW" />
+240-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:21:17-69
+240-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:21:25-66
+241
+242                <category android:name="android.intent.category.DEFAULT" />
+242-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:23:17-76
+242-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:23:27-73
+243                <category android:name="android.intent.category.BROWSABLE" />
+243-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:24:17-78
+243-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:24:27-75
+244
+245                <data
+245-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:26:17-29:51
+246                    android:host="com.reachu.liveshopping"
+246-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:27:21-44
+247                    android:scheme="@string/klarna_mobile_sdk_return_url_scheme" />
+247-->[com.stripe:link:20.49.0] /Users/root1/.gradle/caches/8.13/transforms/2f805e232f2727280cca87d6de0bebe5/transformed/link-20.49.0/AndroidManifest.xml:29:21-48
+248            </intent-filter>
+249        </activity>
+250
+251        <provider
+251-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:73:9-81:20
+252            android:name="androidx.startup.InitializationProvider"
+252-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:74:13-67
+253            android:authorities="com.reachu.liveshopping.androidx-startup"
+253-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:75:13-68
+254            android:exported="false" >
+254-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:76:13-37
+255            <meta-data
+255-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:78:13-80:52
+256                android:name="com.klarna.mobile.sdk.KlarnaMobileSdkInitializer"
+256-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:79:17-80
+257                android:value="androidx.startup" />
+257-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:80:17-49
+258            <meta-data
+258-->[androidx.emoji2:emoji2:1.3.0] /Users/root1/.gradle/caches/8.13/transforms/350072b2e78084c6aa08839a8ffd6206/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+259                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+259-->[androidx.emoji2:emoji2:1.3.0] /Users/root1/.gradle/caches/8.13/transforms/350072b2e78084c6aa08839a8ffd6206/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+260                android:value="androidx.startup" />
+260-->[androidx.emoji2:emoji2:1.3.0] /Users/root1/.gradle/caches/8.13/transforms/350072b2e78084c6aa08839a8ffd6206/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+261            <meta-data
+261-->[androidx.lifecycle:lifecycle-process:2.8.3] /Users/root1/.gradle/caches/8.13/transforms/f2a889a9c61f7a5e0ab35d0ed289c2eb/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:29:13-31:52
+262                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+262-->[androidx.lifecycle:lifecycle-process:2.8.3] /Users/root1/.gradle/caches/8.13/transforms/f2a889a9c61f7a5e0ab35d0ed289c2eb/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:30:17-78
+263                android:value="androidx.startup" />
+263-->[androidx.lifecycle:lifecycle-process:2.8.3] /Users/root1/.gradle/caches/8.13/transforms/f2a889a9c61f7a5e0ab35d0ed289c2eb/transformed/lifecycle-process-2.8.3/AndroidManifest.xml:31:17-49
+264            <meta-data
+264-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+265                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+265-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+266                android:value="androidx.startup" />
+266-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+267        </provider>
+268        <provider
+268-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:82:9-90:20
+269            android:name="com.klarna.mobile.sdk.KlarnaShareFileProvider"
+269-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:83:13-73
+270            android:authorities="com.reachu.liveshopping.klarna.fileprovider.share"
+270-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:84:13-77
+271            android:exported="false"
+271-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:85:13-37
+272            android:grantUriPermissions="true" >
+272-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:86:13-47
+273            <meta-data
+273-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:87:13-89:78
+274                android:name="android.support.FILE_PROVIDER_PATHS"
+274-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:88:17-67
+275                android:resource="@xml/klarna_mobile_sdk_share_file_paths" />
+275-->[com.klarna.mobile.sdk:klarna-core:2.10.0] /Users/root1/.gradle/caches/8.13/transforms/6c6ac11543803ce4a3ae41d8cd0713f6/transformed/klarna-core-2.10.0/AndroidManifest.xml:89:17-75
+276        </provider>
+277
+278        <activity
+278-->[androidx.compose.ui:ui-tooling-android:1.7.1] /Users/root1/.gradle/caches/8.13/transforms/b160596ea23137c64e0ddd020e12ccd0/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
+279            android:name="androidx.compose.ui.tooling.PreviewActivity"
+279-->[androidx.compose.ui:ui-tooling-android:1.7.1] /Users/root1/.gradle/caches/8.13/transforms/b160596ea23137c64e0ddd020e12ccd0/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
+280            android:exported="true" /> <!-- Needs to be explicitly declared on P+ -->
+280-->[androidx.compose.ui:ui-tooling-android:1.7.1] /Users/root1/.gradle/caches/8.13/transforms/b160596ea23137c64e0ddd020e12ccd0/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
+281        <uses-library
+281-->[com.google.android.gms:play-services-maps:18.0.2] /Users/root1/.gradle/caches/8.13/transforms/eddfe585b9e82ef909d25f958c55e8dd/transformed/play-services-maps-18.0.2/AndroidManifest.xml:39:9-41:40
+282            android:name="org.apache.http.legacy"
+282-->[com.google.android.gms:play-services-maps:18.0.2] /Users/root1/.gradle/caches/8.13/transforms/eddfe585b9e82ef909d25f958c55e8dd/transformed/play-services-maps-18.0.2/AndroidManifest.xml:40:13-50
+283            android:required="false" />
+283-->[com.google.android.gms:play-services-maps:18.0.2] /Users/root1/.gradle/caches/8.13/transforms/eddfe585b9e82ef909d25f958c55e8dd/transformed/play-services-maps-18.0.2/AndroidManifest.xml:41:13-37
+284
+285        <activity
+285-->[com.google.android.gms:play-services-base:18.3.0] /Users/root1/.gradle/caches/8.13/transforms/b1f363c9dfc6641d84697c3ff87417eb/transformed/play-services-base-18.3.0/AndroidManifest.xml:20:9-22:45
+286            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+286-->[com.google.android.gms:play-services-base:18.3.0] /Users/root1/.gradle/caches/8.13/transforms/b1f363c9dfc6641d84697c3ff87417eb/transformed/play-services-base-18.3.0/AndroidManifest.xml:20:19-85
+287            android:exported="false"
+287-->[com.google.android.gms:play-services-base:18.3.0] /Users/root1/.gradle/caches/8.13/transforms/b1f363c9dfc6641d84697c3ff87417eb/transformed/play-services-base-18.3.0/AndroidManifest.xml:22:19-43
+288            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+288-->[com.google.android.gms:play-services-base:18.3.0] /Users/root1/.gradle/caches/8.13/transforms/b1f363c9dfc6641d84697c3ff87417eb/transformed/play-services-base-18.3.0/AndroidManifest.xml:21:19-78
+289
+290        <meta-data
+290-->[com.google.android.gms:play-services-basement:18.3.0] /Users/root1/.gradle/caches/8.13/transforms/bab647312706b776930cdb95890f5a17/transformed/play-services-basement-18.3.0/AndroidManifest.xml:21:9-23:69
+291            android:name="com.google.android.gms.version"
+291-->[com.google.android.gms:play-services-basement:18.3.0] /Users/root1/.gradle/caches/8.13/transforms/bab647312706b776930cdb95890f5a17/transformed/play-services-basement-18.3.0/AndroidManifest.xml:22:13-58
+292            android:value="@integer/google_play_services_version" />
+292-->[com.google.android.gms:play-services-basement:18.3.0] /Users/root1/.gradle/caches/8.13/transforms/bab647312706b776930cdb95890f5a17/transformed/play-services-basement-18.3.0/AndroidManifest.xml:23:13-66
+293
+294        <receiver
+294-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+295            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+295-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+296            android:directBootAware="false"
+296-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+297            android:enabled="true"
+297-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+298            android:exported="true"
+298-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+299            android:permission="android.permission.DUMP" >
+299-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+300            <intent-filter>
+300-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+301                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+301-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+301-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+302            </intent-filter>
+303            <intent-filter>
+303-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+304                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+304-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+304-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+305            </intent-filter>
+306            <intent-filter>
+306-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+307                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+307-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+307-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+308            </intent-filter>
+309            <intent-filter>
+309-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+310                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+310-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+310-->[androidx.profileinstaller:profileinstaller:1.3.1] /Users/root1/.gradle/caches/8.13/transforms/3d6cd8bf9e3394f42141f99c19ee74bc/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
+311            </intent-filter>
+312        </receiver>
+313
+314        <meta-data
+314-->[com.google.android.instantapps:instantapps:1.1.0] /Users/root1/.gradle/caches/8.13/transforms/0f77cec356567c938868b0ea69fd34ab/transformed/instantapps-1.1.0/AndroidManifest.xml:10:9-12:33
+315            android:name="aia-compat-api-min-version"
+315-->[com.google.android.instantapps:instantapps:1.1.0] /Users/root1/.gradle/caches/8.13/transforms/0f77cec356567c938868b0ea69fd34ab/transformed/instantapps-1.1.0/AndroidManifest.xml:11:13-54
+316            android:value="1" />
+316-->[com.google.android.instantapps:instantapps:1.1.0] /Users/root1/.gradle/caches/8.13/transforms/0f77cec356567c938868b0ea69fd34ab/transformed/instantapps-1.1.0/AndroidManifest.xml:12:13-30
+317    </application>
+318
+319</manifest>

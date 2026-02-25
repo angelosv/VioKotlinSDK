@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/layout-sw600dp-v13/mtrl_layout_snackbar.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/layout-sw600dp-v13/mtrl_layout_snackbar.xml"
+    },
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/layout-sw600dp-v13/design_layout_snackbar.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-material-1.12.0-8:/layout-sw600dp-v13/design_layout_snackbar.xml"
+    }
+]

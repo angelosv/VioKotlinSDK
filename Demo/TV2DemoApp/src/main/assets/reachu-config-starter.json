@@ -1,0 +1,27 @@
+{
+  "apiKey": "YOUR_REACHU_API_KEY_HERE",
+  "environment": "production",
+  "theme": {
+    "name": "My Store Theme",
+    "mode": "automatic",
+    "lightColors": {
+      "primary": "#007AFF",
+      "secondary": "#5856D6"
+    },
+    "darkColors": {
+      "primary": "#0A84FF",
+      "secondary": "#5E5CE6"
+    }
+  },
+  "cart": {
+    "floatingCartPosition": "bottomRight",
+    "showCartNotifications": true,
+    "enableGuestCheckout": true
+  },
+  "ui": {
+    "enableAnimations": true,
+    "showProductBrands": true,
+    "enableHapticFeedback": true
+  }
+}
+

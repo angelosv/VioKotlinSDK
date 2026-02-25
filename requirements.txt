@@ -1,0 +1,103 @@
+Sponsor Badge and Image Background Color – Checklist Kotlin
+
+Este archivo funciona como checklist de implementación para alinear el SDK Kotlin con la implementación Swift.
+
+## 1. Modelo y configuración de campaña
+
+- [x] **Campaign.campaignLogo**
+  - **Swift**: `Campaign` incluye `campaignLogo: String?`.
+  - **Kotlin (target)**: agregar `val campaignLogo: String? = null` en `Campaign` (`ReachuCore/models/CampaignModels.kt`) y mapearlo desde el JSON.
+
+- [x] **CampaignConfiguration.campaignAdminApiKey**
+  - **Swift**: `CampaignConfiguration` incluye `campaignAdminApiKey: String`.
+  - **Kotlin (target)**: agregar `val campaignAdminApiKey: String? = null` en `CampaignConfiguration` (`ReachuCore/configuration/ModuleConfigurations.kt`), con `default()` inicializando a `null`.
+
+- [x] **ConfigurationLoader – campaigns.campaignAdminApiKey**
+  - **Swift**: `ConfigurationLoader` lee `campaigns.campaignAdminApiKey` desde `vio-config.json`.
+  - **Kotlin (target)**:
+    - Extender `CampaignJSON` con `campaignAdminApiKey: String?`.
+    - En `toDomain()`, copiar el valor a `CampaignConfiguration.campaignAdminApiKey`, con fallback al API key general si es `null`.
+
+- [x] **CampaignManager – uso de campaignAdminApiKey**
+  - **Swift**: `CampaignManager` usa `campaignAdminApiKey` para:
+    - `GET /v1/sdk/config?apiKey={campaignAdminApiKey}&campaignId={campaignId}`
+    - `GET /v1/offers?apiKey={campaignAdminApiKey}&campaignId={campaignId}`
+  - **Kotlin (target)**:
+    - Leer `campaignAdminApiKey` desde `ReachuConfiguration.state.campaign`.
+    - Usarla como API key para los nuevos endpoints REST (manteniendo compatibilidad con el flujo actual que usa `X-API-Key` si es necesario).
+
+## 2. Sponsor Badge (UI)
+
+- [x] **Composable SponsorBadge**
+  - **Swift**: `RSponsorBadge`.
+  - **Kotlin (target)**: crear `SponsorBadge.kt` (Compose):
+    - Texto `"Sponset av"` encima del logo.
+    - Logo máx 60x30 px aprox (usar `Modifier.size` / `heightIn`).
+    - Tipografía pequeña (≈ 8sp) y padding mínimo.
+
+- [x] **Contenedor de posicionamiento**
+  - **Swift**: VStack/HStack + `Spacer()` para colocar el badge arriba/abajo, izquierda/derecha.
+  - **Kotlin (target)**:
+    - Helper reutilizable que reciba:
+      - `showSponsor: Boolean`
+      - `sponsorPosition: String?` (`"topRight"`, `"topLeft"`, `"bottomRight"`, `"bottomLeft"`)
+      - `badgeContent: @Composable () -> Unit`
+      - `content: @Composable () -> Unit`
+    - Posicionamiento:
+      - `top*` → badge arriba del contenido.
+      - `bottom*` → badge debajo del contenido.
+      - `*Right` → `Row` con `Spacer()` antes del badge.
+      - `*Left` → `Row` con `Spacer()` después del badge.
+
+- [x] **Integración en componentes de producto (Compose)**
+  - **Componentes objetivo**:
+    - `RProductCarousel` (`compose/product/RProductCarousel.kt`)
+    - `RProductSlider` (`compose/product/RProductSlider.kt`)
+    - `RProductSpotlight` (`compose/product/RProductSpotlight.kt`)
+    - `RProductStore` (`compose/product/RProductStore.kt`)
+    - `RProductBanner` (`compose/product/RProductBanner.kt`)
+    - `RProductCard` (`compose/product/RProductCard.kt`)
+  - **Kotlin (target)**:
+    - Añadir parámetros:
+      - `showSponsor: Boolean = false`
+      - `sponsorPosition: String? = "topRight"`
+    - Envolver el contenido principal de cada componente con el contenedor de sponsor badge.
+    - Asegurar que el badge está en un contenedor separado (no overlay sobre la tarjeta).
+
+## 3. Logo de campaña en UI
+
+- [x] **Uso de Campaign.campaignLogo**
+  - **Swift**: el badge renderiza el logo recibido en `campaignLogo`.
+  - **Kotlin (target)**:
+    - Exponer `campaignLogo` desde `CampaignManager.currentCampaign`.
+    - Pasarlo a `SponsorBadge` como URL de imagen.
+    - Integrar con el cargador de imágenes usado por los componentes (Coil/otros).
+
+## 4. Image Background Color en ProductCard
+
+- [x] **Nuevo parámetro imageBackgroundColor**
+  - **Swift**: `imageBackgroundColor: Color? = .white` en `RProductCard`.
+  - **Kotlin (target)**:
+    - Añadir `imageBackgroundColor: Color = Color.White` (o equivalente) en `RProductCard` (Compose).
+    - Propagarlo a:
+      - Variantes grid, list, hero, minimal.
+      - Layouts personalizados en carrusel (full, horizontal, etc.).
+
+- [x] **Aplicación del fondo**
+  - **Swift**: `ZStack` que aplica `.background(imageBackgroundColor)` detrás de la imagen.
+  - **Kotlin (target)**:
+    - Envolver la imagen en un `Box(modifier = Modifier.background(imageBackgroundColor))`.
+    - Cuidar que respete `cornerRadius`, sombras y tamaños actuales.
+
+## 5. Configuración JSON de ejemplo
+
+- [x] **vio-config.json – campaignAdminApiKey**
+  - Agregar en los ejemplos de config usados por demos Android (`vio-config*.json`):
+    - `"campaigns": { "webSocketBaseURL": "...", "restAPIBaseURL": "...", "campaignAdminApiKey": "..." }`
+  - Verificar que `ConfigurationLoader` lee correctamente el campo y que el SDK arranca sin error cuando no está presente.
+
+---
+
+Notas:
+- Los campos nuevos deben ser opcionales (`String?`) para no romper configuraciones existentes.
+- El comportamiento por defecto debe ser idéntico al actual cuando `showSponsor = false`, `sponsorPosition = "topRight"` e `imageBackgroundColor = Color.White`.

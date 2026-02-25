@@ -1,0 +1,203 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "io.github.reachudevteam",
+    "module": "reachu-kotlin-sdk",
+    "version": "1.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.13"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseVariantReleaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "reachu-kotlin-sdk-1.0.0.aar",
+          "url": "reachu-kotlin-sdk-1.0.0.aar",
+          "size": 2853641,
+          "sha512": "cef0e2a6587a1c133bd9b9487a3799d452a6d2dab67c81c5d1960293a1c9837e7cf2e4ccdf1480782d0ceda87c94b5770c69c967dbdf06b27ff97126f6787878",
+          "sha256": "927b16976ca6388d27d4c41e5f0df00f7c46c03ca6be86f3226086a3c150d5ab",
+          "sha1": "eaa7583149d628a8f9163d4f0f0ffc89ec441a3e",
+          "md5": "8d3bd919a8842363f04121fb2281fde1"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.compose",
+          "module": "compose-bom",
+          "version": {
+            "requires": "2024.09.01"
+          },
+          "attributes": {
+            "org.gradle.category": "platform"
+          },
+          "endorseStrictVersions": true
+        },
+        {
+          "group": "androidx.compose.ui",
+          "module": "ui"
+        },
+        {
+          "group": "androidx.compose.foundation",
+          "module": "foundation"
+        },
+        {
+          "group": "androidx.compose.material3",
+          "module": "material3"
+        },
+        {
+          "group": "androidx.compose.material",
+          "module": "material-icons-extended"
+        },
+        {
+          "group": "androidx.compose.animation",
+          "module": "animation"
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-runtime-ktx",
+          "version": {
+            "requires": "2.7.0"
+          }
+        },
+        {
+          "group": "androidx.core",
+          "module": "core-ktx",
+          "version": {
+            "requires": "1.13.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.7.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-serialization-json",
+          "version": {
+            "requires": "1.6.3"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.module",
+          "module": "jackson-module-kotlin",
+          "version": {
+            "requires": "2.16.1"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-databind",
+          "version": {
+            "requires": "2.16.1"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.datatype",
+          "module": "jackson-datatype-jsr310",
+          "version": {
+            "requires": "2.16.1"
+          }
+        },
+        {
+          "group": "io.socket",
+          "module": "socket.io-client",
+          "version": {
+            "requires": "2.1.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib",
+          "version": {
+            "requires": "2.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "reachu-kotlin-sdk-1.0.0.aar",
+          "url": "reachu-kotlin-sdk-1.0.0.aar",
+          "size": 2853641,
+          "sha512": "cef0e2a6587a1c133bd9b9487a3799d452a6d2dab67c81c5d1960293a1c9837e7cf2e4ccdf1480782d0ceda87c94b5770c69c967dbdf06b27ff97126f6787878",
+          "sha256": "927b16976ca6388d27d4c41e5f0df00f7c46c03ca6be86f3226086a3c150d5ab",
+          "sha1": "eaa7583149d628a8f9163d4f0f0ffc89ec441a3e",
+          "md5": "8d3bd919a8842363f04121fb2281fde1"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseSourcePublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "reachu-kotlin-sdk-1.0.0-sources.jar",
+          "url": "reachu-kotlin-sdk-1.0.0-sources.jar",
+          "size": 222800,
+          "sha512": "2cd8c48c9bb4af4783decb39772cad417e2e78a9095896c9f8bc084b0f4bc23684509b935411e3bbe1116ef26cbcbc500b4330d531d41345522fe591e82eec67",
+          "sha256": "bd27fc55672eb029b01edb3b84b46f26d9d44ad475cf59484034a86a2bb8eb70",
+          "sha1": "a27534676349fe8c8557502f355c46acb71d68be",
+          "md5": "ba1e92aa6c9ee857ded9fc33a8215ef9"
+        }
+      ]
+    },
+    {
+      "name": "releaseVariantReleaseJavaDocPublication",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "reachu-kotlin-sdk-1.0.0-javadoc.jar",
+          "url": "reachu-kotlin-sdk-1.0.0-javadoc.jar",
+          "size": 2259050,
+          "sha512": "646595f68b8bc9e8a3d74c7d6d781ff929a3dd0de8834bc917e18c013c7d521d209332313ccf314824333cea6a6ef53d4849781c9ae3895c7189e8f8a47c0f8f",
+          "sha256": "e7acb40403d4c889bc12973e74677d0c37b6e073eb12a50886155a8d10327d97",
+          "sha1": "9685f89a40ba6c927e7e9e0dbdf2da6b052a138a",
+          "md5": "0138b6b21e2ff302cceff7789ef144df"
+        }
+      ]
+    }
+  ]
+}

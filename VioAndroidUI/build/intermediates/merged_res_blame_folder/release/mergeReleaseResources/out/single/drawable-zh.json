@@ -1,0 +1,6 @@
+[
+    {
+        "merged": "io.reachu.VioUI.VioAndroidUI-release-95:/drawable-zh/stripe_ic_unionpay_template_32.xml",
+        "source": "io.reachu.VioUI.VioAndroidUI-payments-core-20.49.0-39:/drawable-zh/stripe_ic_unionpay_template_32.xml"
+    }
+]

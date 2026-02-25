@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <application
+        android:label="@string/app_name"
+        android:theme="@style/Theme.ReachuDemoApp"
+        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:largeHeap="true"
+        android:hardwareAccelerated="true">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Deep links for web-based payment providers (Klarna/Vipps) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="reachu-demo" android:host="checkout"
+                    android:pathPrefix="/success" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="reachu-demo" android:host="checkout"
+                    android:pathPrefix="/cancel" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="io.reachu.VioUI.KlarnaNativeActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.ReachuDemoApp"
+            android:hardwareAccelerated="true"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+            <!-- Klarna native payments - no intent filter needed for HTTPS return URL -->
+        </activity>
+        <activity
+            android:name="io.reachu.VioUI.KlarnaWebActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ReachuDemoApp"
+            tools:replace="android:theme" />
+    </application>
+</manifest>

@@ -1,0 +1,38 @@
+{
+  "contexts": {
+    "terminalDemo": {
+      "defaultEnvironment": "development",
+      "environments": {
+        "development": {
+          "apiKey": "THVXN06-MGB4D4P-KCPRCKP-RHGT6VJ",
+          "baseUrl": "https://graph-ql-dev.vio.live/graphql",
+          "marketFallback": {
+            "countryCode": "NO",
+            "currencyCode": "NOK"
+          }
+        },
+        "qa": {
+          "apiKey": "THVXN06-MGB4D4P-KCPRCKP-RHGT6VJ",
+          "baseUrl": "https://graph-ql-dev.vio.live/graphql",
+          "marketFallback": {
+            "countryCode": "SE",
+            "currencyCode": "SEK"
+          }
+        }
+      }
+    },
+    "appDemo": {
+      "defaultEnvironment": "production",
+      "environments": {
+        "production": {
+          "apiKey": "CHANGE_ME_PROD",
+          "baseUrl": "https://graph-ql.vio.live/graphql",
+          "marketFallback": {
+            "countryCode": "US",
+            "currencyCode": "USD"
+          }
+        }
+      }
+    }
+  }
+}
