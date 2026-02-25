@@ -1,12 +1,9 @@
-1. Agregar y actualizar documentación del Kotlin SDK
-Importante: Alan debe agregar y actualizar la documentación a medida que avance en las demás tareas.
-Incluir
-docs/README.md: URLs vio.live, ejemplos actualizados
-KDoc en clases públicas (VioConfiguration, VioColors, etc.)
-Guía de migración Reachu → Vio
-Nuevos nombres de clases y módulos
+1. Renombrar proyecto root a VioKotlinSDK
+Referencia: VioKotlinSDK ya existe como repo; settings.gradle.kts sigue con rootProject.name = "ReachuKotlinSDK".
+Archivos
+settings.gradle.kts: rootProject.name = "VioKotlinSDK"
+Actualizar referencias en build, CI, README
 Criterios de aceptación
-[ ] docs/README.md actualizado
-[ ] KDoc en clases principales
-[ ] Guía de migración Reachu→Vio
-[ ] Sin referencias reachu.io en docs
+[ ] rootProject.name cambiado a VioKotlinSDK
+[ ] README y build actualizados
+[ ] Demos verificados tras el cambio

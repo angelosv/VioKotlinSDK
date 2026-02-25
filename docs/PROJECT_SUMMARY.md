@@ -203,7 +203,7 @@ El SDK mantiene **~85% de paridad** con la implementación Swift original. Los c
 
 ## 📚 Recursos Adicionales
 
-- **Repositorio**: [ReachuKotlinSDK](https://github.com/ReachuDevteam/ReachuKotlinSDK)
+- **Repositorio**: [VioKotlinSDK](https://github.com/VioLive/VioKotlinSDK)
 - **Swift SDK**: Implementación iOS de referencia
 - **Documentación GraphQL**: (enlace a schema/playground)
 - **Guía de Integración**: (enlace a integration docs)

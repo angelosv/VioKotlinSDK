@@ -34,7 +34,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ReachuKotlinSDK"
+rootProject.name = "VioKotlinSDK"
 include(":library")
 
 // Include Android demo apps as subprojects

@@ -26,8 +26,8 @@
 
 **3) Descargar el proyecto**
 - Git por CLI:
-  - `git clone <URL del repo ReachuKotlinSDK>`
-  - Entra a la carpeta del proyecto: `cd ReachuKotlinSDK`
+  - `git clone <URL del repo VioKotlinSDK>`
+  - Entra a la carpeta del proyecto: `cd VioKotlinSDK`
 
 **4) Abrir el proyecto en Android Studio**
 - File → Open… → selecciona la carpeta raíz del repo y espera a que termine el “Gradle Sync”.

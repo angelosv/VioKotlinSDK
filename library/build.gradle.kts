@@ -88,9 +88,9 @@ mavenPublishing {
 
     // Configura el POM con toda la información necesaria para Maven Central
     pom {
-        name.set("Reachu Kotlin SDK")
-        description.set("Reachu Kotlin SDK for Android")
-        url.set("https://github.com/ReachuDevteam/ReachuKotlinSDK")
+        name.set("Vio Kotlin SDK")
+        description.set("Vio Kotlin SDK for Android")
+        url.set("https://github.com/VioLive/VioKotlinSDK")
         licenses {
             license {
                 name.set("Apache-2.0")
@@ -105,9 +105,9 @@ mavenPublishing {
             }
         }
         scm {
-            connection.set("scm:git:https://github.com/ReachuDevteam/ReachuKotlinSDK.git")
-            developerConnection.set("scm:git:ssh://github.com/ReachuDevteam/ReachuKotlinSDK.git")
-            url.set("https://github.com/ReachuDevteam/ReachuKotlinSDK")
+            connection.set("scm:git:https://github.com/VioLive/VioKotlinSDK.git")
+            developerConnection.set("scm:git:ssh://github.com/VioLive/VioKotlinSDK.git")
+            url.set("https://github.com/VioLive/VioKotlinSDK")
         }
     }
 
