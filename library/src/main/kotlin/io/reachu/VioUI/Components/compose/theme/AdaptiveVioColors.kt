@@ -17,7 +17,7 @@ import io.reachu.VioUI.Components.compose.utils.toVioColor
 private fun String.toColor(): Color = toVioColor()
 
 /**
- * Compose-friendly snapshot of the adaptive Reachu color system.
+ * Compose-friendly snapshot of the adaptive Vio color system.
  */
 data class AdaptiveVioColorsCompose(
     val primary: Color,

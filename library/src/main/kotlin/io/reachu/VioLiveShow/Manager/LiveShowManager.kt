@@ -50,9 +50,9 @@ class LiveShowManager private constructor(
     }
 
     private val configuration = VioConfiguration.shared.state.value.liveShow
-    private val prefs: Preferences = Preferences.userRoot().node("io.reachu.liveshow.manager")
+    private val prefs: Preferences = Preferences.userRoot().node("io.vio.liveshow.manager")
     private val heartApiBase = "https://stg-dev-microservices.tipioapp.com/stg-hearts"
-    private val userTrackingKey = "reachu.userTrackingId"
+    private val userTrackingKey = "vio.userTrackingId"
     private val tipioIdToLiveStreamId = ConcurrentHashMap<Int, String>()
 
     private val tipioApiClient = TipioApiClient(VioConfiguration.shared.state.value)
@@ -235,7 +235,7 @@ class LiveShowManager private constructor(
         }
         val clientId = userTrackingId
         val emojiChannel = "emojiChannel-$liveStreamId"
-        val hasHeartedKey = "reachu.hasHearted.$liveStreamId"
+        val hasHeartedKey = "vio.hasHearted.$liveStreamId"
         val hasHeartedBefore = prefs.getBoolean(hasHeartedKey, false)
 
         val url = when {

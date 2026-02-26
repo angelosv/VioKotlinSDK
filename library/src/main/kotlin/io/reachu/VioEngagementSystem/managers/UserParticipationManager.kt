@@ -10,15 +10,15 @@ import com.fasterxml.jackson.core.type.TypeReference
  * Kotlin port of the Swift `UserParticipationManager`.
  */
 class UserParticipationManager private constructor(
-    private val preferences: Preferences = Preferences.userRoot().node("reachu.participation")
+    private val preferences: Preferences = Preferences.userRoot().node("vio.participation")
 ) {
     companion object {
         val shared = UserParticipationManager()
     }
 
-    private val pollsKey = "reachu.participated.polls"
-    private val contestsKey = "reachu.participated.contests"
-    private val votesKey = "reachu.poll.votes"
+    private val pollsKey = "vio.participated.polls"
+    private val contestsKey = "vio.participated.contests"
+    private val votesKey = "vio.poll.votes"
 
     var participatedPolls: Set<String> = emptySet()
         private set

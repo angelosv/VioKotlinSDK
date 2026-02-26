@@ -7,7 +7,7 @@ plugins {
 
 // Convenience alias to run the console demos from the repo root
 tasks.register("run") {
-    dependsOn(":Demo:ReachuDemoSdk:run")
+    dependsOn(":Demo:VioDemoSdk:run")
 }
 
 subprojects {
@@ -21,7 +21,7 @@ configure(listOf(project(":library"), project(":VioAndroidUI"))) {
 }
 
 
-project(":Demo:ReachuDemoApp") {
+project(":Demo:VioDemoApp") {
     apply(plugin = "com.android.application")
     apply(plugin = "org.jetbrains.kotlin.android")
     apply(plugin = "org.jetbrains.kotlin.plugin.compose")

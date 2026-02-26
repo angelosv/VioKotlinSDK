@@ -1,20 +1,4 @@
-1. Renombrar ReachuConfiguration a VioConfiguration
-Referencia: Swift SDK ya tiene estos cambios aplicados.
-Archivos
-ReachuConfiguration.kt → VioConfiguration.kt
-Actualizar referencias en ConfigurationLoader, ModuleConfigurations, etc.
-Criterios de aceptación
-[ ] Clase renombrada a VioConfiguration
-[ ] Todas las referencias actualizadas
-[ ] Actualizar KDoc/docs si aplica
-
-2. Renombrar design tokens
-Referencia: Swift SDK ya tiene estos cambios aplicados (VioColors, VioShadow, etc.).
-Archivos
-library/io/reachu/ReachuDesignSystem/
-ReachuDesignSystem → VioDesignSystem
-ReachuColors, ReachuShadow, ReachuBorderRadius, ReachuTypography, ReachuSpacing → Vio*
-Criterios de aceptación
-[ ] Design tokens renombrados
-[ ] Referencias actualizadas en todo el SDK
-[ ] Actualizar KDoc/docs si aplica
+1. VioEngagementPollOverlay.kt
+    No parameter with name 'pollResults' found.
+    No parameter with name 'sponsorLogoUrl' found.
+    No parameter with name 'onDismiss' found.

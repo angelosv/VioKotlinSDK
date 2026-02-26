@@ -8,4 +8,4 @@ object VioEngagementSystem {
     }
 }
 
-typealias ReachuEngagementManager = EngagementManager
+typealias VioEngagementManager = EngagementManager

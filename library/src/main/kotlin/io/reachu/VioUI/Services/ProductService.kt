@@ -14,7 +14,7 @@ import kotlinx.coroutines.sync.withLock
 
 /**
  * Kotlin analogue of the Swift `ProductService`.
- * Centralizes SDK client management and exposes helpers to fetch products for Reachu UI components.
+ * Centralizes SDK client management and exposes helpers to fetch products for Vio UI components.
  */
 object ProductService {
     private val mutex = Mutex()

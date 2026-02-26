@@ -38,7 +38,7 @@ rootProject.name = "VioKotlinSDK"
 include(":library")
 
 // Include Android demo apps as subprojects
-include(":Demo:ReachuDemoApp")
+include(":Demo:VioDemoApp")
 include(":Demo:TV2DemoApp")
 include(":Demo:ViaplayDemoApp")
 
