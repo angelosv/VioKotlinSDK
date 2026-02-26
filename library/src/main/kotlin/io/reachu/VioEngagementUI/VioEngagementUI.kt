@@ -21,8 +21,8 @@ package io.reachu.VioEngagementUI
  * 
  * @Composable
  * fun MyScreen() {
- *     ReachuEngagementPollCard(poll = myPoll)
- *     ReachuEngagementContestCard(contest = myContest)
+ *     VioEngagementPollCard(poll = myPoll)
+ *     VioEngagementContestCard(contest = myContest)
  * }
  * ```
  */

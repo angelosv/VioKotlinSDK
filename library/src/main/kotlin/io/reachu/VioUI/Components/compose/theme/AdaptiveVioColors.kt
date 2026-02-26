@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.Color
 import io.reachu.VioCore.configuration.VioConfiguration
 import io.reachu.VioCore.configuration.VioTheme
 import io.reachu.VioCore.configuration.ThemeMode
-import io.reachu.VioDesignSystem.Tokens.AdaptiveColors
+import io.reachu.VioDesignSystem.Tokens.AdaptiveVioPalette
 import io.reachu.VioDesignSystem.Tokens.AdaptiveVioColors
 import io.reachu.VioUI.Components.compose.utils.toVioColor
 
@@ -38,7 +38,7 @@ data class AdaptiveVioColorsCompose(
     val borderSecondary: Color,
 ) {
     companion object {
-        fun from(adaptive: AdaptiveColors): AdaptiveVioColorsCompose =
+        fun from(adaptive: AdaptiveVioPalette): AdaptiveVioColorsCompose =
             AdaptiveVioColorsCompose(
                 primary = adaptive.primary.toColor(),
                 secondary = adaptive.secondary.toColor(),

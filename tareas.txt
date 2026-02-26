@@ -1,5 +1,15 @@
-1. CastingActiveScreen.kt
-    Unresolved reference 'VioEngagementContestCard'.
-    Unresolved reference 'VioEngagementProductCard'.
-    Unresolved reference 'VioEngagementContestCard'.
-    Unresolved reference 'VioEngagementProductCard'.
+1. Renombrar ReachuUI
+Archivos
+ReachuUI.kt, ReachuTheme.kt, ReachuButton.kt, AdaptiveReachuColors.kt → Vio*
+Criterios de aceptación
+[ ] Componentes UI renombrados
+[ ] Referencias actualizadas
+
+2. Renombrar Engagement modules
+Cambios
+ReachuEngagementUI → VioEngagementUI
+ReachuEngagementSystem → VioEngagementSystem
+Criterios de aceptación
+[ ] Módulos renombrados
+[ ] Referencias actualizadas
+[ ] Actualizar KDoc/docs si aplica

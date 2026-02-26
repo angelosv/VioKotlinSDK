@@ -7,7 +7,7 @@ import io.reachu.VioCore.configuration.VioTheme
  * Kotlin analogue of Swift's AdaptiveVioColors.
  * Provides theme-aware colors that adapt to light/dark modes.
  */
-data class AdaptiveColors(
+data class AdaptiveVioPalette(
     val primary: String,
     val secondary: String,
     val success: String,
@@ -31,17 +31,17 @@ object AdaptiveVioColors {
      * Resolve adaptive colors for the current configured theme.
      * Caller decides if dark mode is active (e.g., via isSystemInDarkTheme()).
      */
-    fun current(isDark: Boolean): AdaptiveColors = forTheme(VioConfiguration.shared.state.value.theme, isDark)
+    fun current(isDark: Boolean): AdaptiveVioPalette = forTheme(VioConfiguration.shared.state.value.theme, isDark)
 
     /**
      * Resolve adaptive colors for a specific theme and mode.
      */
-    fun forTheme(theme: VioTheme, isDark: Boolean): AdaptiveColors {
+    fun forTheme(theme: VioTheme, isDark: Boolean): AdaptiveVioPalette {
         val palette = if (isDark) theme.darkColors else theme.lightColors
 
         fun pick(candidate: String?, fallback: String) = candidate ?: fallback
 
-        return AdaptiveColors(
+        return AdaptiveVioPalette(
             primary = pick(palette.primary, VioColors.primary),
             secondary = pick(palette.secondary, VioColors.secondary),
             success = pick(palette.success, VioColors.success),
