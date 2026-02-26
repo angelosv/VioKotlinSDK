@@ -45,7 +45,7 @@ Native Kotlin/JVM SDK for integrating Vio's commerce platform from backend servi
 
 ### Remote Dependency
 
-Publish the package (e.g. to Artifactory/GitHub Packages) and add it to your service `build.gradle.kts`:
+Publish the package and add it to your service `build.gradle.kts`:
 
 ```kotlin
 repositories {
@@ -53,7 +53,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.reachu:reachu-kotlin-sdk:<version>")
+    implementation("io.reachu:vio-kotlin-sdk:<version>")
 }
 ```
 
@@ -79,7 +79,7 @@ dependencies {
   - DTOs in `domain/models` (Jackson data classes mirroring Swift models).
   - Public interfaces in `domain/repositories`.
 
-- **SdkClient**
+- **VioSdkClient**
   - Wires the GraphQL client and exposes module instances (`cart`, `channel`, `checkout`, etc.).
 
 ---
@@ -87,12 +87,12 @@ dependencies {
 ## Quickstart
 
 ```kotlin
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import kotlinx.coroutines.runBlocking
 import java.net.URL
 
 fun main() = runBlocking {
-    val sdk = SdkClient(
+    val sdk = VioSdkClient(
         baseUrl = URL("https://your-host/graphql"),
         apiKey = "<YOUR_TOKEN>",
     )
@@ -284,8 +284,8 @@ Copy `src/main/resources/vio-config-example.json` to `vio-config.json`, fill in 
 2. Wait for Gradle sync to finish; choose “Trust Project” if prompted.
 3. Create a run configuration:
    - `Run > Edit Configurations…` → `+` → `Kotlin` (or `Application`).
-   - `Main class`: `io.reachu.demo.MainKt`
-   - `Use classpath of module`: `ReachuKotlinSDK.main`
+   - `Main class`: `io.vio.demo.MainKt`
+   - `Use classpath of module`: `VioKotlinSDK.main`
    - `Program arguments`: `all` (or an individual demo like `cart`).
 4. Place breakpoints anywhere you need and press `Run` or `Debug`.
 5. Leave `Program arguments` empty or set it to `all` to execute every demo in sequence; supply a specific name to run just that scenario.
@@ -362,7 +362,7 @@ src/main/kotlin/io/reachu/sdk/
     market/
     payment/
 
-src/main/kotlin/io/reachu/demo/
+src/main/kotlin/io/vio.demo/
   Main.kt
   demos/
     CartDemo.kt

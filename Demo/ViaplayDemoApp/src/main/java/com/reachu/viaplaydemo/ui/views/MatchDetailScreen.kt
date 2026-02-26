@@ -51,7 +51,7 @@ import io.reachu.VioCore.configuration.VioConfiguration
 import io.reachu.VioUI.Components.compose.cart.VioFloatingCartIndicator
 import io.reachu.VioUI.Components.compose.product.VioProductSlider
 import io.reachu.VioUI.Managers.CartManager
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import java.net.URL
 
 @Composable
@@ -65,7 +65,7 @@ fun MatchDetailScreen(
     val configState = VioConfiguration.shared.state.value
     val sdkClient = remember(configState.apiKey, configState.environment) {
         val apiKey = configState.apiKey.ifBlank { "DEMO_KEY" }
-        SdkClient(URL(configState.environment.graphQLUrl), apiKey)
+        VioSdkClient(URL(configState.environment.graphQLUrl), apiKey)
     }
     var showVideo by rememberSaveable { mutableStateOf(false) }
     var showCastSheet by rememberSaveable { mutableStateOf(false) }

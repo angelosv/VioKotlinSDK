@@ -224,4 +224,4 @@ Para contribuir al SDK:
 
 **Última actualización**: Noviembre 2025  
 **Versión SDK**: 1.0.0-alpha  
-**Mantenedores**: Reachu Dev Team
+**Mantenedores**: Vio Dev Team

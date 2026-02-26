@@ -36,7 +36,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import io.reachu.sdk.domain.models.ProductDto
 import com.reachu.tv2demo.services.events.ProductEventData
 import com.reachu.tv2demo.ui.theme.TV2Theme
@@ -46,7 +46,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun TV2ProductOverlay(
     productEvent: ProductEventData,
-    sdk: SdkClient,
+    sdk: VioSdkClient,
     currency: String,
     country: String,
     onAddToCart: (ProductDto?) -> Unit,
@@ -198,7 +198,7 @@ private fun displayPrice(product: ProductDto?, event: ProductEventData): String 
 
 private suspend fun fetchProduct(
     productEvent: ProductEventData,
-    sdk: SdkClient,
+    sdk: VioSdkClient,
     currency: String,
     country: String,
 ): ProductDto? = withContext(Dispatchers.IO) {

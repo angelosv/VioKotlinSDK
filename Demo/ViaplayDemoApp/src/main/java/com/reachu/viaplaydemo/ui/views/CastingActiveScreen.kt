@@ -42,7 +42,7 @@ import com.reachu.viaplaydemo.ui.theme.ViaplayTheme
 import io.reachu.VioUI.Components.compose.cart.VioFloatingCartIndicator
 import io.reachu.VioUI.Managers.CartManager
 import io.reachu.VioUI.Managers.toDomainProduct
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import io.reachu.VioEngagementUI.Components.VioEngagementContestCard
 import io.reachu.VioEngagementUI.Components.VioEngagementPollCard
 import io.reachu.VioEngagementUI.Components.VioEngagementProductCard
@@ -66,7 +66,7 @@ val BrandDarkerBg = Color(0xFF12121A)
 fun CastingActiveView(
     match: Match,
     cartManager: CartManager,
-    sdkClient: SdkClient,
+    sdkClient: VioSdkClient,
     onClose: () -> Unit,
 ) {
     val castingManager = remember { CastingManager.shared }
@@ -192,7 +192,7 @@ private fun HeaderSection(match: Match, onClose: () -> Unit) {
             Row(modifier = Modifier.align(Alignment.CenterStart).clickable { onClose() }, verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Default.ArrowBackIosNew, contentDescription = "Back", tint = Color.White, modifier = Modifier.size(16.dp))
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Facebook", color = Color.White, fontSize = 14.sp)
+                Text("Tilbake", color = Color.White, fontSize = 14.sp)
             }
             
             // "Sponset av ELKJOP"
@@ -488,7 +488,7 @@ private fun InteractionCards(
     poll: PollEventData?,
     product: ProductEventData?,
     contest: ContestEventData?,
-    sdkClient: SdkClient,
+    sdkClient: VioSdkClient,
     cartManager: CartManager,
     onDismissPoll: () -> Unit,
     onDismissProduct: () -> Unit,
@@ -554,7 +554,7 @@ private fun InteractionCards(
 @Composable
 private fun EngagementProductFromEvent(
     productEvent: ProductEventData,
-    sdkClient: SdkClient,
+    sdkClient: VioSdkClient,
     currency: String,
     country: String,
     onAddToCart: (ProductDto?) -> Unit,
@@ -600,7 +600,7 @@ private fun EngagementProductFromEvent(
 
 private suspend fun fetchProductForEngagement(
     event: ProductEventData,
-    sdk: SdkClient,
+    sdk: VioSdkClient,
     currency: String,
     country: String,
 ): ProductDto? = withContext(Dispatchers.IO) {

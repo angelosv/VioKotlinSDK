@@ -2,7 +2,7 @@ package io.reachu.demo.demos
 
 import io.reachu.demo.DemoConfig
 import io.reachu.demo.util.Logger
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import io.reachu.sdk.core.errors.SdkException
 import io.reachu.sdk.domain.models.LineItemInput
 import java.util.UUID
@@ -16,7 +16,7 @@ suspend fun runCartDemo(config: DemoConfig) {
     val deleteCartAtEnd = true
 
     val sessionId = "demo-${UUID.randomUUID()}"
-    val sdk = SdkClient(config.baseUrl, config.apiToken)
+    val sdk = VioSdkClient(config.baseUrl, config.apiToken)
 
     try {
         Logger.section("CreateCart ($sessionId)")

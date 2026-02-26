@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.reachu.VioCore.models.LiveShowCartManaging
 import io.reachu.VioCore.models.Product as CoreProduct
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import io.reachu.sdk.domain.repositories.CartRepository
 import io.reachu.sdk.domain.repositories.CheckoutRepository
 import io.reachu.sdk.domain.repositories.DiscountRepository
@@ -30,7 +30,7 @@ interface CartManagingSDK {
     val market: MarketRepository
 }
 
-fun SdkClient.asCartManagingSDK(): CartManagingSDK = object : CartManagingSDK {
+fun VioSdkClient.asCartManagingSDK(): CartManagingSDK = object : CartManagingSDK {
     override val cart: CartRepository get() = this@asCartManagingSDK.cart
     override val product: ProductRepository get() = this@asCartManagingSDK.channel.product
     override val checkout: CheckoutRepository get() = this@asCartManagingSDK.checkout
@@ -99,7 +99,7 @@ class CartManager(
             val overrideToken = System.getenv("REACHU_API_TOKEN")?.trim()?.takeIf { it.isNotBlank() }
             val apiKey = (overrideToken ?: cfg.apiKey).ifBlank { "DEMO_KEY" }
             println("🔧 [CartManager] Initializing SDK Client (baseUrl=$baseUrl)")
-            SdkClient(baseUrl = baseUrl, apiKey = apiKey).asCartManagingSDK()
+            VioSdkClient(baseUrl = baseUrl, apiKey = apiKey).asCartManagingSDK()
         }
         this.sdk = providedSdk
 

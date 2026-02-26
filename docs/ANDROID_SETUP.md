@@ -33,7 +33,7 @@
 - File → Open… → selecciona la carpeta raíz del repo y espera a que termine el “Gradle Sync”.
 - Si aparece error de JDK, abre Settings → Gradle → elige JDK 17 y reintenta Sync.
 
-**5) Preparar configuración Reachu (assets)**
+**5) Preparar configuración Vio (assets)**
 - Carpeta: `Demo/ReachuDemoApp/src/main/assets/`
 - Copia `vio-config-example.json` a `vio-config.json` y edítalo:
   - `apiKey`: coloca tu API key de pruebas/entorno.

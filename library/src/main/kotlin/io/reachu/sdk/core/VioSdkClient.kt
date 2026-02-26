@@ -15,10 +15,26 @@ import io.reachu.sdk.domain.repositories.PaymentRepository
 import java.net.URL
 
 /**
- * Kotlin counterpart for the Swift `SdkClient`.
- * It wires repositories with a shared GraphQL client and exposes them as properties.
+ * The primary entry point for the Vio SDK logic.
+ *
+ * This client provides access to all Vio platform modules (Cart, Checkout, Discount, etc.)
+ * by wiring them with a shared [GraphQLHttpClient].
+ *
+ * ### Example Usage:
+ *
+ * ```kotlin
+ * val sdk = VioSdkClient(
+ *     baseUrl = URL("https://graph-ql.vio.live"),
+ *     apiKey = "YOUR_API_KEY"
+ * )
+ *
+ * val markets = sdk.market.getAvailable()
+ * ```
+ *
+ * @property baseUrl The base URL of the Vio GraphQL API.
+ * @property apiKey The API token for authentication.
  */
-class SdkClient(
+class VioSdkClient(
     val baseUrl: URL,
     val apiKey: String,
     httpClientFactory: (URL, String) -> GraphQLHttpClient = { url, key ->

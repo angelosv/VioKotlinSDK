@@ -4,7 +4,7 @@ import io.reachu.VioCore.configuration.VioConfiguration
 import io.reachu.VioCore.utils.VioLogger
 import io.reachu.VioUI.Managers.Product
 import io.reachu.VioUI.Managers.toDomainProduct
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import io.reachu.sdk.core.errors.SdkException
 import io.reachu.sdk.domain.models.ProductDto
 import java.net.MalformedURLException
@@ -19,12 +19,12 @@ import kotlinx.coroutines.sync.withLock
 object ProductService {
     private val mutex = Mutex()
     @Volatile
-    private var cachedSdkClient: SdkClient? = null
+    private var cachedVioSdkClient: VioSdkClient? = null
 
-    private suspend fun getSdkClient(): SdkClient {
-        cachedSdkClient?.let { return it }
+    private suspend fun getVioSdkClient(): VioSdkClient {
+        cachedVioSdkClient?.let { return it }
         return mutex.withLock {
-            cachedSdkClient?.let { return it }
+            cachedVioSdkClient?.let { return it }
             val state = VioConfiguration.shared.state.value
             val apiKey = state.apiKey.ifBlank { "DEMO_KEY" }
             val baseUrl = try {
@@ -32,15 +32,15 @@ object ProductService {
             } catch (error: MalformedURLException) {
                 throw ProductServiceError.InvalidConfiguration("Invalid GraphQL URL: ${state.environment.graphQLUrl}")
             }
-            val client = SdkClient(baseUrl = baseUrl, apiKey = apiKey)
+            val client = VioSdkClient(baseUrl = baseUrl, apiKey = apiKey)
             VioLogger.debug("Created SDK client", "ProductService")
-            cachedSdkClient = client
+            cachedVioSdkClient = client
             client
         }
     }
 
     fun clearCache() {
-        cachedSdkClient = null
+        cachedVioSdkClient = null
         VioLogger.debug("Cleared SDK client cache", "ProductService")
     }
 
@@ -91,7 +91,7 @@ object ProductService {
         VioLogger.debug("Loading products for category ID: $categoryId", "ProductService")
         VioLogger.debug("Currency: $currency, Country: $country", "ProductService")
         val dtos = try {
-            val client = getSdkClient()
+            val client = getVioSdkClient()
             client.channel.product.get(
                 currency = currency,
                 imageSize = "medium",
@@ -113,7 +113,7 @@ object ProductService {
         currency: String,
         country: String,
     ): List<ProductDto> = try {
-        val client = getSdkClient()
+        val client = getVioSdkClient()
         client.channel.product.get(
             currency = currency,
             imageSize = "medium",

@@ -2,7 +2,7 @@ package io.reachu.demo.demos
 
 import io.reachu.demo.DemoConfig
 import io.reachu.demo.util.Logger
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import io.reachu.sdk.core.errors.SdkException
 import io.reachu.sdk.core.helpers.JsonUtils
 import kotlin.math.min
@@ -13,7 +13,7 @@ suspend fun runChannelProductDemo(config: DemoConfig) {
     val imageSize = "large"
     val productId = 402517
 
-    val sdk = SdkClient(config.baseUrl, config.apiToken)
+    val sdk = VioSdkClient(config.baseUrl, config.apiToken)
     val products = sdk.channel.product
     val categoriesRepo = sdk.channel.category
 

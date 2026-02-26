@@ -1,9 +1,9 @@
-# Reachu Kotlin SDK – Análisis Técnico
+# Vio Kotlin SDK – Análisis Técnico
 
 Este documento resume el estudio técnico del proyecto ubicado en `/Users/devmiguelopz/repoGit/outshifter/new_folder/ReachuKotlinSDK`. Describe su propósito, estructura, arquitectura y configuración actual sin sugerir modificaciones.
 
 ## Resumen general del proyecto
-- El repositorio provee un SDK Kotlin/JVM que encapsula los flujos de comercio de Reachu (carrito, descuentos, checkout, pagos, productos y mercados) junto con un demo de consola para ejercitar los casos punta a punta (`README.md:1-58`).
+- El repositorio provee un SDK Kotlin/JVM que encapsula los flujos de comercio de Vio (carrito, descuentos, checkout, pagos, productos y mercados) junto con un demo de consola para ejercitar los casos punta a punta (`README.md:1-58`).
 - La distribución está pensada para servicios backend o proyectos multiplataforma: se publica como paquete Gradle y puede ejecutarse localmente mediante `./gradlew run`, lo que dispara la demo incluida (`README.md:40-58`, `build.gradle.kts:7-9`).
 - El código productivo vive en el módulo `library`, mientras que `Demo/ReachuDemoSdk` contiene un runner CLI; las apps Android demo se abren como proyectos independientes y se sincronizan con el SDK local mediante dependencias de proyecto (`settings.gradle.kts:17-21`, `Demo/ReachuDemoApp/build.gradle.kts:3-61`).
 

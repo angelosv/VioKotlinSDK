@@ -31,7 +31,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.reachu.viaplaydemo.ui.theme.ViaplayTheme
 import io.reachu.VioUI.Managers.CartManager
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import io.reachu.VioUI.VioCheckoutOverlay
 import io.reachu.VioUI.Components.compose.cart.VioFloatingCartIndicator
 import io.reachu.VioCore.configuration.VioConfiguration
@@ -43,7 +43,7 @@ import com.reachu.viaplaydemo.ui.model.toMatchContext
 fun TV2VideoPlayer(
     match: Match,
     cartManager: CartManager,
-    sdkClient: SdkClient,
+    sdkClient: VioSdkClient,
     onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current

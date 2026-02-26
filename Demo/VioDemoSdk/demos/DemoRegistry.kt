@@ -9,7 +9,7 @@ object DemoRegistry {
         DemoItem("discount", "Discount list, add/apply/delete", ::runDiscountDemo),
         DemoItem("market", "Available markets", ::runMarketDemo),
         DemoItem("payment", "Payment methods and inits", ::runPaymentDemo),
-        DemoItem("sdk", "End-to-end flow using SdkClient", ::runSdkDemo),
+        DemoItem("sdk", "End-to-end flow using VioSdkClient", ::runSdkDemo),
         DemoItem("channel-category", "Channel categories", ::runChannelCategoryDemo),
         DemoItem("channel-info", "Channel info and terms", ::runChannelInfoDemo),
         DemoItem("channel-product", "Get product(s) by params/ids", ::runChannelProductDemo),

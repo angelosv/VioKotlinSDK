@@ -37,7 +37,7 @@ import io.reachu.VioUI.Managers.CartManager
 import io.reachu.VioUI.Managers.Product
 import io.reachu.VioUI.Managers.toDomainProduct
 import com.reachu.viaplaydemo.ui.theme.ViaplayTheme
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -52,7 +52,7 @@ fun ProductsGridScreen(
     val configurationState = VioConfiguration.shared.state.value
     val sdkClient = remember(configurationState.apiKey, configurationState.environment) {
         val apiKey = configurationState.apiKey.ifBlank { "DEMO_KEY" }
-        SdkClient(URL(configurationState.environment.graphQLUrl), apiKey)
+        VioSdkClient(URL(configurationState.environment.graphQLUrl), apiKey)
     }
     var state by rememberSaveable { mutableStateOf(ProductGridState(isLoading = true)) }
 
@@ -112,7 +112,7 @@ private data class ProductGridState(
 )
 
 private suspend fun loadProducts(
-    sdkClient: SdkClient,
+    sdkClient: VioSdkClient,
     currency: String,
     country: String,
 ): List<Product> = withContext(Dispatchers.IO) {

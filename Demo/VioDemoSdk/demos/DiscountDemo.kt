@@ -2,7 +2,7 @@ package io.reachu.demo.demos
 
 import io.reachu.demo.DemoConfig
 import io.reachu.demo.util.Logger
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import io.reachu.sdk.core.errors.SdkException
 import io.reachu.sdk.domain.models.LineItemInput
 import java.time.Instant
@@ -22,7 +22,7 @@ suspend fun runDiscountDemo(config: DemoConfig) {
     val startDate = now.truncatedTo(ChronoUnit.SECONDS).toString()
     val endDate = now.plus(7, ChronoUnit.DAYS).truncatedTo(ChronoUnit.SECONDS).toString()
 
-    val sdk = SdkClient(config.baseUrl, config.apiToken)
+    val sdk = VioSdkClient(config.baseUrl, config.apiToken)
 
     try {
         Logger.section("CreateCart ($sessionId)")

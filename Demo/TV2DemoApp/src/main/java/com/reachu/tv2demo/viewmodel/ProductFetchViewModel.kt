@@ -1,7 +1,7 @@
 package com.reachu.tv2demo.viewmodel
 
 import io.reachu.VioUI.Managers.Product
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import io.reachu.sdk.domain.models.ProductDto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +17,7 @@ import kotlinx.coroutines.withContext
  * Fetches Vio products by ID so the overlays can show details instantly.
  */
 class ProductFetchViewModel(
-    private val sdk: SdkClient,
+    private val sdk: VioSdkClient,
     private val currency: String,
     private val country: String,
 ) {

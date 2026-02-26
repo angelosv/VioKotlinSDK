@@ -1,7 +1,7 @@
 package io.reachu.VioCore.configuration
 
 import io.reachu.VioCore.utils.VioLogger
-import io.reachu.sdk.core.SdkClient
+import io.reachu.sdk.core.VioSdkClient
 import io.reachu.sdk.core.errors.NotFoundException
 import io.reachu.sdk.core.errors.SdkException
 import java.io.File
@@ -288,7 +288,7 @@ object ConfigurationLoader {
                 return@launch
             }
             try {
-                val sdk = SdkClient(URL(state.environment.graphQLUrl), state.apiKey)
+                val sdk = VioSdkClient(URL(state.environment.graphQLUrl), state.apiKey)
                 VioLogger.debug("Checking market availability for $countryCode", COMPONENT)
                 val markets = sdk.channel.market.getAvailable()
                 val marketCodes = markets.mapNotNull { it.code?.uppercase() }
