@@ -13,10 +13,22 @@ import io.reachu.VioEngagementSystem.models.Contest
  */
 @Deprecated("Use VioEngagementContestCard instead", ReplaceWith("VioEngagementContestCard(contest, sponsorLogoUrl, modifier, onJoin, onDismiss)"))
 @Composable
-fun VioEngagementContestCardInternal(
+fun VioEngagementContestCard(
     contest: Contest,
-    onParticipate: (() -> Unit)? = null
+    sponsorLogoUrl: String? = null,
+    modifier: Modifier = Modifier,
+    onJoin: (() -> Unit)? = null,
+    onDismiss: (() -> Unit)? = null,
 ) {
-    // Deprecated: Use VioEngagementContestCard instead
-    // This stub is kept for backward compatibility
+    VioEngagementCardBase(
+        modifier = modifier,
+        sponsorLogoUrl = sponsorLogoUrl,
+        onDismiss = { onDismiss?.invoke() }
+    ) {
+        androidx.compose.material3.Text(
+            text = contest.title,
+            color = androidx.compose.ui.graphics.Color.White,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+        )
+    }
 }

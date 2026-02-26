@@ -37,7 +37,7 @@ object VippsPaymentHandler {
 
     fun isVippsReturnUri(uri: URI): Boolean {
         val params = parseQuery(uri)
-        return uri.scheme == "reachu-demo" && params["payment_method"] == "vipps"
+        return uri.scheme == "vio-demo" && params["payment_method"] == "vipps"
     }
 
     fun isVippsReturnUrl(url: String): Boolean =

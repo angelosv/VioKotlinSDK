@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
         val uri: Uri = intent.data ?: return
-        if (uri.scheme == "reachu-demo" && uri.host == "checkout") {
+        if (uri.scheme == "vio-demo" && uri.host == "checkout") {
             val status = when (uri.pathSegments.getOrNull(0)) {
                 "success" -> CheckoutDeepLinkBus.Status.Success
                 "cancel" -> CheckoutDeepLinkBus.Status.Cancel

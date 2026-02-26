@@ -31,8 +31,8 @@ class CheckoutDraft {
     var appliedDiscount: Double = 0.0
 
     // URLs
-    var successUrl: String = "reachu-demo://checkout/success"
-    var cancelUrl: String = "reachu-demo://checkout/cancel"
+    var successUrl: String = "vio-demo://checkout/success"
+    var cancelUrl: String = "vio-demo://checkout/cancel"
 
     fun addressPayload(fallbackCountryISO2: String): Map<String, Any?> {
         val iso2 = resolveISO2(fallbackCountryISO2)

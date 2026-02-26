@@ -15,12 +15,27 @@ import io.reachu.VioEngagementSystem.models.Contest
  */
 @Deprecated("Use VioEngagementContestOverlay instead", ReplaceWith("VioEngagementContestOverlay(name, prize, deadline, maxParticipants, prizes, isChatExpanded, sponsorLogoUrl, modifier, onJoin, onDismiss)"))
 @Composable
-fun VioEngagementContestOverlayInternal(
-    contest: Contest,
-    isVisible: Boolean = false,
+fun VioEngagementContestOverlay(
+    name: String,
+    prize: String,
+    deadline: String,
+    maxParticipants: Int? = null,
+    prizes: List<String>? = null,
+    isChatExpanded: Boolean = false,
+    sponsorLogoUrl: String? = null,
+    modifier: Modifier = Modifier,
+    onJoin: (() -> Unit)? = null,
     onDismiss: (() -> Unit)? = null,
-    onParticipate: (() -> Unit)? = null
 ) {
-    // Deprecated: Use VioEngagementContestOverlay instead
-    // This stub is kept for backward compatibility
+    VioEngagementCardBase(
+        modifier = modifier,
+        sponsorLogoUrl = sponsorLogoUrl,
+        onDismiss = { onDismiss?.invoke() }
+    ) {
+        androidx.compose.material3.Text(
+            text = name,
+            color = androidx.compose.ui.graphics.Color.White,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+        )
+    }
 }

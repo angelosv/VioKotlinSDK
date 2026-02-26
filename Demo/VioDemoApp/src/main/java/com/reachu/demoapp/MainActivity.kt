@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleIntent(intent: android.content.Intent?) {
         val uri: Uri = intent?.data ?: return
-        if (uri.scheme == "reachu-demo" && uri.host == "checkout") {
+        if (uri.scheme == "vio-demo" && uri.host == "checkout") {
             // Update global Vipps handler state from deep link
             VippsPaymentHandler.handleReturnUrl(uri.toString())
 

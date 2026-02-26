@@ -23,14 +23,14 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="reachu-demo" android:host="checkout"
+                <data android:scheme="vio-demo" android:host="checkout"
                     android:pathPrefix="/success" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="reachu-demo" android:host="checkout"
+                <data android:scheme="vio-demo" android:host="checkout"
                     android:pathPrefix="/cancel" />
             </intent-filter>
         </activity>

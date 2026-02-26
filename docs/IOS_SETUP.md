@@ -20,19 +20,19 @@
   - Si usas otras utilidades (p.ej. Alamofire), agrégalas según corresponda.
 - Verifica que los targets de la app incluyan estas dependencias en “Frameworks, Libraries, and Embedded Content”.
 
-**Configuración Reachu (vio-config)**
-- En Android usamos `Demo/ReachuDemoApp/src/main/assets/vio-config.json`.
+**Configuración Vio (vio-config)**
+- En Android usamos `Demo/VioDemoApp/src/main/assets/vio-config.json`.
 - En iOS prepara un archivo equivalente dentro del bundle de la app (por ejemplo, en una carpeta `Resources/` del target):
   - Copia el contenido de tu `vio-config.json` (o del example) y ajústalo (API key, entorno, theme, cart, market, etc.).
   - Asegúrate que el archivo está marcado como “Target Membership” del app target (Build Phase: Copy Bundle Resources).
 - La app debe cargar este JSON al iniciar (similar a Android). Si ya existe un cargador en `VioConfiguration`, solo asegúrate de que apunta al archivo dentro del bundle.
 
 **URL Schemes y Deep Links (Klarna/Vipps Web)**
-- Para completar pagos vía Web y volver a la app, registra un esquema de URL, igual que en Android (ej. `reachu-demo`).
+- Para completar pagos vía Web y volver a la app, registra un esquema de URL, igual que en Android (ej. `vio-demo`).
 - En Xcode:
   - Selecciona el target de la app → pestaña “Info” → “URL Types” → “+”.
-  - `Identifier`: ReachuDemo (libre)
-  - `URL Schemes`: `reachu-demo`
+  - `Identifier`: VioDemo (libre)
+  - `URL Schemes`: `vio-demo`
 - Manejo del retorno:
   - Si usas UIKit: en `AppDelegate` implementa `application(_:open:options:)` y procesa `URL(string)` con rutas `/checkout/success` o `/checkout/cancel`.
   - Si usas SwiftUI con SceneDelegate: implementa `scene(_:openURLContexts:)` y procesa las URLs del mismo modo.
@@ -69,7 +69,7 @@
 - Abre el proyecto en Xcode (ReachuSwiftSDK demo).
 - Verifica dependencias SPM (Stripe, Klarna) y sus versiones.
 - Copia `vio-config.json` dentro del bundle del app y revisa credenciales/URLs.
-- Configura URL Types con el esquema `reachu-demo`.
+- Configura URL Types con el esquema `vio-demo`.
 - Selecciona un simulador o dispositivo y presiona “Run”.
 - Dentro de la app:
   - Agrega productos al carrito.
@@ -81,7 +81,7 @@
 - La opción de pago no aparece:
   - Verifica `supportedPaymentMethods` en tu `vio-config.json` y que el backend (si se interseca) también liste el método.
 - Deep link no regresa a la app:
-  - Revisa `URL Types` y que el esquema `reachu-demo` coincida con el `return_url` usado por el backend.
+  - Revisa `URL Types` y que el esquema `vio-demo` coincida con el `return_url` usado por el backend.
 - Stripe falla al abrir PaymentSheet:
   - Asegúrate de inicializar `PaymentConfiguration` con la `publishableKey` recibida.
 - Klarna nativo no se presenta:

@@ -13,10 +13,24 @@ import io.reachu.sdk.domain.models.ProductDto
  */
 @Deprecated("Use VioEngagementProductGridCard instead", ReplaceWith("VioEngagementProductGridCard(products, sponsorLogoUrl, modifier, onProductClick, onAddToCart, onDismiss)"))
 @Composable
-fun VioEngagementProductGridCardInternal(
-    productId: String,
-    onProductClick: ((productId: String) -> Unit)? = null
+fun VioEngagementProductGridCard(
+    products: List<ProductDto>,
+    sponsorLogoUrl: String? = null,
+    modifier: Modifier = Modifier,
+    onProductClick: ((ProductDto) -> Unit)? = null,
+    onAddToCart: ((ProductDto) -> Unit)? = null,
+    onDismiss: (() -> Unit)? = null,
 ) {
-    // Deprecated: Use VioEngagementProductGridCard instead
-    // This stub is kept for backward compatibility
+    VioEngagementCardBase(
+        modifier = modifier,
+        sponsorLogoUrl = sponsorLogoUrl,
+        onDismiss = { onDismiss?.invoke() }
+    ) {
+        // Grid implementation stub
+        androidx.compose.material3.Text(
+            text = "Products (${products.size})",
+            color = androidx.compose.ui.graphics.Color.White,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+        )
+    }
 }

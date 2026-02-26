@@ -1,7 +1,9 @@
 package io.reachu.VioEngagementUI.Components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import io.reachu.VioEngagementSystem.models.Poll
+import io.reachu.VioEngagementSystem.models.PollResults
 
 /**
  * Reusable Compose component for displaying a poll card.
