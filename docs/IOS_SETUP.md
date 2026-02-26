@@ -62,8 +62,8 @@
 
 **Variables y entornos**
 - Puedes definir/inyectar:
-  - `REACHU_API_TOKEN`: sobrescribe la API key del JSON.
-  - `REACHU_ENVIRONMENT`: `development` | `sandbox` | `production` (si tu cargador lo soporta).
+  - `VIO_API_TOKEN`: sobrescribe la API key del JSON.
+  - `VIO_ENVIRONMENT`: `development` | `sandbox` | `production` (si tu cargador lo soporta).
 
 **Pasos para correr el demo iOS**
 - Abre el proyecto en Xcode (ReachuSwiftSDK demo).

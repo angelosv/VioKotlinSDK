@@ -1,9 +1,20 @@
-1. Renombrar proyecto root a VioKotlinSDK
-Referencia: VioKotlinSDK ya existe como repo; settings.gradle.kts sigue con rootProject.name = "ReachuKotlinSDK".
+1. Renombrar ReachuConfiguration a VioConfiguration
+Referencia: Swift SDK ya tiene estos cambios aplicados.
 Archivos
-settings.gradle.kts: rootProject.name = "VioKotlinSDK"
-Actualizar referencias en build, CI, README
+ReachuConfiguration.kt → VioConfiguration.kt
+Actualizar referencias en ConfigurationLoader, ModuleConfigurations, etc.
 Criterios de aceptación
-[ ] rootProject.name cambiado a VioKotlinSDK
-[ ] README y build actualizados
-[ ] Demos verificados tras el cambio
+[ ] Clase renombrada a VioConfiguration
+[ ] Todas las referencias actualizadas
+[ ] Actualizar KDoc/docs si aplica
+
+2. Renombrar design tokens
+Referencia: Swift SDK ya tiene estos cambios aplicados (VioColors, VioShadow, etc.).
+Archivos
+library/io/reachu/ReachuDesignSystem/
+ReachuDesignSystem → VioDesignSystem
+ReachuColors, ReachuShadow, ReachuBorderRadius, ReachuTypography, ReachuSpacing → Vio*
+Criterios de aceptación
+[ ] Design tokens renombrados
+[ ] Referencias actualizadas en todo el SDK
+[ ] Actualizar KDoc/docs si aplica

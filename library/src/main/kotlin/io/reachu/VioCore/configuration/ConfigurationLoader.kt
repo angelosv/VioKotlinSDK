@@ -34,7 +34,7 @@ object ConfigurationLoader {
     ) {
         try {
             val targetName = fileName ?: detectConfigName(basePath)
-            val resolvedCountry = userCountryCode ?: System.getenv("REACHU_USER_COUNTRY")
+            val resolvedCountry = userCountryCode ?: System.getenv("VIO_USER_COUNTRY")
             if (targetName != null) {
                 VioLogger.debug("Loading configuration: $targetName.json", COMPONENT)
                 val data = readFile("$basePath$targetName.json")
@@ -57,7 +57,7 @@ object ConfigurationLoader {
     ) {
         val data = withContext(Dispatchers.IO) { url.readText() }
         val config = json.decodeFromString<JsonConfiguration>(data)
-        applyConfiguration(config, basePath, userCountryCode ?: System.getenv("REACHU_USER_COUNTRY"))
+        applyConfiguration(config, basePath, userCountryCode ?: System.getenv("VIO_USER_COUNTRY"))
     }
 
     private fun applyConfiguration(
@@ -65,8 +65,8 @@ object ConfigurationLoader {
         basePath: String,
         userCountryCode: String?,
     ) {
-        val envApi = System.getenv("REACHU_API_TOKEN")?.takeIf { it.isNotBlank() }
-        val envEnv = System.getenv("REACHU_ENVIRONMENT")?.takeIf { it.isNotBlank() }
+        val envApi = System.getenv("VIO_API_TOKEN")?.takeIf { it.isNotBlank() }
+        val envEnv = System.getenv("VIO_ENVIRONMENT")?.takeIf { it.isNotBlank() }
 
         val environment = runCatching {
             (envEnv ?: config.environment)?.let { VioEnvironment.valueOf(it.uppercase()) }
@@ -134,8 +134,8 @@ object ConfigurationLoader {
     }
 
     private fun detectConfigName(basePath: String): String? {
-        // 1) Environment override: REACHU_CONFIG_TYPE -> vio-config-<type>.json
-        val type = System.getenv("REACHU_CONFIG_TYPE")?.trim()?.lowercase()
+        // 1) Environment override: VIO_CONFIG_TYPE -> vio-config-<type>.json
+        val type = System.getenv("VIO_CONFIG_TYPE")?.trim()?.lowercase()
         if (!type.isNullOrEmpty()) {
             val name = "vio-config-$type"
             if (File("$basePath$name.json").exists()) return name
@@ -163,7 +163,7 @@ object ConfigurationLoader {
             val rootObj = el.jsonObject
             val contexts = rootObj["contexts"]?.jsonObject ?: return@runCatching json.decodeFromString<JsonConfiguration>(data)
 
-            val type = System.getenv("REACHU_CONFIG_TYPE")?.trim()?.lowercase()
+            val type = System.getenv("VIO_CONFIG_TYPE")?.trim()?.lowercase()
             val contextKey = when {
                 !type.isNullOrEmpty() && contexts.containsKey(type) -> type
                 contexts.size == 1 -> contexts.keys.first()
@@ -174,7 +174,7 @@ object ConfigurationLoader {
 
             val envs = contextNode["environments"]?.jsonObject
             val defaultEnv = contextNode["defaultEnvironment"]?.toString()?.trim('"')
-            val envOverride = System.getenv("REACHU_ENVIRONMENT")?.trim()
+            val envOverride = System.getenv("VIO_ENVIRONMENT")?.trim()
             val envName = envOverride ?: defaultEnv ?: envs?.keys?.firstOrNull() ?: "production"
             val envNode = envs?.get(envName)?.jsonObject ?: envs?.values?.first()?.jsonObject
 

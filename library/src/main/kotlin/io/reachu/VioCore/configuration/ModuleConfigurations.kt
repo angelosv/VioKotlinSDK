@@ -13,7 +13,7 @@ data class CartConfiguration(
     // Demo/testing: show indicator even when cart is empty
     val alwaysShowFloatingCart: Boolean = false,
     val autoSaveCart: Boolean = true,
-    val cartPersistenceKey: String = "reachu_cart",
+    val cartPersistenceKey: String = "vio_cart",
     val maxQuantityPerItem: Int = 99,
     val showCartNotifications: Boolean = true,
     val enableGuestCheckout: Boolean = true,
