@@ -3,6 +3,7 @@ package com.reachu.viaplaydemo.ui
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -23,6 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,6 +39,7 @@ import io.reachu.VioUI.Managers.Product
 import io.reachu.VioUI.adapters.VioCoilImageLoader
 import io.reachu.VioUI.Managers.loadProductsIfNeeded
 import androidx.compose.ui.zIndex
+import androidx.compose.ui.draw.scale
 
 data class ContentItem(val title: String, val subtitle: String?, val imageUrl: String?)
 
@@ -181,22 +184,11 @@ fun ViaplayHomeView(
                         verticalAlignment = Alignment.CenterVertically, 
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .background(Color.Red, shape = CircleShape)
-                                .padding(2.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text("V", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        }
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            "viaplay",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
-                            letterSpacing = (-0.5).sp
+                        Image(
+                            painter = painterResource(id = com.reachu.viaplaydemo.R.drawable.logo_red),
+                            contentDescription = "Viaplay",
+                            modifier = Modifier.height(24.dp),
+                            contentScale = ContentScale.Fit
                         )
                     }
 
@@ -263,27 +255,14 @@ fun HeroSectionMock() {
             ) {
                 // Viaplay Header Style Logo
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
+                    Image(
+                        painter = painterResource(id = com.reachu.viaplaydemo.R.drawable.logo_white),
+                        contentDescription = "Viaplay",
                         modifier = Modifier
-                            .size(24.dp)
-                            .background(Color.White, shape = CircleShape)
-                            .padding(2.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(12.dp)
-                                .background(Color.Black, shape = CircleShape)
-                                .padding(2.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        "viaplay",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
-                        letterSpacing = (-0.5).sp
+                            .padding(start = 22.dp)
+                            .height(40.dp)
+                            .scale(1.8f),
+                        contentScale = ContentScale.Fit
                     )
                 }
 
