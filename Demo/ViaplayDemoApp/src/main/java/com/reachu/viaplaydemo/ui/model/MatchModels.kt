@@ -105,6 +105,9 @@ data class Match(
     val availability: MatchAvailability,
     val relatedContent: List<RelatedTeam> = emptyList(),
     val campaignLogo: String? = null,
+    // Opcional: flujo por contentId
+    val contentId: String? = null,
+    val countryCode: String? = null,
 )
 
 object MatchMocks {
@@ -154,18 +157,30 @@ object MatchMocks {
         ),
     )
 
-    val cityVsReal = Match(
-        homeTeam = Team(name = "Manchester City", shortName = "City", logo = "city_logo"),
-        awayTeam = Team(name = "Real Madrid", shortName = "Madrid", logo = "madrid_logo"),
-        title = "Man City - Real Madrid",
-        subtitle = "UEFA Champions League • Fotball",
-        competition = "UEFA Champions League",
-        venue = "Etihad Stadium",
-        commentator = "Øyvind Alsaker",
-        isLive = true,
-        backgroundImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQM6atVnC3T4SNnl0vkyj6Q-_kTQSiNFgV68Q&s",
-        availability = MatchAvailability.Available,
+    private val realMadrid = Team(
+        name = "Real Madrid",
+        shortName = "Real Madrid",
+        logo = "madrid_logo",
     )
 
-    val mockMatches = listOf(barcelonaVsPsg, dortmundVsAthletic, cityVsReal)
+    /**
+     * Ejemplo específico para el flujo contentId:
+     * Real Madrid - Barcelona con contentId y countryCode configurados.
+     */
+    val realMadridVsBarcelona = Match(
+        homeTeam = realMadrid,
+        awayTeam = barcelona,
+        title = "Real Madrid - Barcelona",
+        subtitle = "LaLiga • Fotball",
+        competition = "LaLiga",
+        venue = "Santiago Bernabéu",
+        commentator = "Øyvind Alsaker",
+        isLive = true,
+        backgroundImage = "https://images.pexels.com/photos/399187/pexels-photo-399187.jpeg?auto=compress&cs=tinysrgb&w=800",
+        availability = MatchAvailability.Available,
+        contentId = "real-madrid-barcelona-demo",
+        countryCode = "NO",
+    )
+
+    val mockMatches = listOf(barcelonaVsPsg, dortmundVsAthletic, realMadridVsBarcelona)
 }

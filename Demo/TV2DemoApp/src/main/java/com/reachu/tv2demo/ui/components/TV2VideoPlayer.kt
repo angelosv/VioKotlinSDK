@@ -36,6 +36,9 @@ import io.reachu.VioUI.VioCheckoutOverlay
 import io.reachu.VioUI.Components.compose.cart.VioFloatingCartIndicator
 import io.reachu.VioCore.configuration.VioConfiguration
 import io.reachu.VioCore.managers.CampaignManager
+import io.reachu.VioCore.models.BroadcastContext
+import io.reachu.VioEngagementSystem.BroadcastValidationService
+import io.reachu.VioEngagementSystem.managers.EngagementManager
 import com.reachu.tv2demo.ui.model.Match
 import com.reachu.tv2demo.ui.model.toMatchContext
 
@@ -55,18 +58,47 @@ fun TV2VideoPlayer(
     var showChat by remember { mutableStateOf(false) }
 
     val campaignManager = remember { CampaignManager.shared }
+    val engagementManager = remember { EngagementManager.shared }
 
     suspend fun setupMatchContext() {
         val config = VioConfiguration.shared
-        val autoDiscover = config.state.value.campaign.autoDiscover
+        val state = config.state.value
+        val autoDiscover = state.campaign.autoDiscover
+
         val matchContext = match.toMatchContext(
-            channelId = config.state.value.campaign.channelId
+            channelId = state.campaign.channelId
         )
-        if (autoDiscover) {
-            campaignManager.discoverCampaigns(matchId = matchContext.matchId)
-            campaignManager.setMatchContext(matchContext)
+
+        // Siempre establecemos el contexto de partido
+        campaignManager.setMatchContext(matchContext)
+
+        // Rama contentId: si la app proporciona contentId + country, validar antes de discoverCampaigns
+        val contentId = match.contentId
+        val country = match.countryCode ?: state.userCountryCode ?: state.market.countryCode
+
+        if (!contentId.isNullOrBlank() && !country.isNullOrBlank()) {
+            val validationResult = BroadcastValidationService.validate(contentId, country)
+
+            val broadcastId = validationResult.broadcastId
+            if (!validationResult.hasEngagement || broadcastId == null) {
+                // No hay engagement: no discoverCampaigns, no loadEngagement
+                println("TV2Demo: no engagement for contentId=$contentId country=$country")
+                return
+            }
+
+            val broadcastContext = BroadcastContext(broadcastId = broadcastId)
+
+            if (autoDiscover) {
+                campaignManager.discoverCampaigns(matchId = matchContext.matchId)
+            }
+
+            // Carga de polls/contests basada en broadcastId
+            engagementManager.loadEngagement(broadcastContext)
         } else {
-            campaignManager.setMatchContext(matchContext)
+            // Flujo legacy por matchId cuando no hay contentId
+            if (autoDiscover) {
+                campaignManager.discoverCampaigns(matchId = matchContext.matchId)
+            }
         }
     }
 

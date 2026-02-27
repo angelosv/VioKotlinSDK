@@ -105,6 +105,9 @@ data class Match(
     val availability: MatchAvailability,
     val relatedContent: List<RelatedTeam> = emptyList(),
     val campaignLogo: String? = null,
+    // Opcional: flujo por contentId
+    val contentId: String? = null,
+    val countryCode: String? = null,
 )
 
 object MatchMocks {

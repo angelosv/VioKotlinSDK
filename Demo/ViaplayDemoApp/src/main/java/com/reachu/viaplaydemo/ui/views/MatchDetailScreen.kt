@@ -204,7 +204,7 @@ fun MatchDetailScreen(
 @Preview
 @Composable
 private fun MatchDetailPreview() {
-    MatchDetailScreen(match = MatchMocks.barcelonaVsPsg, cartManager = CartManager(), onBack = {})
+    MatchDetailScreen(match = MatchMocks.realMadridVsBarcelona, cartManager = CartManager(), onBack = {})
 }
 
 @Composable

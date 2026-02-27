@@ -158,9 +158,9 @@ fun HorizontalCarouselMock(onNavigateToMatch: (Match) -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         val matches = listOf(
+            MatchMocks.realMadridVsBarcelona,
             MatchMocks.dortmundVsAthletic,
-            MatchMocks.cityVsReal,
-            MatchMocks.barcelonaVsPsg
+            MatchMocks.barcelonaVsPsg,
         )
         
         matches.forEach { match ->

@@ -1,4 +1,14 @@
-1. DemoEngagementRepository.kt
-    Class 'DemoEngagementRepository' is not abstract and does not implement abstract member 'voteInPoll'.
-    'voteInPoll' overrides nothing.
-    'participateInContest' overrides nothing.
+1. Integrar rama contentId en setupMatchContext / video player
+Referencia: Si la app pasa contentId + country, validar antes de discoverCampaigns.
+Lógica
+Si contentId + country provistos: llamar BroadcastValidationService.validate()
+Si hasEngagement=false: no discoverCampaigns, no loadEngagement
+Si hasEngagement=true: crear BroadcastContext con broadcastId de respuesta, setMatchContext, discoverCampaigns, loadEngagement
+Mantener flujo legacy con matchId cuando no hay contentId
+Archivos
+TV2VideoPlayer.kt: setupMatchContext()
+ViaplayDemoApp: ejemplo con contentId para Real Madrid - Barcelona
+Criterios de aceptación
+[ ] Rama contentId en setupMatchContext
+[ ] ViaplayDemoApp con flujo contentId
+[ ] Flujo legacy matchId intacto

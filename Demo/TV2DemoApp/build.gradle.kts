@@ -26,6 +26,13 @@ android {
         }
     }
 
+    sourceSets {
+        getByName("main") {
+            // Incluir la carpeta Configuration como fuente de assets (junto con la default)
+            assets.srcDirs("src/main/assets", "Configuration")
+        }
+    }
+
     buildFeatures {
         compose = true
     }
