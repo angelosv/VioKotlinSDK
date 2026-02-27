@@ -1,15 +1,26 @@
-1. Renombrar ReachuUI
-Archivos
-ReachuUI.kt, ReachuTheme.kt, ReachuButton.kt, AdaptiveReachuColors.kt → Vio*
+1. Implementar flujo contentId en SDK
+Referencia: Backend tiene GET /v1/sdk/broadcast?contentId=xxx&country=yyy. Swift SDK tiene plan; Kotlin debe implementar paridad.
+Flujo
+App abre stream con contentId + country
+SDK llama GET /v1/sdk/broadcast
+Si hasEngagement=false: no mostrar engagement
+Si hasEngagement=true: usar broadcastId de respuesta para polls/contests
 Criterios de aceptación
-[ ] Componentes UI renombrados
-[ ] Referencias actualizadas
+[x] BroadcastValidationService creado
+[x] BroadcastValidationResult model
+[x] Integración en video player / setup
+[x] Usar campaignApiKey de config
 
-2. Renombrar Engagement modules
-Cambios
-ReachuEngagementUI → VioEngagementUI
-ReachuEngagementSystem → VioEngagementSystem
+2. Crear BroadcastValidationService y BroadcastValidationResult
+Referencia: Endpoint GET /v1/sdk/broadcast en api-dev.vio.live.
+Servicio
+Llamar GET /v1/sdk/broadcast?contentId=&country=
+Header X-Api-Key con campaignApiKey (o apiKey si no definido)
+Modelo BroadcastValidationResult
+hasEngagement, broadcastId, broadcastName, status
+campaignId, websocketChannel
+campaignComponents, broadcastComponents (polls, contests, chat)
 Criterios de aceptación
-[ ] Módulos renombrados
-[ ] Referencias actualizadas
-[ ] Actualizar KDoc/docs si aplica
+[x] BroadcastValidationService con validate(contentId, country)
+[x] BroadcastValidationResult model
+[x] Usar campaignApiKey de VioConfiguration

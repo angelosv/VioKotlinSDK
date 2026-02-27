@@ -3,6 +3,7 @@ package io.reachu.VioEngagementSystem.managers
 import io.reachu.VioCore.configuration.VioConfiguration
 import io.reachu.VioCore.configuration.VioEnvironment
 import io.reachu.VioCore.models.BroadcastContext
+import io.reachu.VioEngagementSystem.BroadcastValidationService
 import io.reachu.VioEngagementSystem.models.*
 import io.reachu.VioEngagementSystem.repositories.EngagementRepository
 import io.reachu.VioEngagementSystem.repositories.EngagementRepositoryBackend
@@ -33,6 +34,24 @@ class EngagementManager private constructor() {
     val pollResults: StateFlow<Map<String, PollResults>> = _pollResults.asStateFlow()
 
     private val userParticipation = UserParticipationManager.shared
+
+    /**
+     * Valida un [contentId] contra el endpoint `/v1/sdk/broadcast` y, si hay engagement
+     * activo, carga polls y contests para el broadcastId devuelto.
+     *
+     * @param contentId Identificador del contenido (stream) a validar.
+     * @param country Código de país ISO 3166-1 alpha-2 (e.g. "NO", "SE").
+     */
+    fun loadEngagementForContent(contentId: String, country: String) {
+        scope.launch {
+            val result = BroadcastValidationService.validate(contentId, country)
+            if (!result.hasEngagement || result.broadcastId == null) {
+                println("EngagementManager: no engagement for contentId=$contentId")
+                return@launch
+            }
+            loadEngagement(BroadcastContext(broadcastId = result.broadcastId))
+        }
+    }
 
     fun loadEngagement(context: BroadcastContext) {
         val config = VioConfiguration.shared.state.value
