@@ -287,6 +287,13 @@ data class CampaignConfiguration(
     val webSocketBaseURL: String = "https://api-dev.vio.live",
     val restAPIBaseURL: String = "https://api-dev.vio.live",
     /**
+     * API key específica para el flujo de contentId (máxima prioridad).
+     * Usada por [io.reachu.VioEngagementSystem.BroadcastValidationService] al llamar
+     * GET /v1/sdk/broadcast. Si es null o en blanco, hace fallback a [campaignAdminApiKey]
+     * y luego al API key general del SDK.
+     */
+    val campaignApiKey: String? = null,
+    /**
      * Habilita el descubrimiento automático de campañas basado en el contexto.
      */
     val autoDiscover: Boolean = false,

@@ -481,6 +481,7 @@ private data class LocalizationJSON(
 private data class CampaignJSON(
     val webSocketBaseURL: String? = null,
     val restAPIBaseURL: String? = null,
+    val campaignApiKey: String? = null,
     val campaignAdminApiKey: String? = null,
     val autoDiscover: Boolean? = null,
     val channelId: Int? = null,
@@ -488,6 +489,7 @@ private data class CampaignJSON(
     fun toDomain() = CampaignConfiguration(
         webSocketBaseURL = webSocketBaseURL ?: CampaignConfiguration.default().webSocketBaseURL,
         restAPIBaseURL = restAPIBaseURL ?: CampaignConfiguration.default().restAPIBaseURL,
+        campaignApiKey = campaignApiKey ?: CampaignConfiguration.default().campaignApiKey,
         campaignAdminApiKey = campaignAdminApiKey ?: CampaignConfiguration.default().campaignAdminApiKey,
         autoDiscover = autoDiscover ?: CampaignConfiguration.default().autoDiscover,
         channelId = channelId ?: CampaignConfiguration.default().channelId,

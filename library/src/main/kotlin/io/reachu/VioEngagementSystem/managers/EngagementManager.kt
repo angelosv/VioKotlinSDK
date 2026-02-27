@@ -3,6 +3,7 @@ package io.reachu.VioEngagementSystem.managers
 import io.reachu.VioCore.configuration.VioConfiguration
 import io.reachu.VioCore.configuration.VioEnvironment
 import io.reachu.VioCore.models.BroadcastContext
+import io.reachu.VioCore.models.VioSessionContext
 import io.reachu.VioEngagementSystem.BroadcastValidationService
 import io.reachu.VioEngagementSystem.models.*
 import io.reachu.VioEngagementSystem.repositories.EngagementRepository
@@ -108,7 +109,7 @@ class EngagementManager private constructor() {
     }
 
     @Throws(EngagementError::class)
-    fun voteInPoll(pollId: String, optionId: String, broadcastContext: BroadcastContext) {
+    fun voteInPoll(pollId: String, optionId: String, broadcastContext: BroadcastContext, session: VioSessionContext? = null) {
         val polls = _pollsByBroadcast.value[broadcastContext.broadcastId]
         val poll = polls?.find { it.id == pollId } ?: throw EngagementError.PollNotFound()
 
@@ -127,7 +128,7 @@ class EngagementManager private constructor() {
         
         scope.launch {
             try {
-                repository?.voteInPoll(pollId, optionId, broadcastContext)
+                repository?.voteInPoll(pollId, optionId, broadcastContext, session)
             } catch (e: Exception) {
                 // Determine how to handle rollback or error notification
                  println("Error voting: ${e.message}")
@@ -136,7 +137,7 @@ class EngagementManager private constructor() {
     }
 
     @Throws(EngagementError::class)
-    fun participateInContest(contestId: String, broadcastContext: BroadcastContext, answers: Map<String, String>? = null) {
+    fun participateInContest(contestId: String, broadcastContext: BroadcastContext, answers: Map<String, String>? = null, session: VioSessionContext? = null) {
         val contests = _contestsByBroadcast.value[broadcastContext.broadcastId]
         val contest = contests?.find { it.id == contestId } ?: throw EngagementError.ContestNotFound()
 
@@ -148,7 +149,7 @@ class EngagementManager private constructor() {
         
         scope.launch {
             try {
-                repository?.participateInContest(contestId, broadcastContext, answers)
+                repository?.participateInContest(contestId, broadcastContext, answers, session)
             } catch (e: Exception) {
                  println("Error participating in contest: ${e.message}")
             }

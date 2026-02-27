@@ -1,6 +1,7 @@
 package io.reachu.VioEngagementSystem.repositories
 
 import io.reachu.VioCore.models.BroadcastContext
+import io.reachu.VioCore.models.VioSessionContext
 import io.reachu.VioEngagementSystem.models.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -9,8 +10,8 @@ import kotlinx.serialization.json.Json
 interface EngagementRepository {
     suspend fun loadPolls(context: BroadcastContext): List<Poll>
     suspend fun loadContests(context: BroadcastContext): List<Contest>
-    suspend fun voteInPoll(pollId: String, optionId: String, broadcastContext: BroadcastContext)
-    suspend fun participateInContest(contestId: String, broadcastContext: BroadcastContext, answers: Map<String, String>?)
+    suspend fun voteInPoll(pollId: String, optionId: String, broadcastContext: BroadcastContext, session: VioSessionContext? = null)
+    suspend fun participateInContest(contestId: String, broadcastContext: BroadcastContext, answers: Map<String, String>?, session: VioSessionContext? = null)
 }
 
 class EngagementRepositoryBackend : EngagementRepository {
@@ -76,6 +77,7 @@ class EngagementRepositoryBackend : EngagementRepository {
         val apiKey: String,
         val broadcastId: String,
         val optionId: String,
+        val userId: String? = null,
         val matchId: String? = null // Backward compatibility
     )
     
@@ -84,6 +86,7 @@ class EngagementRepositoryBackend : EngagementRepository {
         val apiKey: String,
         val broadcastId: String,
         val answers: Map<String, String>? = null,
+        val userId: String? = null,
         val matchId: String? = null // Backward compatibility
     )
     
@@ -190,7 +193,7 @@ class EngagementRepositoryBackend : EngagementRepository {
         }
     }
 
-    override suspend fun voteInPoll(pollId: String, optionId: String, broadcastContext: BroadcastContext) {
+    override suspend fun voteInPoll(pollId: String, optionId: String, broadcastContext: BroadcastContext, session: VioSessionContext?) {
         val config = io.reachu.VioCore.configuration.VioConfiguration.shared.state.value
         val baseUrl = config.campaign.restAPIBaseURL.trimEnd('/')
         val apiKey = config.apiKey
@@ -200,6 +203,7 @@ class EngagementRepositoryBackend : EngagementRepository {
             apiKey = apiKey,
             broadcastId = broadcastContext.broadcastId,
             optionId = optionId,
+            userId = session?.userId,
             matchId = broadcastContext.broadcastId // Backward compatibility
         )
         
@@ -222,7 +226,7 @@ class EngagementRepositoryBackend : EngagementRepository {
         }
     }
 
-    override suspend fun participateInContest(contestId: String, broadcastContext: BroadcastContext, answers: Map<String, String>?) {
+    override suspend fun participateInContest(contestId: String, broadcastContext: BroadcastContext, answers: Map<String, String>?, session: VioSessionContext?) {
         val config = io.reachu.VioCore.configuration.VioConfiguration.shared.state.value
         val baseUrl = config.campaign.restAPIBaseURL.trimEnd('/')
         val apiKey = config.apiKey
@@ -232,6 +236,7 @@ class EngagementRepositoryBackend : EngagementRepository {
             apiKey = apiKey,
             broadcastId = broadcastContext.broadcastId,
             answers = answers,
+            userId = session?.userId,
             matchId = broadcastContext.broadcastId // Backward compatibility
         )
         
@@ -329,13 +334,13 @@ class EngagementRepositoryDemo : EngagementRepository {
         )
     }
 
-    override suspend fun voteInPoll(pollId: String, optionId: String, broadcastContext: BroadcastContext) {
+    override suspend fun voteInPoll(pollId: String, optionId: String, broadcastContext: BroadcastContext, session: VioSessionContext?) {
         // Simulate network delay
         // kotlinx.coroutines.delay(500)
         println("Demo: voted in poll $pollId for option $optionId")
     }
 
-    override suspend fun participateInContest(contestId: String, broadcastContext: BroadcastContext, answers: Map<String, String>?) {
+    override suspend fun participateInContest(contestId: String, broadcastContext: BroadcastContext, answers: Map<String, String>?, session: VioSessionContext?) {
         // Simulate network delay
         // kotlinx.coroutines.delay(500)
         println("Demo: participated in contest $contestId")

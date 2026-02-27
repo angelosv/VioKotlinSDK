@@ -47,9 +47,10 @@ object BroadcastValidationService {
         val config = VioConfiguration.shared.state.value
         val baseUrl = config.campaign.restAPIBaseURL.trimEnd('/')
 
-        // campaignAdminApiKey tiene precedencia; fallback al apiKey general
-        val apiKey = config.campaign.campaignAdminApiKey
+        // campaignApiKey tiene máxima prioridad; luego campaignAdminApiKey; fallback al apiKey general
+        val apiKey = config.campaign.campaignApiKey
             ?.takeIf { it.isNotBlank() }
+            ?: config.campaign.campaignAdminApiKey?.takeIf { it.isNotBlank() }
             ?: config.apiKey
 
         val encodedContentId = URLEncoder.encode(contentId, "UTF-8")

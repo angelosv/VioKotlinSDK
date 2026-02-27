@@ -1,6 +1,7 @@
 package io.reachu.VioEngagementSystem.repositories
 
 import io.reachu.VioCore.models.BroadcastContext
+import io.reachu.VioCore.models.VioSessionContext
 import io.reachu.VioEngagementSystem.models.*
 import kotlinx.coroutines.delay
 
@@ -80,13 +81,23 @@ class DemoEngagementRepository : EngagementRepository {
         return contests
     }
     
-    override suspend fun voteInPoll(pollId: String, optionId: String, broadcastContext: BroadcastContext) {
+    override suspend fun voteInPoll(
+        pollId: String,
+        optionId: String,
+        broadcastContext: BroadcastContext,
+        session: VioSessionContext?
+    ) {
         // Simulate network delay (500ms)
         delay(500)
         println("🗳️ [DemoEngagementRepository] Simulated vote in poll $pollId for option $optionId (broadcast: ${broadcastContext.broadcastId})")
     }
     
-    override suspend fun participateInContest(contestId: String, broadcastContext: BroadcastContext, answers: Map<String, String>?) {
+    override suspend fun participateInContest(
+        contestId: String,
+        broadcastContext: BroadcastContext,
+        answers: Map<String, String>?,
+        session: VioSessionContext?
+    ) {
         // Simulate network delay (500ms)
         delay(500)
         println("🎉 [DemoEngagementRepository] Simulated participation in contest $contestId (broadcast: ${broadcastContext.broadcastId})")
