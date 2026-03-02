@@ -3,6 +3,7 @@ package io.reachu.VioCore.configuration
 import io.reachu.VioCore.analytics.AnalyticsManager
 import io.reachu.VioCore.managers.CampaignManager
 import io.reachu.sdk.domain.models.GetAvailableMarketsDto
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,6 +43,8 @@ class VioConfiguration private constructor() {
     companion object {
         val shared: VioConfiguration = VioConfiguration()
 
+        private val isConfiguring = AtomicBoolean(false)
+
         fun configure(
             apiKey: String,
             environment: VioEnvironment = VioEnvironment.PRODUCTION,
@@ -57,31 +60,40 @@ class VioConfiguration private constructor() {
             analyticsConfig: AnalyticsConfiguration? = null,
             demoDataConfig: DemoDataConfiguration? = null,
         ) {
-            val instance = shared
-            instance._state.value = instance._state.value.copy(
-                apiKey = apiKey,
-                environment = environment,
-                theme = theme ?: VioTheme.defaultTheme(),
-                cart = cartConfig ?: CartConfiguration.default(),
-                network = networkConfig ?: NetworkConfiguration.default(),
-                ui = uiConfig ?: UIConfiguration.default(),
-                liveShow = liveShowConfig ?: LiveShowConfiguration.default(),
-                market = marketConfig ?: MarketConfiguration.default(),
-                productDetail = productDetailConfig ?: ProductDetailConfiguration.default(),
-                localization = localizationConfig ?: LocalizationConfiguration.default(),
-                campaign = campaignConfig ?: CampaignConfiguration.default(),
-                analytics = analyticsConfig ?: AnalyticsConfiguration.default(),
-                demoData = demoDataConfig ?: DemoDataConfiguration.default(),
-                isConfigured = true,
-            )
-            VioLocalization.configure(instance._state.value.localization)
-            AnalyticsManager.configure(instance._state.value.analytics)
-            CampaignManager.shared.reinitialize()
+            if (!isConfiguring.compareAndSet(false, true)) {
+                println("⚠️ VioConfiguration.configure() ya está en curso, ignorando llamada concurrente")
+                return
+            }
 
-            println("🔧 Vio SDK configured successfully")
-            println("   API Key: ${apiKey.take(8)}...")
-            println("   Environment: $environment")
-            println("   Theme: ${instance._state.value.theme.name}")
+            try {
+                val instance = shared
+                instance._state.value = instance._state.value.copy(
+                    apiKey = apiKey,
+                    environment = environment,
+                    theme = theme ?: VioTheme.defaultTheme(),
+                    cart = cartConfig ?: CartConfiguration.default(),
+                    network = networkConfig ?: NetworkConfiguration.default(),
+                    ui = uiConfig ?: UIConfiguration.default(),
+                    liveShow = liveShowConfig ?: LiveShowConfiguration.default(),
+                    market = marketConfig ?: MarketConfiguration.default(),
+                    productDetail = productDetailConfig ?: ProductDetailConfiguration.default(),
+                    localization = localizationConfig ?: LocalizationConfiguration.default(),
+                    campaign = campaignConfig ?: CampaignConfiguration.default(),
+                    analytics = analyticsConfig ?: AnalyticsConfiguration.default(),
+                    demoData = demoDataConfig ?: DemoDataConfiguration.default(),
+                    isConfigured = true,
+                )
+                VioLocalization.configure(instance._state.value.localization)
+                AnalyticsManager.configure(instance._state.value.analytics)
+                CampaignManager.shared.reinitialize()
+
+                println("🔧 Vio SDK configured successfully")
+                println("   API Key: ${apiKey.take(8)}...")
+                println("   Environment: $environment")
+                println("   Theme: ${instance._state.value.theme.name}")
+            } finally {
+                isConfiguring.set(false)
+            }
         }
 
         fun configure(apiKey: String) {

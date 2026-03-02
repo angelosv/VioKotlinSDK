@@ -34,6 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -54,6 +55,12 @@ fun VioLiveShowFullScreenOverlay(
     modifier: Modifier = Modifier,
     videoContent: @Composable BoxScope.(LiveStream?) -> Unit = { DefaultVideoPlaceholder(it) },
 ) {
+    DisposableEffect(controller) {
+        onDispose {
+            controller.clear()
+        }
+    }
+
     val state by controller.state.collectAsState()
     val chatController = remember(state.stream?.id) { VioLiveChatComponentController() }
     Box(modifier = modifier.fillMaxSize().background(Color.Black)) {

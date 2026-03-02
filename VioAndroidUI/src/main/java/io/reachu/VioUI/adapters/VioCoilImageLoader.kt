@@ -3,12 +3,15 @@ package io.reachu.VioUI.adapters
 import android.util.Log
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.Modifier
+import coil.ImageLoader
 import coil.compose.AsyncImagePainter
-import coil.compose.SubcomposeAsyncImage
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import io.reachu.VioCore.utils.VioLogger
 import io.reachu.VioUI.Components.compose.product.VioImageLoader
 import io.reachu.VioUI.Components.compose.product.VioImageLoaderDefaults
 import io.reachu.VioUI.Components.compose.product.VioPlaceholderImageLoader
+import java.io.File
 
 
 private const val TAG = "ImageLoader"
@@ -44,7 +47,18 @@ val VioCoilImageLoader: VioImageLoader = VioImageLoader { url, contentDescriptio
     }
 
     val context = androidx.compose.ui.platform.LocalContext.current
-    val imageLoader = coil.ImageLoader.Builder(context)
+    val imageLoader = ImageLoader.Builder(context)
+        .memoryCache {
+            MemoryCache.Builder(context)
+                .maxSizePercent(0.25)
+                .build()
+        }
+        .diskCache {
+            DiskCache.Builder()
+                .directory(File(context.cacheDir, "vio-image-cache"))
+                .maxSizePercent(0.02)
+                .build()
+        }
         .components {
             add(coil.decode.SvgDecoder.Factory())
         }

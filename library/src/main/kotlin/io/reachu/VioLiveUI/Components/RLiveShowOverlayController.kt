@@ -9,7 +9,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import io.reachu.liveshow.LiveShowManager
@@ -44,6 +43,7 @@ class VioLiveShowOverlayController(
     val state: StateFlow<LiveShowOverlayState> = _state.asStateFlow()
 
     private val isStarted = AtomicBoolean(false)
+    private val scopeJob: Job? = scope.coroutineContext[Job]
 
     init {
         scope.launch {
@@ -61,6 +61,12 @@ class VioLiveShowOverlayController(
                 likesManager.handleRemoteHeartEvent()
             }
         }
+    }
+
+    fun clear() {
+        scopeJob?.cancel()
+        dynamicManager.reset()
+        _state.value = LiveShowOverlayState(configuration = configuration)
     }
 
     private suspend fun handleStreamChange(stream: LiveStream?) {
