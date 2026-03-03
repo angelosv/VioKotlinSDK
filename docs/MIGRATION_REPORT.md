@@ -252,11 +252,11 @@
 ## SDK – UI – Sources → ReachuAndroidUI
 
 ### Swift sin equivalente Kotlin
-- `Sources/VioUI/Components/` contiene múltiples vistas SwiftUI (CheckoutOverlay, Product Slider, Market Selector, Offer Banner, Product Store, etc.) y helpers (`ImageLoader`, `ReachuComponentWrapper`) que no tienen versión en `ReachuAndroidUI` (actualmente residen en `library/io.reachu.VioUI`).
+- `Sources/VioUI/Components/` contiene múltiples vistas SwiftUI (CheckoutOverlay, Product Slider, Market Selector, Offer Banner, Product Store, etc.) y helpers (`ImageLoader`, `ReachuComponentWrapper`) que no tienen versión en `ReachuAndroidUI` (actualmente residen en `library/live.vio.VioUI`).
 - `Sources/VioUI/Managers/VippsPaymentHandler.swift` no cuenta con un bridge Android equivalente fuera del uso directo de `PaymentSheetBridge`.
 
 ### Kotlin sin equivalente Swift
-- `ReachuAndroidUI/src/main/java/io.reachu.VioUI/KlarnaBridge.kt`, `KlarnaNativeActivity.kt`, `KlarnaWebActivity.kt`, `PaymentSheetBridge.kt`, `DeepLinkBus.kt`, `RCheckoutOverlayCompose.kt`, `adapters/VioCoilImageLoader.kt` son adaptaciones Android-only necesarias para exponer WebViews/Compose.
+- `ReachuAndroidUI/src/main/java/live.vio.VioUI/KlarnaBridge.kt`, `KlarnaNativeActivity.kt`, `KlarnaWebActivity.kt`, `PaymentSheetBridge.kt`, `DeepLinkBus.kt`, `RCheckoutOverlayCompose.kt`, `adapters/VioCoilImageLoader.kt` son adaptaciones Android-only necesarias para exponer WebViews/Compose.
 
 ### Pares Swift ↔ Kotlin
 - Bridges Stripe/Vipps: `Sources/VioUI/Components/RCheckoutOverlay.swift` usa `VippsPaymentHandler`/`PaymentSheet`; en Android esto se divide en `PaymentSheetBridge.kt`, `KlarnaBridge.kt`, `RCheckoutOverlayCompose.kt`.
@@ -264,6 +264,6 @@
 - `VioUI/Helpers/ReachuComponentWrapper.swift` ↔ la composición `ReachuAndroidUI/.../RCheckoutOverlayCompose.kt` (wrapper Compose).
 
 ### Checklist
-- [ ] Reorganizar los componentes Compose (`library/io.reachu.VioUI/Components/compose/*`) dentro del módulo `ReachuAndroidUI` o documentar por qué viven en `library`.
+- [ ] Reorganizar los componentes Compose (`library/live.vio.VioUI/Components/compose/*`) dentro del módulo `ReachuAndroidUI` o documentar por qué viven en `library`.
 - [ ] Crear homólogos Android de `VippsPaymentHandler` y otros managers ligados a lifecycle.
 - [ ] Unificar documentación sobre cómo `DeepLinkBus` reemplaza a los `NotificationCenter` usados en Swift.

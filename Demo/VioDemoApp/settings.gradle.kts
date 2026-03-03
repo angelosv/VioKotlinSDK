@@ -30,7 +30,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ReachuDemoApp"
+rootProject.name = "VioDemoApp"
 
 include(":library")
 project(":library").projectDir = file("../../library")

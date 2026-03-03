@@ -53,7 +53,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.reachu:vio-kotlin-sdk:<version>")
+    implementation("live.vio:vio-kotlin-sdk:<version>")
 }
 ```
 
@@ -87,7 +87,7 @@ dependencies {
 ## Quickstart
 
 ```kotlin
-import io.reachu.sdk.core.VioSdkClient
+import live.vio.sdk.core.VioSdkClient
 import kotlinx.coroutines.runBlocking
 import java.net.URL
 

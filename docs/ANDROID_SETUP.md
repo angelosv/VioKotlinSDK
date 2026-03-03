@@ -72,10 +72,10 @@
 - “No arranca la app en dispositivo”: habilita USB debugging, acepta huella RSA en el dispositivo. En Windows instala drivers del fabricante.
 
 **10) Dónde editar qué**
-- Configuración visual/Compose del checkout: `Demo/ReachuDemoApp/src/main/java/io.reachu.VioUI/`.
-- Lógica de checkout (controlador): `library/io.reachu.VioUI/Components/RCheckoutOverlay.kt`.
-- Managers de pago (Stripe/Klarna/Vipps): `library/io.reachu.VioUI/Managers/PaymentManager.kt`.
-- Config global Reachu: `library/io.reachu.VioCore/configuration/*`.
+- Configuración visual/Compose del checkout: `Demo/ReachuDemoApp/src/main/java/live.vio.VioUI/`.
+- Lógica de checkout (controlador): `library/live.vio.VioUI/Components/RCheckoutOverlay.kt`.
+- Managers de pago (Stripe/Klarna/Vipps): `library/live.vio.VioUI/Managers/PaymentManager.kt`.
+- Config global Reachu: `library/live.vio.VioCore/configuration/*`.
 
 **11) Siguiente paso**
 - Si ya compila y abre el demo, agrega productos y prueba cada método de pago según lo configurado en `vio-config.json`.

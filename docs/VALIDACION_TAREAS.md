@@ -10,7 +10,7 @@ Este documento verifica que las 6 tareas descritas en `tareas.txt` estén correc
 
 **Implementación:**
 
-- **Archivo:** `library/io.reachu.VioCore/managers/CampaignManager.kt`
+- **Archivo:** `library/live.vio.VioCore/managers/CampaignManager.kt`
 - **Propiedad:** `activeCampaigns` expuesta como `StateFlow<List<Campaign>>` (líneas 83-84), no como `var`; es la forma reactiva correcta.
 - **Selección:** `selectCurrentCampaign()` (líneas 422-433) elige la primera campaña con `currentState == ACTIVE` y `isPaused != true`.
 - **Uso:** Tras `discoverCampaigns()`, se actualiza `_activeCampaigns`, se llama a `selectCurrentCampaign(active)` y se asigna a `_currentCampaign`.
@@ -76,7 +76,7 @@ Este documento verifica que las 6 tareas descritas en `tareas.txt` estén correc
 
 **Implementación:**
 
-- **Modelo de dominio:** `library/io.reachu.VioCore/configuration/ModuleConfigurations.kt` (286-304): `CampaignConfiguration` con webSocketBaseURL, restAPIBaseURL, campaignAdminApiKey, autoDiscover (default false), channelId (nullable).
+- **Modelo de dominio:** `library/live.vio.VioCore/configuration/ModuleConfigurations.kt` (286-304): `CampaignConfiguration` con webSocketBaseURL, restAPIBaseURL, campaignAdminApiKey, autoDiscover (default false), channelId (nullable).
 - **Carga desde JSON:** `ConfigurationLoader.kt`: `CampaignJSON` (458-471) con webSocketBaseURL, restAPIBaseURL, campaignAdminApiKey, autoDiscover, channelId; `toDomain()` mapea a `CampaignConfiguration`. El JSON raíz usa `campaigns` (315) y se aplica en `applyConfiguration` (86: `config.campaigns?.toDomain()`).
 - **Ejemplo de JSON esperado:** El formato descrito en la tarea (`campaigns.autoDiscover`, `campaigns.channelId`) es soportado; los demos pueden añadir en su `vio-config.json`:
   - `"campaigns": { "autoDiscover": true, "channelId": null, ... }`

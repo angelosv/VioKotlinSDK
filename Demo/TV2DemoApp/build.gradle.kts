@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.reachu.tv2demo"
+    namespace = "com.vio.tv2demo"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.reachu.tv2demo"
+        applicationId = "com.vio.tv2demo"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

@@ -31,7 +31,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TV2DemoApp"
+rootProject.name = "ViaplayDemoApp"
 
 include(":library")
 project(":library").projectDir = file("../../library")

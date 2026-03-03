@@ -56,7 +56,7 @@ If you use `VioEnvironment.PRODUCTION` or `VioEnvironment.SANDBOX`, the SDK hand
 
 ## Steps for Migration
 
-1.  **Update Dependencies:** Change all SDK artifacts in your `build.gradle.kts` to point to the new package names or the updated module artifacts (e.g., `io.reachu:vio-kotlin-sdk`).
+1.  **Update Dependencies:** Change all SDK artifacts in your `build.gradle.kts` to point to the new package names or the updated module artifacts (e.g., `live.vio:vio-kotlin-sdk`).
 2.  **Global Find & Replace:** Run a project-wide search for `Reachu` and replace it with `Vio`. Also search for `SdkClient` and replace with `VioSdkClient`.
 3.  **Update Configurations:** If you were using raw JSON configuration files, rename them (e.g., from `reachu-config.json` to `vio-config.json`) and update their contents to use the new `vio.live` endpoints.
 4.  **Recompile & Test:** Build the project. The compiler will highlight any missed renaming. Thoroughly test the integration, paying special attention to initialization and checkout flows.

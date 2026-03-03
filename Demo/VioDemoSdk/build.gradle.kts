@@ -23,7 +23,7 @@ sourceSets {
 }
 
 application {
-    mainClass = "io.reachu.demo.MainKt"
+    mainClass = "live.vio.demo.MainKt"
 }
 
 tasks.named("compileKotlin") {

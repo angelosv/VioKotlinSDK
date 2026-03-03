@@ -11,7 +11,7 @@ tasks.register("run") {
 }
 
 subprojects {
-    group = "io.reachu"
+    group = "live.vio"
     version = "0.0.1"
 }
 

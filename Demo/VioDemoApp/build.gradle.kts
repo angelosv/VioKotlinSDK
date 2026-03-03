@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.reachu.demoapp"
+    namespace = "com.vio.demoapp"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.reachu.demoapp"
+        applicationId = "com.vio.demoapp"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

@@ -32,7 +32,7 @@ La revisión de la documentación **VALIDA** las prioridades establecidas previa
 
 ### 1. Falta de KDoc en `CartManager` (API Pública Principal)
 
-**Ubicación**: `library/io.reachu.VioUI/Managers/CartManager.kt`
+**Ubicación**: `library/live.vio.VioUI/Managers/CartManager.kt`
 **Hallazgo**: La clase `CartManager` es el punto de entrada principal para la lógica de carrito y checkout en la UI. Sin embargo, **carece casi totalmente de documentación KDoc**.
 
 - No hay descripción de clase.

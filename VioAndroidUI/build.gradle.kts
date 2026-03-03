@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "io.reachu.VioUI"
+    namespace = "live.vio.VioUI"
     compileSdk = 34
 
     defaultConfig {
@@ -56,7 +56,7 @@ kotlin { jvmToolchain(17) }
 
 mavenPublishing {
     // Define las coordenadas de tu librería
-    coordinates("io.github.viodevteam", "vio-android-ui", "1.0.0")
+    coordinates("live.vio", "vio-android-ui", "1.0.0")
 
     // Configura el POM con toda la información necesaria para Maven Central
     pom {

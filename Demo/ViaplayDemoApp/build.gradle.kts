@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.reachu.viaplaydemo"
+    namespace = "com.vio.viaplaydemo"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.reachu.viaplaydemo"
+        applicationId = "com.vio.viaplaydemo"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

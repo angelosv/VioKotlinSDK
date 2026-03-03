@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.reachu.liveshopping"
+    namespace = "com.vio.liveshopping"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.reachu.liveshopping"
+        applicationId = "com.vio.liveshopping"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

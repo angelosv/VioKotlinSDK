@@ -2,13 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application android:usesCleartextTraffic="true">
         <activity
-            android:name="io.reachu.VioUI.KlarnaNativeActivity"
+            android:name="live.vio.VioUI.KlarnaNativeActivity"
             android:exported="false"
             android:launchMode="singleTask"
             android:hardwareAccelerated="true"
             android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity
-            android:name="io.reachu.VioUI.KlarnaWebActivity"
+            android:name="live.vio.VioUI.KlarnaWebActivity"
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.DayNight" />
     </application>

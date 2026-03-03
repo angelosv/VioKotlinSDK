@@ -1,3 +1,21 @@
-1. VioCoilImageLoader.kt
-    Argument type mismatch: actual type is 'kotlin.Float', but 'kotlin.Double' was expected.
-    Argument type mismatch: actual type is 'kotlin.Float', but 'kotlin.Double' was expected.
+1. El namespace io.reachu es visible para integradores externos (imports en código del cliente). TV2 no puede ver Reachu en ningún import.
+
+Magnitud: 255 archivos .kt con referencias a io.reachu
+
+Maven
+groupId: io.github.reachudevteam → live.vio
+artifactId: reachu-kotlin-sdk → vio-kotlin-sdk
+
+Paquetes a renombrar
+io.reachu.VioCore → live.vio.VioCore
+io.reachu.VioUI → live.vio.VioUI
+io.reachu.VioEngagementSystem → live.vio.VioEngagementSystem
+io.reachu.VioEngagementUI → live.vio.VioEngagementUI
+com.reachu.* en demos → com.vio.*
+
+Archivos clave a actualizar manualmente
+build.gradle raíz y todos los módulos
+settings.gradle
+README.md (borra reachu-android-ui:0.0.1)
+AndroidManifest.xml de cada módulo
+.github/workflows/

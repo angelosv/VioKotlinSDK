@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "io.reachu.library"
+    namespace = "live.vio.library"
     compileSdk = 34
 
     defaultConfig {
@@ -84,7 +84,7 @@ tasks.withType<Test> { useJUnitPlatform() }
 
 mavenPublishing {
     // Define las coordenadas de tu librería
-    coordinates("io.github.reachudevteam", "reachu-kotlin-sdk", "1.0.1")
+    coordinates("live.vio", "vio-kotlin-sdk", "1.0.1")
 
     // Configura el POM con toda la información necesaria para Maven Central
     pom {
@@ -99,8 +99,8 @@ mavenPublishing {
         }
         developers {
             developer {
-                id.set("reachu")
-                name.set("Reachu")
+                id.set("vio")
+                name.set("Vio")
                 email.set("dev@vio.live")
             }
         }
