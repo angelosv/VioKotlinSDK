@@ -38,6 +38,8 @@ class VioConfiguration private constructor() {
         val userCountryCode: String? = null,
         val availableMarkets: List<GetAvailableMarketsDto> = emptyList(),
         val isConfigured: Boolean = false,
+        val sponsor: live.vio.VioCore.models.SponsorConfig? = null,
+        val commerce: live.vio.VioCore.models.CommerceConfig? = null,
     )
 
     companion object {
@@ -109,6 +111,14 @@ class VioConfiguration private constructor() {
 
         fun updateCartConfiguration(config: CartConfiguration) {
             shared._state.value = shared._state.value.copy(cart = config)
+        }
+
+        fun updateSponsor(sponsor: live.vio.VioCore.models.SponsorConfig) {
+            shared._state.value = shared._state.value.copy(sponsor = sponsor)
+        }
+
+        fun updateCommerce(commerce: live.vio.VioCore.models.CommerceConfig) {
+            shared._state.value = shared._state.value.copy(commerce = commerce)
         }
 
         fun setMarketAvailability(

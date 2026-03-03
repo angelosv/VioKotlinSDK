@@ -1,66 +1,7 @@
-1. KOTLIN-002: Contexto
-En Swift implementamos SponsorConfig completo. El SDK de Kotlin no tiene nada equivalente. Todo el branding del sponsor (colores, logos) llega del backend — nada hardcodeado.
-Backend
-Endpoint: GET /v1/campaigns/:id/config
-API Key: viaplay_api_key_0c611e983b314ff8
-Backend: https://api-dev.vio.live
-Payload de respuesta incluye:
-{
-  "sponsor": {
-    "id": 1,
-    "name": "Elkjøp",
-    "logoUrl": "https://...",
-    "avatarUrl": "https://...",
-    "primaryColor": "#f7b23b",
-    "secondaryColor": "#ffffff",
-    "badgeText": "no"
-  },
-  "integrations": {
-    "commerce": {
-      "enabled": true,
-      "apiKey": "KCXF10Y-W5T4PCR-GG5119A-Z64SQ9S",
-      "endpoint": "https://graph-ql-dev.vio.live"
-    }
-  }
-}
-Implementar
-1. SponsorConfig data class
-
-
-data class SponsorConfig(
-    val id: Int,
-    val name: String,
-    val logoUrl: String?,
-    val avatarUrl: String?,
-    val primaryColor: String?,
-    val secondaryColor: String?,
-    val badgeText: String?
-)
-2. SponsorAssets object (helper centralizado)
-logoUrl: String?
-avatarUrl: String?
-primaryColor: Color (parseado desde hex)
-textOnPrimary: Color — calculado en SDK via luminosidad WCAG (NO viene del backend)
-name: String
-badgeText: String?
-3. WCAG textOnPrimary
-Fórmula luminosidad relativa: L = 0.2126*R + 0.7152*G + 0.0722*B
-Si L > 0.179 → texto negro; si no → texto blanco
-4. CampaignConfig parsea sección sponsor
-Cuando cambia la campaña → SponsorAssets se actualiza → todos los componentes UI reciben el nuevo branding
-Referencia Swift
-Sources/VioDesignSystem/SponsorAssets.swift
-Sources/VioCore/Models/CampaignModels.swift (SponsorConfig struct)
-
-2. Descripción
-El badge del sponsor tiene que usar los datos que llegan del backend, no la configuracion local.
-Datos del sponsor en campana 35:
-name: Elkjop
-logoUrl: https://api-dev.vio.live/objects/uploads/adc65620-...
-primaryColor: #f7b23b
+1. El SDK necesita leer la configuracion del sponsor (nombre, logo, avatar, color) y los datos de Commerce (apiKey, channelId) que llegan en la respuesta de /v1/campaigns/:id/config.
 Que hacer:
-SponsorConfig ya estara disponible (KOTLIN-002)
-CampaignSponsorBadge.kt: AsyncImage con Coil para logoUrl
-Background: primaryColor con 15% de opacidad
-Avatar circular de 20x20dp
-Criterio: el badge de Elkjop aparece con su logo real y el color correcto.
+Crear SponsorConfig data class con: name, logoUrl, avatarUrl, primaryColor
+Crear CommerceConfig data class con: enabled, apiKey, channelId
+Parsear ambos en DynamicConfigManager al recibir la config de campana
+Exponer en VioConfiguration como propiedades observables
+Referencia Swift: Sources/VioCore/Models/DynamicConfigModels.swift

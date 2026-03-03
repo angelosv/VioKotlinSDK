@@ -391,7 +391,9 @@ class CampaignManager private constructor(
 
         CacheManager.shared.saveCampaign(campaign)
         CacheManager.shared.saveCampaignState(_campaignState.value, _isCampaignActive.value)
-        SponsorAssets.update(campaign.sponsor)
+        
+        // Use DynamicConfigManager to update sponsor and commerce config
+        DynamicConfigManager.shared.updateFromConfig(response.body)
     }
 
     /**
