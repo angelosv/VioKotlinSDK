@@ -47,6 +47,20 @@ class CampaignManager private constructor(
          * El payload contiene 'oldLogoUrl' y 'newLogoUrl'.
          */
         const val NOTIFICATION_CAMPAIGN_LOGO_CHANGED = "VioCampaignLogoChanged"
+        
+        /**
+         * Notificación emitida cuando la configuración de commerce cambia.
+         */
+        const val NOTIFICATION_COMMERCE_CONFIG_CHANGED = "VioCommerceConfigChanged"
+    }
+
+    /**
+     * Emite una notificación de que la configuración de commerce ha cambiado.
+     */
+    fun notifyCommerceChanged(commerce: live.vio.VioCore.models.CommerceConfig) {
+        scope.launch {
+            _events.emit(CampaignNotification.CommerceConfigChanged(commerce))
+        }
     }
 
     /**
@@ -150,6 +164,15 @@ class CampaignManager private constructor(
     fun getActiveComponents(type: String): List<Component> {
         if (!_isCampaignActive.value) return emptyList()
         return _activeComponents.value.filter { it.type == type && it.isActive }
+    }
+
+    /**
+     * Busca un componente activo por su locationId (slot).
+     * Si no se especifica locationId, devuelve el primero del tipo solicitado.
+     */
+    fun getActiveComponent(locationId: String): Component? {
+        if (!_isCampaignActive.value) return null
+        return _activeComponents.value.firstOrNull { it.locationId == locationId && it.isActive }
     }
 
     fun setAppBundleId(bundleId: String) {
@@ -885,4 +908,5 @@ sealed interface CampaignNotification {
     data class ComponentStatusChanged(val event: ComponentStatusChangedEvent) : CampaignNotification
     data class ComponentConfigUpdated(val event: ComponentConfigUpdatedEvent) : CampaignNotification
     data class CampaignLogoChanged(val oldLogoUrl: String?, val newLogoUrl: String?) : CampaignNotification
+    data class CommerceConfigChanged(val commerce: live.vio.VioCore.models.CommerceConfig) : CampaignNotification
 }

@@ -4,6 +4,7 @@ import live.vio.VioCore.analytics.AnalyticsManager
 import live.vio.VioCore.configuration.VioConfiguration
 import live.vio.VioCore.managers.CampaignManager
 import live.vio.VioCore.models.Component
+import live.vio.VioCore.managers.CampaignNotification
 import live.vio.VioCore.models.ProductStoreConfig
 import live.vio.VioCore.utils.VioLogger
 import live.vio.VioUI.Managers.Product
@@ -68,6 +69,13 @@ class VioProductStore(
                     return@collectLatest
                 }
                 handleConfig(component, config)
+            }
+        }
+        scope.launch {
+            campaignManager.events.collect { event ->
+                if (event is CampaignNotification.CommerceConfigChanged) {
+                    refresh()
+                }
             }
         }
     }
@@ -225,10 +233,4 @@ class VioProductStore(
     }
 }
 
-internal fun List<Component>.findComponent(type: String, componentId: String?): Component? {
-    return firstOrNull { component ->
-        component.type == type &&
-            component.isActive &&
-            (componentId == null || component.id == componentId)
-    }
-}
+

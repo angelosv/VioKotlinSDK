@@ -56,16 +56,7 @@ enum class CampaignState {
     }
 }
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-data class SponsorConfig(
-    @JsonProperty("id") val id: Int,
-    @JsonProperty("name") val name: String,
-    @JsonProperty("logoUrl") val logoUrl: String? = null,
-    @JsonProperty("avatarUrl") val avatarUrl: String? = null,
-    @JsonProperty("primaryColor") val primaryColor: String? = null,
-    @JsonProperty("secondaryColor") val secondaryColor: String? = null,
-    @JsonProperty("badgeText") val badgeText: String? = null
-)
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Campaign(
@@ -139,6 +130,7 @@ data class ComponentResponse(
     val status: String,
     val customConfig: Map<String, Any?>? = null,
     val component: ComponentData? = null,
+    @JsonProperty("locationId") val locationId: String? = null,
 ) {
     data class ComponentData(
         val id: String,
@@ -159,6 +151,10 @@ data class Component(
      * Permite asociar el componente a un partido específico.
      */
     val matchContext: MatchContext? = null,
+    /**
+     * ID de ubicación (slot) para asignación desde el dashboard.
+     */
+    val locationId: String? = null,
 ) {
     val isActive: Boolean get() = status == "active"
 
@@ -170,7 +166,8 @@ data class Component(
                name == other.name &&
                config == other.config &&
                status == other.status &&
-               matchContext == other.matchContext
+               matchContext == other.matchContext &&
+               locationId == other.locationId
     }
 
     override fun hashCode(): Int {
@@ -180,6 +177,7 @@ data class Component(
         result = 31 * result + config.hashCode()
         result = 31 * result + (status?.hashCode() ?: 0)
         result = 31 * result + (matchContext?.hashCode() ?: 0)
+        result = 31 * result + (locationId?.hashCode() ?: 0)
         return result
     }
 
@@ -197,6 +195,7 @@ data class Component(
                 config = preferredConfig,
                 status = response.status,
                 matchContext = null, // TODO: Extract from response when backend supports it
+                locationId = response.locationId,
             )
         }
     }
@@ -379,7 +378,8 @@ data class ComponentDiscoveryItem(
     @JsonProperty("name") val name: String,
     @JsonProperty("config") val config: Map<String, Any?> = emptyMap(),
     @JsonProperty("status") val status: String? = null,
-    @JsonProperty("matchContext") val matchContext: MatchContext? = null
+    @JsonProperty("matchContext") val matchContext: MatchContext? = null,
+    @JsonProperty("locationId") val locationId: String? = null
 ) {
     fun toComponent(): Component = Component(
         id = id,
@@ -387,6 +387,7 @@ data class ComponentDiscoveryItem(
         name = name,
         config = config,
         status = status,
-        matchContext = matchContext
+        matchContext = matchContext,
+        locationId = locationId
     )
 }

@@ -2,7 +2,7 @@ package live.vio.VioCore.managers
 
 import live.vio.VioCore.configuration.VioConfiguration
 import live.vio.VioCore.models.DynamicConfig
-import live.vio.VioLogger
+import live.vio.VioCore.utils.VioLogger
 import live.vio.sdk.core.helpers.JsonUtils
 
 /**
@@ -46,7 +46,7 @@ class DynamicConfigManager private constructor() {
         // Update Commerce Config
         config.commerce?.let {
             VioLogger.success("Updating commerce config: ${it.apiKey}", TAG)
-            VioConfiguration.updateCommerce(it)
+            VioConfiguration.updateDynamicCommerceConfig(it)
         }
     }
 }

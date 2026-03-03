@@ -4,6 +4,7 @@ import live.vio.VioCore.analytics.AnalyticsManager
 import live.vio.VioCore.configuration.VioConfiguration
 import live.vio.VioCore.managers.CampaignManager
 import live.vio.VioCore.models.Component
+import live.vio.VioCore.managers.CampaignNotification
 import live.vio.VioCore.models.ProductCarouselConfig
 import live.vio.VioUI.Managers.Product
 import live.vio.VioUI.Services.ProductService
@@ -49,6 +50,7 @@ enum class ProductCarouselLayout {
 
 class VioProductCarousel(
     private val componentId: String? = null,
+    private val locationId: String? = null,
     private val layoutOverride: ProductCarouselLayout? = null,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
     private val campaignManager: CampaignManager = CampaignManager.shared,
@@ -65,7 +67,7 @@ class VioProductCarousel(
     init {
         scope.launch {
             campaignManager.activeComponents.collectLatest { components ->
-                val component = components.findComponent("product_carousel", componentId)
+                val component = components.findComponent("product_carousel", locationId, componentId)
                 if (component == null || !VioConfiguration.shared.shouldUseSDK) {
                     hide()
                     return@collectLatest
@@ -76,6 +78,13 @@ class VioProductCarousel(
                     return@collectLatest
                 }
                 handleConfig(component, config)
+            }
+        }
+        scope.launch {
+            campaignManager.events.collect { event ->
+                if (event is CampaignNotification.CommerceConfigChanged) {
+                    refresh()
+                }
             }
         }
     }

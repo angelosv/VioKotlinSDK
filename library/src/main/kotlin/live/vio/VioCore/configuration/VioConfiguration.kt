@@ -119,6 +119,17 @@ class VioConfiguration private constructor() {
 
         fun updateCommerce(commerce: live.vio.VioCore.models.CommerceConfig) {
             shared._state.value = shared._state.value.copy(commerce = commerce)
+            // Clear ProductService cache when commerce config changes
+            live.vio.VioUI.Services.ProductService.clearCache()
+            // Notify components and integrators
+            CampaignManager.shared.notifyCommerceChanged(commerce)
+        }
+
+        /**
+         * Alias para updateCommerce() usado por el backend para actualizaciones dinámicas.
+         */
+        fun updateDynamicCommerceConfig(commerce: live.vio.VioCore.models.CommerceConfig) {
+            updateCommerce(commerce)
         }
 
         fun setMarketAvailability(

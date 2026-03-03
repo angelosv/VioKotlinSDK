@@ -4,6 +4,7 @@ import live.vio.VioCore.analytics.AnalyticsManager
 import live.vio.VioCore.configuration.VioConfiguration
 import live.vio.VioCore.managers.CampaignManager
 import live.vio.VioCore.models.Component
+import live.vio.VioCore.managers.CampaignNotification
 import live.vio.VioCore.models.ProductBannerConfig
 import java.util.concurrent.atomic.AtomicReference
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +45,7 @@ data class VioProductBannerState(
 
 class VioProductBanner(
     private val componentId: String? = null,
+    private val locationId: String? = null,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
     private val campaignManager: CampaignManager = CampaignManager.shared,
 ) {
@@ -59,7 +61,7 @@ class VioProductBanner(
     init {
         scope.launch {
             campaignManager.activeComponents.collectLatest { components ->
-                val component = components.findComponent("product_banner", componentId)
+                val component = components.findComponent("product_banner", locationId, componentId)
                 if (component == null || !VioConfiguration.shared.shouldUseSDK) {
                     hide()
                     return@collectLatest
@@ -70,6 +72,13 @@ class VioProductBanner(
                     return@collectLatest
                 }
                 handleConfig(component, config)
+            }
+        }
+        scope.launch {
+            campaignManager.events.collect { event ->
+                if (event is CampaignNotification.CommerceConfigChanged) {
+                    refresh()
+                }
             }
         }
     }

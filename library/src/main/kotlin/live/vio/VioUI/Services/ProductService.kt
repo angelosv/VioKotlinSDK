@@ -22,18 +22,44 @@ object ProductService {
     private var cachedVioSdkClient: VioSdkClient? = null
 
     private suspend fun getVioSdkClient(): VioSdkClient {
-        cachedVioSdkClient?.let { return it }
+        val state = VioConfiguration.shared.state.value
+        val commerceApiKey = state.commerce?.apiKey
+        
+        // If we have a cached client, check if the API key matches the current commerce key
+        cachedVioSdkClient?.let { client ->
+            if (commerceApiKey != null && client.apiKey == commerceApiKey) {
+                return client
+            }
+            // If the commerce key changed, we need to clear the cache and recreate
+            if (commerceApiKey != null) {
+                clearCache()
+            } else if (client.apiKey == state.apiKey) {
+                // If we are using the fallback key and it hasn't changed, return it
+                return client
+            } else {
+                clearCache()
+            }
+        }
+
         return mutex.withLock {
             cachedVioSdkClient?.let { return it }
-            val state = VioConfiguration.shared.state.value
-            val apiKey = state.apiKey.ifBlank { "DEMO_KEY" }
+            
+            // Re-fetch state to be sure we have the latest after lock
+            val currentState = VioConfiguration.shared.state.value
+            val commerceConfig = currentState.commerce
+            
+            // PRIORITY: Use commerce-specific API key if available
+            val apiKey = commerceConfig?.apiKey 
+                ?: throw ProductServiceError.InvalidConfiguration("Commerce API key not configured (integrations.commerce.apiKey missing)")
+
             val baseUrl = try {
-                URL(state.environment.graphQLUrl)
+                URL(currentState.environment.graphQLUrl)
             } catch (error: MalformedURLException) {
-                throw ProductServiceError.InvalidConfiguration("Invalid GraphQL URL: ${state.environment.graphQLUrl}")
+                throw ProductServiceError.InvalidConfiguration("Invalid GraphQL URL: ${currentState.environment.graphQLUrl}")
             }
+            
             val client = VioSdkClient(baseUrl = baseUrl, apiKey = apiKey)
-            VioLogger.debug("Created SDK client", "ProductService")
+            VioLogger.info("Created SDK client with dynamic Commerce API key", "ProductService")
             cachedVioSdkClient = client
             client
         }
