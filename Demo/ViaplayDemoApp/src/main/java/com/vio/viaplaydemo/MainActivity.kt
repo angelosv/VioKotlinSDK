@@ -79,6 +79,19 @@ class MainActivity : AppCompatActivity() {
         PaymentSheetBridge.attach(this)
         KlarnaBridge.init(this)
 
+        // Mock SponsorConfig for Campaign 35 (Elkjop)
+        live.vio.VioCore.models.SponsorAssets.update(
+            live.vio.VioCore.models.SponsorConfig(
+                id = 35,
+                name = "Elkjop",
+                logoUrl = "https://api-dev.vio.live/objects/uploads/adc65620-3351-4091-959a-9e1951ca896a.png",
+                avatarUrl = null,
+                primaryColor = "#f7b23b",
+                secondaryColor = "#ffffff",
+                badgeText = "no"
+            )
+        )
+
         setContent {
             VioTheme {
                 ProvideAdaptiveVioColors {

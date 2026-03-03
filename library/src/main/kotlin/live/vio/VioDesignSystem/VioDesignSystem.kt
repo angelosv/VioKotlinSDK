@@ -60,3 +60,9 @@ fun VioCustomLoader(
     size = size,
     color = color,
 )
+@Composable
+fun CampaignSponsorBadge(
+    modifier: Modifier = Modifier,
+) = live.vio.VioDesignSystem.Components.CampaignSponsorBadge(
+    modifier = modifier,
+)

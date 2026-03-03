@@ -100,6 +100,7 @@ fun CastingActiveOverlay(
                 Text("Casting til ${state.selectedDevice?.name ?: "enhet"}", style = ViaplayTheme.Typography.headline, color = ViaplayTheme.Colors.textPrimary)
                 Text(MatchMocks.barcelonaVsPsg.title, style = ViaplayTheme.Typography.title, color = ViaplayTheme.Colors.textPrimary)
                 Text(MatchMocks.barcelonaVsPsg.subtitle, style = ViaplayTheme.Typography.caption, color = ViaplayTheme.Colors.textSecondary)
+                live.vio.VioDesignSystem.CampaignSponsorBadge()
                 Divider(color = ViaplayTheme.Colors.surfaceLight)
                 Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
                     TeamLogo(MatchMocks.barcelonaVsPsg.homeTeam.logo, MatchMocks.barcelonaVsPsg.homeTeam.name)

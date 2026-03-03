@@ -96,6 +96,8 @@ private fun CastingHeader(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = match.title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
             Text(text = match.subtitle, color = Color.White.copy(alpha = 0.7f), fontSize = 13.sp)
+            Spacer(modifier = Modifier.height(4.dp))
+            live.vio.VioDesignSystem.CampaignSponsorBadge()
         }
 
         Button(

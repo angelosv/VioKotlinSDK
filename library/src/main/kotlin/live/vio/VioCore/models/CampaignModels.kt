@@ -57,6 +57,17 @@ enum class CampaignState {
 }
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+data class SponsorConfig(
+    @JsonProperty("id") val id: Int,
+    @JsonProperty("name") val name: String,
+    @JsonProperty("logoUrl") val logoUrl: String? = null,
+    @JsonProperty("avatarUrl") val avatarUrl: String? = null,
+    @JsonProperty("primaryColor") val primaryColor: String? = null,
+    @JsonProperty("secondaryColor") val secondaryColor: String? = null,
+    @JsonProperty("badgeText") val badgeText: String? = null
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class Campaign(
     @JsonProperty("campaignId") val id: Int,
     val startDate: String? = null,
@@ -71,6 +82,10 @@ data class Campaign(
      * Permite asociar la campaña a un partido específico.
      */
     val matchContext: MatchContext? = null,
+    /**
+     * Sponsor config fetched from the API
+     */
+    val sponsor: SponsorConfig? = null,
 ) {
     val currentState: CampaignState
         get() {
@@ -99,7 +114,8 @@ data class Campaign(
                endDate == other.endDate &&
                isPaused == other.isPaused &&
                campaignLogo == other.campaignLogo &&
-               matchContext == other.matchContext
+               matchContext == other.matchContext &&
+               sponsor == other.sponsor
     }
 
     override fun hashCode(): Int {
@@ -109,6 +125,7 @@ data class Campaign(
         result = 31 * result + (isPaused?.hashCode() ?: 0)
         result = 31 * result + (campaignLogo?.hashCode() ?: 0)
         result = 31 * result + (matchContext?.hashCode() ?: 0)
+        result = 31 * result + (sponsor?.hashCode() ?: 0)
         return result
     }
 }

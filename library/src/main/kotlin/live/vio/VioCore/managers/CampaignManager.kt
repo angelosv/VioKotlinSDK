@@ -373,6 +373,7 @@ class CampaignManager private constructor(
             CacheManager.shared.saveCampaign(campaign)
             CacheManager.shared.saveCampaignState(_campaignState.value, _isCampaignActive.value)
             CacheManager.shared.saveComponents(emptyList())
+            SponsorAssets.update(campaign.sponsor)
             return
         }
 
@@ -390,6 +391,7 @@ class CampaignManager private constructor(
 
         CacheManager.shared.saveCampaign(campaign)
         CacheManager.shared.saveCampaignState(_campaignState.value, _isCampaignActive.value)
+        SponsorAssets.update(campaign.sponsor)
     }
 
     /**
@@ -460,6 +462,8 @@ class CampaignManager private constructor(
                 CacheManager.shared.saveCampaign(selected)
                 CacheManager.shared.saveCampaignState(selected.currentState, true)
             }
+            
+            SponsorAssets.update(selected.sponsor)
 
             // Process components from the discovery items for all active campaigns
             val allComponents = mutableListOf<Component>()
@@ -498,6 +502,7 @@ class CampaignManager private constructor(
         } else {
             VioLogger.warning("No active campaigns found", COMPONENT)
             _isCampaignActive.value = false
+            SponsorAssets.update(null)
         }
     }
 
@@ -528,6 +533,7 @@ class CampaignManager private constructor(
             _currentCampaign.value = campaign
             _campaignState.value = campaign.currentState
             _isCampaignActive.value = campaign.currentState == CampaignState.ACTIVE && campaign.isPaused != true
+            SponsorAssets.update(campaign.sponsor)
             VioLogger.success("Manually selected campaign: $campaignId", COMPONENT)
         } else {
             VioLogger.warning("Campaign $campaignId not found in discovered campaigns", COMPONENT)
