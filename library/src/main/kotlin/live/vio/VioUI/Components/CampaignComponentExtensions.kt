@@ -22,7 +22,8 @@ fun List<Component>.findComponent(
     locationId: String? = null,
     componentId: String? = null
 ): Component? {
-    return firstOrNull { component ->
+    live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] findComponent: searching for type=$type, locationId=$locationId, componentId=$componentId in ${this.size} components")
+    val found = firstOrNull { component ->
         if (component.type != type || !component.isActive) return@firstOrNull false
         
         when {
@@ -31,4 +32,10 @@ fun List<Component>.findComponent(
             else -> true // Return first active component of this type
         }
     }
+    if (found != null) {
+        live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] findComponent: Found match id=${found.id}, locationId=${found.locationId}")
+    } else {
+        live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] findComponent: No match found")
+    }
+    return found
 }

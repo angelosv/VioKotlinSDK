@@ -127,19 +127,24 @@ class CampaignManager private constructor(
     }
 
     suspend fun initializeCampaign() {
+        VioLogger.debug("[CampaignManager] Initializing campaign")
         val id = campaignId?.takeIf { it > 0 } ?: return
         if (!isInitializing.compareAndSet(false, true)) {
-            VioLogger.debug("Campaign initialization already in progress", COMPONENT)
+            VioLogger.debug("[CampaignManager] Campaign initialization already in progress")
             return
         }
         try {
+            VioLogger.debug("[CampaignManager] Loading campaign info from cache")
             loadFromCache()
+            VioLogger.debug("[CampaignManager] Fetching campaign info from API")
             fetchCampaignInfo(id)
+            VioLogger.debug("[CampaignManager] Connecting to WebSocket")
             connectWebSocket(id)
             if (_campaignState.value == CampaignState.ACTIVE &&
                 _isCampaignActive.value &&
                 _currentCampaign.value?.isPaused != true
             ) {
+                VioLogger.debug("[CampaignManager] Fetching active components")
                 fetchActiveComponents(id)
             }
         } finally {
@@ -342,7 +347,7 @@ class CampaignManager private constructor(
         val baseUrl = restApiBaseUrl.trimEnd('/')
         // Using /v1/sdk/config endpoint as requested
         val url = "$baseUrl/v1/sdk/config?apiKey=$effectiveApiKey&campaignId=$campaignId"
-        VioLogger.debug("Fetching campaign info from: $url", COMPONENT)
+        VioLogger.debug("[CampaignManager] Fetching campaign info from: $url")
 
         val response = httpGet(url) ?: return
 
@@ -366,10 +371,10 @@ class CampaignManager private constructor(
             return
         }
         
-        VioLogger.debug("Campaign info response: ${response.body}", COMPONENT)
+        VioLogger.debug("[CampaignManager] Campaign info response for $campaignId: ${response.body}")
 
         if (response.body.trimStart().startsWith("<")) {
-            VioLogger.error("Received HTML instead of JSON from campaign endpoint", COMPONENT)
+            VioLogger.error("Received HTML instead of JSON from campaign endpoint. URL: $url. Body: ${response.body}", COMPONENT)
             _isCampaignActive.value = true
             _campaignState.value = CampaignState.ACTIVE
             return
@@ -378,7 +383,7 @@ class CampaignManager private constructor(
         val campaign = runCatching {
             JsonUtils.mapper.readValue(response.body, Campaign::class.java)
         }.onFailure {
-            VioLogger.error("Failed to decode campaign info: ${it.message}", COMPONENT)
+            VioLogger.error("[CampaignManager] Failed to decode campaign info for ID $campaignId: ${it.message}. Body: ${response.body}")
         }.getOrNull() ?: return
 
         VioLogger.debug("Parsed Campaign Logo: ${campaign.campaignLogo}", COMPONENT)
@@ -431,35 +436,39 @@ class CampaignManager private constructor(
         val oldLogoUrl = _currentCampaign.value?.campaignLogo
         currentMatchId = matchId
         val baseUrl = restApiBaseUrl.trimEnd('/')
-        // Use only SDK apiKey as requested for this endpoint
-        val url = "$baseUrl/v1/sdk/campaigns?apiKey=$apiKey" +
+        
+        // Use campaignAdminApiKey if available, otherwise fallback to general apiKey
+        val effectiveApiKey = campaignAdminApiKey?.takeIf { it.isNotBlank() } ?: apiKey
+        
+        val url = "$baseUrl/v1/sdk/campaigns?apiKey=$effectiveApiKey" +
                 if (matchId != null) "&matchId=$matchId" else ""
         
-        VioLogger.debug("Discovering campaigns from: $url", COMPONENT)
+        VioLogger.debug("[CampaignManager] Discovering campaigns from: $url")
 
         // Request with 10s timeout
         val response = httpGet(url, timeout = 10_000) ?: return
 
         if (response.statusCode !in 200..299) {
-            VioLogger.error("Campaign discovery failed with status ${response.statusCode}", COMPONENT)
+            VioLogger.error("Campaign discovery failed with status ${response.statusCode}. URL: $url", COMPONENT)
             return
         }
 
+        VioLogger.debug("[CampaignManager] Discovery response body: ${response.body}")
+
         if (response.body.trimStart().startsWith("<")) {
-            VioLogger.error("Received HTML instead of JSON from discovery endpoint", COMPONENT)
+            VioLogger.error("Received HTML instead of JSON from discovery endpoint. URL: $url. Body: ${response.body}", COMPONENT)
             return
         }
 
         val discoveryResponse = runCatching {
             JsonUtils.mapper.readValue(response.body, CampaignsDiscoveryResponse::class.java)
         }.onFailure {
-            VioLogger.error("Failed to decode discovery response: ${it.message}", COMPONENT)
+            VioLogger.error("Failed to decode discovery response: ${it.message}. Body: ${response.body}", COMPONENT)
         }.getOrNull() ?: return
 
-        val items = discoveryResponse.data
-        val campaigns = items.map { it.toCampaign() }
+        val campaigns = discoveryResponse.campaigns.map { it.toCampaign() }
         _discoveredCampaigns.value = campaigns
-        VioLogger.debug("Discovered ${campaigns.size} campaigns", COMPONENT)
+        VioLogger.debug("[CampaignManager] Discovered ${campaigns.size} campaigns")
 
         // Save to cache
         scope.launch {
@@ -494,7 +503,7 @@ class CampaignManager private constructor(
 
             // Process components from the discovery items for all active campaigns
             val allComponents = mutableListOf<Component>()
-            items.forEach { item: CampaignDiscoveryItem ->
+            discoveryResponse.campaigns.forEach { item: CampaignDiscoveryItem ->
                 val campaignIsActive = active.any { activeCampaign: Campaign -> activeCampaign.id == item.campaignId }
                 if (campaignIsActive) {
                     val components = item.components.map { compItem: ComponentDiscoveryItem -> compItem.toComponent() }
@@ -600,6 +609,10 @@ class CampaignManager private constructor(
         val components = responses.map { Component.fromResponse(it) }
         val active = components.filter { it.isActive }
         _activeComponents.value = active
+        VioLogger.debug("[CampaignManager] Found ${active.size} active components out of ${components.size} total for campaign $campaignId")
+        active.forEach { 
+            VioLogger.debug("[CampaignManager] Component: id=${it.id}, type=${it.type}, locationId=${it.locationId}")
+        }
 
         scope.launch {
             CacheManager.shared.saveComponents(active)
@@ -642,7 +655,7 @@ class CampaignManager private constructor(
             }
 
             if (response.body.trimStart().startsWith("<")) {
-                VioLogger.error("Received HTML instead of JSON from components endpoint for campaign ${campaign.id}", COMPONENT)
+                VioLogger.error("Received HTML instead of JSON from components endpoint for campaign ${campaign.id} from $url. Body: ${response.body}", COMPONENT)
                 return@forEach
             }
 
@@ -653,7 +666,7 @@ class CampaignManager private constructor(
                 val type = mapper.typeFactory.constructCollectionType(List::class.java, ComponentResponse::class.java)
                 mapper.readValue(response.body, type)
             }.onFailure {
-                VioLogger.error("Failed to decode components for campaign ${campaign.id}: ${it.message}", COMPONENT)
+                VioLogger.error("Failed to decode components for campaign ${campaign.id} from $url: ${it.message}. Body: ${response.body}", COMPONENT)
             }.getOrElse { return@forEach }
 
             val components = responses.map { Component.fromResponse(it) }

@@ -14,6 +14,7 @@ import live.vio.VioUI.Components.compose.product.VioImageLoaderDefaults
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import live.vio.VioCore.managers.CampaignManager
+import live.vio.VioCore.configuration.VioConfiguration
 
 import androidx.compose.ui.graphics.Color
 
@@ -42,9 +43,16 @@ fun SponsorBadgeContainer(
     content: @Composable () -> Unit,
 ) {
     val currentCampaign by CampaignManager.shared.currentCampaign.collectAsState(initial = null)
+    val config by VioConfiguration.shared.state.collectAsState()
     
-    val effectiveSponsorLogoUrl = remember(sponsorLogoUrl, currentCampaign, showSponsor) {
-        val rawUrl = sponsorLogoUrl ?: if (showSponsor) currentCampaign?.campaignLogo else null
+    val effectiveSponsorLogoUrl = remember(sponsorLogoUrl, currentCampaign, config.sponsor, showSponsor) {
+        val rawUrl = sponsorLogoUrl ?: if (showSponsor) {
+            currentCampaign?.campaignLogo 
+                ?: currentCampaign?.sponsor?.logoUrl 
+                ?: config.sponsor?.logoUrl
+        } else {
+            null
+        }
         live.vio.VioCore.utils.UrlUtils.resolveAssetUrl(rawUrl)
     }
     

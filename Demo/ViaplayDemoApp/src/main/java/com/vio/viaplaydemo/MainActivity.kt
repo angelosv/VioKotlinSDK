@@ -79,18 +79,6 @@ class MainActivity : AppCompatActivity() {
         PaymentSheetBridge.attach(this)
         KlarnaBridge.init(this)
 
-        // Mock SponsorConfig for Campaign 35 (Elkjop)
-        live.vio.VioCore.models.SponsorAssets.update(
-            live.vio.VioCore.models.SponsorConfig(
-                id = 35,
-                name = "Elkjop",
-                logoUrl = "https://api-dev.vio.live/objects/uploads/adc65620-3351-4091-959a-9e1951ca896a.png",
-                avatarUrl = null,
-                primaryColor = "#f7b23b",
-                secondaryColor = "#ffffff",
-                badgeText = "no"
-            )
-        )
 
         setContent {
             VioTheme {
@@ -120,7 +108,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun copyConfigToFilesDir(fileName: String) {
         val output = File(filesDir, fileName)
-        if (output.exists()) return
+        // Eliminamos el check 'if (output.exists()) return' para forzar la actualización
+        // desde assets cada vez que se inicia la app durante el desarrollo.
+        println("📂 [MainActivity] Copying $fileName to internal storage")
         assets.open(fileName).use { input ->
             output.outputStream().use { outputStream ->
                 input.copyTo(outputStream)

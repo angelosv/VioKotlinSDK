@@ -1,6 +1,6 @@
 {
   "apiKey": "KCXF10Y-W5T4PCR-GG5119A-Z64SQ9S",
-  "campaignId": 25,
+  "campaignId": 35,
   "environment": "development",
   "theme": {
     "name": "Reachu Demo Theme",
@@ -189,6 +189,6 @@
   "campaigns": {
     "webSocketBaseURL": "https://api-dev.vio.live",
     "restAPIBaseURL": "https://api-dev.vio.live",
-    "campaignAdminApiKey": "xxl_api_key_507d4014243d8360"
+    "campaignAdminApiKey": "viaplay_api_key_0c611e983b314ff8"
   }
 }

@@ -61,16 +61,21 @@ class VioProductBanner(
     init {
         scope.launch {
             campaignManager.activeComponents.collectLatest { components ->
+                live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] Banner controller diagnostic: components available=${components.size}, searching for type=product_banner, locationId=$locationId, componentId=$componentId")
                 val component = components.findComponent("product_banner", locationId, componentId)
                 if (component == null || !VioConfiguration.shared.shouldUseSDK) {
+                    live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] Banner controller diagnostic: component not found or SDK disabled")
                     hide()
                     return@collectLatest
                 }
+                live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] Banner controller diagnostic: found component id=${component.id}, locationId=${component.locationId}")
                 val config = component.decodeConfig<ProductBannerConfig>()
                 if (config == null) {
+                    live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] Banner controller diagnostic: failed to decode ProductBannerConfig")
                     hide()
                     return@collectLatest
                 }
+                live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] Banner controller diagnostic: configuration decoded successfully for title='${config.title}'")
                 handleConfig(component, config)
             }
         }

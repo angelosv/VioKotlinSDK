@@ -47,6 +47,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun VioProductCarousel(
     componentId: String? = null,
+    locationId: String? = null,
     cartManager: CartManager,
     modifier: Modifier = Modifier,
     layout: String? = null,
@@ -56,9 +57,13 @@ fun VioProductCarousel(
     sponsorPosition: String? = "topRight",
     sponsorLogoUrl: String? = null,
     imageBackgroundColor: Color = Color.White,
-    controller: live.vio.VioUI.Components.VioProductCarousel = remember(componentId, layoutOverride, layout) {
+    controller: live.vio.VioUI.Components.VioProductCarousel = remember(componentId, locationId, layoutOverride, layout) {
         val resolvedOverride = layoutOverride ?: layout?.let { ProductCarouselLayout.fromConfig(it) }
-        live.vio.VioUI.Components.VioProductCarousel(componentId = componentId, layoutOverride = resolvedOverride)
+        live.vio.VioUI.Components.VioProductCarousel(
+            componentId = componentId, 
+            locationId = locationId,
+            layoutOverride = resolvedOverride
+        )
     },
     onProductTap: (Product) -> Unit = {},
     isCampaignGated: Boolean = true,

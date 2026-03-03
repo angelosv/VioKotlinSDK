@@ -31,6 +31,8 @@ import com.vio.viaplaydemo.ui.views.MatchDetailScreen
 import live.vio.VioUI.Components.compose.product.VioProductSlider
 import live.vio.VioUI.Managers.CartManager
 import live.vio.VioUI.Components.VioProductSliderLayout
+import live.vio.VioCore.managers.CampaignManager
+import live.vio.VioCore.utils.UrlUtils
 
 @Composable
 fun ViaplaySportView(
@@ -60,13 +62,28 @@ fun ViaplaySportView(
                 // Header / Back button mock
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(16.dp).padding(top = 24.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        "< Back to Home", 
+                        "< Back", 
                         color = Color.White, 
                         modifier = Modifier.clickable { onBack() }
                     )
+                    
+                    val currentCampaign by CampaignManager.shared.currentCampaign.collectAsState(initial = null)
+                    val logoUrl = UrlUtils.resolveAssetUrl(currentCampaign?.campaignLogo)
+                    
+                    if (!logoUrl.isNullOrBlank()) {
+                        AsyncImage(
+                            model = logoUrl,
+                            contentDescription = "Campaign Logo",
+                            modifier = Modifier.height(30.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                    } else {
+                        Text("SPORT", color = Color.White, fontWeight = FontWeight.Bold)
+                    }
                 }
 
                 // Vis sendeskjema button
@@ -134,6 +151,7 @@ fun ViaplaySportView(
                     cartManager = cartManager,
                     title = "Ukens tilbud",
                     layout = VioProductSliderLayout.CARDS,
+                    locationId = "sport_slider"
                 )
 
                 Spacer(modifier = Modifier.height(120.dp))

@@ -44,8 +44,11 @@ import live.vio.VioCore.configuration.VioConfiguration
 @Composable
 fun VioProductBanner(
     componentId: String? = null,
+    locationId: String? = null,
     modifier: Modifier = Modifier,
-    controller: VioProductBanner = remember(componentId) { VioProductBanner(componentId) },
+    controller: VioProductBanner = remember(componentId, locationId) { 
+        VioProductBanner(componentId = componentId, locationId = locationId) 
+    },
     imageLoader: VioImageLoader = VioImageLoaderDefaults.current,
     onBannerClick: (VioProductBannerState) -> Unit = {},
     onCtaClick: (VioProductBannerState) -> Unit = {},
@@ -63,22 +66,39 @@ fun VioProductBanner(
     val currentCampaign by campaignManager.currentCampaign.collectAsState(initial = null)
     
     val shouldShowComponent = remember(isCampaignActive, activeComponents, currentCampaign, isCampaignGated) {
+        live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] Banner diagnostic: gated=$isCampaignGated, active=$isCampaignActive, paused=${currentCampaign?.isPaused}, components=${activeComponents.size}")
         if (!isCampaignGated) return@remember true
         val state = VioConfiguration.shared.state.value
         val campaignId = state.liveShow.campaignId
-        if (campaignId <= 0) return@remember true
-        if (!isCampaignActive || currentCampaign?.isPaused == true) return@remember false
-        if (activeComponents.isEmpty()) return@remember true
-        activeComponents.any { component ->
+        if (campaignId <= 0) {
+            live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] Banner diagnostic: no campaignId configured, showing by default")
+            return@remember true
+        }
+        if (!isCampaignActive || currentCampaign?.isPaused == true) {
+            live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] Banner diagnostic: campaign not active or paused")
+            return@remember false
+        }
+        if (activeComponents.isEmpty()) {
+             live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] Banner diagnostic: no active components in list")
+             return@remember true
+        }
+        val match = activeComponents.any { component ->
             val type = component.type?.lowercase()
             type == "product_banner" || type == "banner"
         }
+        live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] Banner diagnostic: type match found=$match")
+        match
     }
     
     if (!shouldShowComponent) return
 
     val state by controller.state.collectAsState()
-    if (!state.isVisible && isCampaignGated) return
+    if (!state.isVisible && isCampaignGated) {
+        live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] Banner diagnostic: state.isVisible is false for id=${componentId ?: locationId}")
+        return
+    }
+
+    live.vio.VioCore.utils.VioLogger.debug("[CampaignManager] RENDERING banner for id=${componentId ?: locationId}")
 
     val titleColor = state.titleColor.toComposeColor(default = Color.White)
     val subtitleColor = state.subtitleColor.toComposeColor(default = Color.White.copy(alpha = 0.85f))

@@ -35,13 +35,18 @@ object ConfigurationLoader {
         try {
             val targetName = fileName ?: detectConfigName(basePath)
             val resolvedCountry = userCountryCode ?: System.getenv("VIO_USER_COUNTRY")
+            println("🔍 [ConfigurationLoader] targetName: $targetName, basePath: $basePath")
             if (targetName != null) {
                 VioLogger.debug("Loading configuration: $targetName.json", COMPONENT)
-                val data = readFile("$basePath$targetName.json")
+                val path = "$basePath$targetName.json"
+                println("🔍 [ConfigurationLoader] Reading file: $path")
+                val data = readFile(path)
+                println("🔍 [ConfigurationLoader] File read successful, length: ${data.length}")
                 val config = resolveConfigurationFromString(data)
                 applyConfiguration(config, basePath, resolvedCountry)
             } else {
                 VioLogger.warning("No config file found, using defaults", COMPONENT)
+                println("⚠️ [ConfigurationLoader] No config file found, using defaults")
                 applyDefaultConfiguration(resolvedCountry)
             }
         } catch (t: Throwable) {

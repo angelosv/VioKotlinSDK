@@ -122,8 +122,12 @@
   "campaigns": {
     "webSocketBaseURL": "https://api-dev.vio.live",
     "restAPIBaseURL": "https://api-dev.vio.live",
-    "campaignApiKey": "viaplay_api_key_placeholder",
+    "campaignApiKey": "viaplay_api_key_0c611e983b314ff8",
     "campaignAdminApiKey": "viaplay_api_key_0c611e983b314ff8"
+  },
+  "network": {
+    "enableLogging": true,
+    "logLevel": "debug"
   },
   "_cartOptions": {
     "_comment": "Available options for cart configuration",

@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import live.vio.VioCore.configuration.VioConfiguration
 import live.vio.VioCore.configuration.VioLocalization
 import live.vio.VioCore.managers.CampaignManager
+import live.vio.VioCore.managers.CampaignNotification
 import live.vio.VioDesignSystem.Tokens.VioBorderRadius
 import live.vio.VioDesignSystem.Tokens.VioColors
 import live.vio.VioDesignSystem.Tokens.VioSpacing
@@ -60,8 +61,8 @@ import live.vio.VioUI.Components.slider.VioProductSliderViewModel
 import live.vio.VioUI.Managers.CartManager
 import live.vio.VioUI.Managers.Product
 import live.vio.VioUI.Managers.addProduct
-import live.vio.VioUI.Components.compose.product.VioImageLoaderDefaults
 import live.vio.VioUI.Components.compose.utils.toVioColor
+import live.vio.VioUI.Components.findComponent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URL
@@ -81,6 +82,8 @@ fun VioProductSlider(
     onProductCardTap: ((VioProductCardState) -> Unit)? = null,
     onAddToCart: ((Product) -> Unit)? = null,
     onSeeAllTap: (() -> Unit)? = null,
+    locationId: String? = null,
+    componentId: String? = null,
     currency: String? = null,
     country: String? = null,
     imageSize: String = "large",
@@ -112,8 +115,17 @@ fun VioProductSlider(
         if (campaignId <= 0) return@remember true
         if (!isCampaignActive || currentCampaign?.isPaused == true) return@remember false
         if (activeComponents.isEmpty()) return@remember true
-        activeComponents.any { component ->
-            val type = component.type?.lowercase()
+        
+        val component = activeComponents.findComponent("product_slider", locationId, componentId)
+            ?: activeComponents.findComponent("products", locationId, componentId)
+            ?: activeComponents.findComponent("recommended_products", locationId, componentId)
+            
+        if (locationId != null || componentId != null) {
+            return@remember component != null
+        }
+
+        activeComponents.any { c ->
+            val type = c.type?.lowercase()
             type == "product_slider" || type == "recommended_products" || type == "products"
         }
     }
@@ -141,6 +153,19 @@ fun VioProductSlider(
                 country = resolvedCountry,
                 forceRefresh = true,
             )
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        campaignManager.events.collect { event ->
+            if (event is CampaignNotification.CommerceConfigChanged) {
+                controller.loadProducts(
+                    categoryId = categoryId,
+                    currency = resolvedCurrency,
+                    country = resolvedCountry,
+                    forceRefresh = true,
+                )
+            }
         }
     }
 

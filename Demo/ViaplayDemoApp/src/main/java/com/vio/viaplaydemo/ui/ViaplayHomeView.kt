@@ -33,13 +33,17 @@ import com.vio.viaplaydemo.casting.CastUiState
 import com.vio.viaplaydemo.ui.components.BottomTabBar
 import com.vio.viaplaydemo.ui.model.TabItem
 import live.vio.VioUI.Components.compose.product.VioProductSlider
+import live.vio.VioUI.Components.compose.product.VioProductCarousel
+import live.vio.VioUI.Components.compose.product.VioProductBanner
 import live.vio.VioUI.Components.VioProductSliderLayout
 import live.vio.VioUI.Managers.CartManager
 import live.vio.VioUI.Managers.Product
 import live.vio.VioUI.adapters.VioCoilImageLoader
 import live.vio.VioUI.Managers.loadProductsIfNeeded
-import androidx.compose.ui.zIndex
 import androidx.compose.ui.draw.scale
+import live.vio.VioCore.managers.CampaignManager
+import live.vio.VioCore.utils.UrlUtils
+import androidx.compose.ui.zIndex
 
 data class ContentItem(val title: String, val subtitle: String?, val imageUrl: String?)
 
@@ -145,22 +149,40 @@ fun ViaplayHomeView(
             LaunchedEffect(Unit) {
                 cartManager.loadProductsIfNeeded()
             }
-            
-            VioProductSlider(
+
+            VioProductCarousel(
                 cartManager = cartManager,
-                title = "",
-                layout = VioProductSliderLayout.CARDS,
-                showSeeAll = false,
+                modifier = Modifier.fillMaxWidth(),
+                layout = "full",
                 onProductTap = { product -> onOpenProductDetail(product) },
-                currency = cartManager.currency,
-                country = cartManager.country,
-                imageLoader = VioCoilImageLoader,
-                isCampaignGated = false,
-                products = cartManager.products,
-                isLoading = cartManager.isProductsLoading,
                 showSponsor = true,
-                sponsorPosition = "topRight"
+                sponsorPosition = "top_right",                
             )
+
+            VioProductBanner(
+                // modifier = Modifier.fillMaxWidth(),
+                locationId = "sport-detail-banner",
+                // imageLoader = VioCoilImageLoader,
+                //onBannerClick = { state -> openProductDetailById(state.productId) },
+                //onCtaClick = { state -> openProductDetailById(state.productId) },
+                // showSponsor = true,
+                // sponsorPosition = "top_right",
+            )
+            // VioProductSlider(
+                // cartManager = cartManager,
+                // title = "",
+                // layout = VioProductSliderLayout.CARDS,
+                // showSeeAll = false,
+                // onProductTap = { product -> onOpenProductDetail(product) },
+                // currency = cartManager.currency,
+                // country = cartManager.country,
+                // imageLoader = VioCoilImageLoader,
+                // isCampaignGated = false,
+                // products = cartManager.products,
+                // isLoading = cartManager.isProductsLoading,
+                // showSponsor = true,
+                // sponsorPosition = "top_right"
+            // )
 
             Spacer(modifier = Modifier.height(100.dp)) // Nav bar padding
         }
@@ -184,12 +206,24 @@ fun ViaplayHomeView(
                         verticalAlignment = Alignment.CenterVertically, 
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Image(
-                            painter = painterResource(id = com.vio.viaplaydemo.R.drawable.logo_red),
-                            contentDescription = "Viaplay",
-                            modifier = Modifier.height(24.dp),
-                            contentScale = ContentScale.Fit
-                        )
+                        val currentCampaign by CampaignManager.shared.currentCampaign.collectAsState(initial = null)
+                        val logoUrl = UrlUtils.resolveAssetUrl(currentCampaign?.campaignLogo)
+                        
+                        if (!logoUrl.isNullOrBlank()) {
+                            AsyncImage(
+                                model = logoUrl,
+                                contentDescription = "Campaign",
+                                modifier = Modifier.height(24.dp),
+                                contentScale = ContentScale.Fit
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(id = com.vio.viaplaydemo.R.drawable.logo_red),
+                                contentDescription = "Viaplay",
+                                modifier = Modifier.height(24.dp),
+                                contentScale = ContentScale.Fit
+                            )
+                        }
                     }
 
                     Box(
@@ -255,15 +289,30 @@ fun HeroSectionMock() {
             ) {
                 // Viaplay Header Style Logo
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = com.vio.viaplaydemo.R.drawable.logo_white),
-                        contentDescription = "Viaplay",
-                        modifier = Modifier
-                            .padding(start = 22.dp)
-                            .height(40.dp)
-                            .scale(1.8f),
-                        contentScale = ContentScale.Fit
-                    )
+                    val currentCampaign by CampaignManager.shared.currentCampaign.collectAsState(initial = null)
+                    val logoUrl = UrlUtils.resolveAssetUrl(currentCampaign?.campaignLogo)
+                    
+                    if (!logoUrl.isNullOrBlank()) {
+                        AsyncImage(
+                            model = logoUrl,
+                            contentDescription = "Campaign",
+                            modifier = Modifier
+                                .padding(start = 22.dp)
+                                .height(40.dp)
+                                .scale(1.5f),
+                            contentScale = ContentScale.Fit
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = com.vio.viaplaydemo.R.drawable.logo_white),
+                            contentDescription = "Viaplay",
+                            modifier = Modifier
+                                .padding(start = 22.dp)
+                                .height(40.dp)
+                                .scale(1.8f),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))

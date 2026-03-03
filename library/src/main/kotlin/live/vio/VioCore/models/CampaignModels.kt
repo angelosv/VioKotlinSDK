@@ -87,14 +87,21 @@ data class Campaign(
         }
 
     private fun parseIsoDate(iso: String): Long? {
-        return runCatching {
-            // Simple approach for ISO dates if java.time is not available
-            // In a real SDK, we might want a more robust parser or core library desugaring
-            // But for now, let's use a safe fallback or a simple SimpleDateFormat
-            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US)
-            sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
-            sdf.parse(iso)?.time
-        }.getOrNull()
+        val formats = listOf(
+            "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+            "yyyy-MM-dd'T'HH:mm:ss'Z'",
+            "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
+            "yyyy-MM-dd'T'HH:mm:ssXXX"
+        )
+        for (format in formats) {
+            val result = runCatching {
+                val sdf = java.text.SimpleDateFormat(format, java.util.Locale.US)
+                sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+                sdf.parse(iso)?.time
+            }.getOrNull()
+            if (result != null) return result
+        }
+        return null
     }
 
     override fun equals(other: Any?): Boolean {
@@ -123,15 +130,22 @@ data class Campaign(
 
 data class ComponentsResponseWrapper(val components: List<ComponentResponse>)
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class ComponentResponse(
-    val id: Int,
-    val campaignId: Int,
-    val componentId: String,
-    val status: String,
+    @JsonProperty("id") val id: String? = null,
+    val campaignId: Int? = null,
+    val componentId: String? = null,
+    val status: String? = null,
     val customConfig: Map<String, Any?>? = null,
     val component: ComponentData? = null,
     @JsonProperty("locationId") val locationId: String? = null,
+    // Support for flat JSON top-level fields
+    @JsonProperty("type") val type: String? = null,
+    @JsonProperty("name") val name: String? = null,
+    @JsonProperty("config") val config: Map<String, Any?>? = null,
+    @JsonProperty("isActive") val isActive: Boolean? = null,
 ) {
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class ComponentData(
         val id: String,
         val type: String,
@@ -184,17 +198,31 @@ data class Component(
     companion object {
         fun fromResponse(response: ComponentResponse): Component {
             val data = response.component
+            
+            // Detect if it's flat (from /v1/sdk/campaigns) or nested (from /api/campaigns/{id}/components)
+            val id = response.id ?: response.componentId ?: data?.id ?: "unknown"
+            
+            // If the status is not present, we assume active if it's coming from a discovery endpoint
+            // that only returns active campaigns and their components.
+            val status = response.status 
+                ?: (if (response.isActive == false) "paused" else "active")
+            
+            val type = response.type ?: data?.type ?: "unknown"
+            val name = response.name ?: data?.name ?: "Component $id"
+            
             val preferredConfig = when {
                 response.customConfig?.isNotEmpty() == true -> response.customConfig
+                response.config?.isNotEmpty() == true -> response.config
                 else -> data?.config
             } ?: emptyMap()
+            
             return Component(
-                id = response.componentId,
-                type = data?.type ?: "unknown",
-                name = data?.name ?: "Component ${response.componentId}",
+                id = id,
+                type = type,
+                name = name,
                 config = preferredConfig,
-                status = response.status,
-                matchContext = null, // TODO: Extract from response when backend supports it
+                status = status,
+                matchContext = null,
                 locationId = response.locationId,
             )
         }
@@ -345,8 +373,8 @@ private object JsonNodeConverter {
 }
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class CampaignsDiscoveryResponse(
-    val status: String,
-    val data: List<CampaignDiscoveryItem> = emptyList()
+    val status: String? = null,
+    @JsonProperty("campaigns") val campaigns: List<CampaignDiscoveryItem> = emptyList()
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
