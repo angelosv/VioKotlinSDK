@@ -1,16 +1,16 @@
-1. Los componentes de producto (banner, carousel) deben aceptar un locationId para que el operador pueda asignarlos desde el dashboard sin tocar codigo.
+1. Los polls y contests tienen que llegar por WebSocket, no por polling HTTP. Esto elimina el spike de RAM y hace el engagement instantaneo.
 Que hacer:
-Anadir locationId: String? al modelo Component
-Metodo en CampaignManager: getActiveComponent(locationId: String)
-VProductBanner y VProductCarousel aceptan locationId como parametro
-Si viene locationId, busca por slot. Si no, usa componentId como fallback.
-Slots estandar: sport-detail-banner, sport-detail-carousel
-Referencia Swift: Sources/VioUI/VProductBanner.swift
+CampaignWebSocketManager: handlers para eventos poll y contest
+Callbacks: onPollReceived y onContestReceived
+EngagementManager: addOrUpdatePoll() y addOrUpdateContest() por broadcastId
+BroadcastContextSetup: cablea los callbacks al conectar el WS
+El backend envia snapshot del estado actual al conectarse
+Referencia Swift: Sources/VioEngagementSystem/Services/BroadcastContextSetup.swift
 
-2. La apiKey de Commerce tiene que venir del campo integrations.commerce.apiKey que devuelve el backend en la config de campana. Nunca debe estar hardcodeada en el SDK ni en el vio-config.json del integrador.
-Que hacer:
-ProductService lee dynamicCommerceConfig?.apiKey
-Si no hay apiKey: lanzar error claro ('Commerce API key not configured')
-VioConfiguration.updateDynamicCommerceConfig() al recibir la config
-Notificacion de cambio para que los componentes se actualicen
-Referencia Swift: Sources/VioUI/ProductService.swift
+2. La app de demo de Android tiene que conectarse a la campana 35 con los mismos datos que la demo de Viaplay en iOS.
+vio-config.json:
+apiKey: viaplay_api_key_0c611e983b314ff8
+backendUrl: Vio - Real-time Event Management
+contentId: real-madrid-barcelona-2025-01-24
+country: NO
+marketFallback: { countryCode: NO, currencyCode: NOK }

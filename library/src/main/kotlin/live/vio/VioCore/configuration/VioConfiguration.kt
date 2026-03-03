@@ -87,6 +87,7 @@ class VioConfiguration private constructor() {
                 )
                 VioLocalization.configure(instance._state.value.localization)
                 AnalyticsManager.configure(instance._state.value.analytics)
+                live.vio.VioEngagementSystem.VioEngagementSystem.configure()
                 CampaignManager.shared.reinitialize()
 
                 println("🔧 Vio SDK configured successfully")

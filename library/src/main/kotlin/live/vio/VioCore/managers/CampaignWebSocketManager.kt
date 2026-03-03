@@ -6,6 +6,8 @@ import live.vio.VioCore.models.CampaignResumedEvent
 import live.vio.VioCore.models.CampaignStartedEvent
 import live.vio.VioCore.models.ComponentConfigUpdatedEvent
 import live.vio.VioCore.models.ComponentStatusChangedEvent
+import live.vio.VioEngagementSystem.models.Contest
+import live.vio.VioEngagementSystem.models.Poll
 import live.vio.VioCore.utils.VioLogger
 import live.vio.sdk.core.helpers.JsonUtils
 import java.util.concurrent.atomic.AtomicBoolean
@@ -44,6 +46,8 @@ class CampaignWebSocketManager(
     var onCampaignResumed: ((CampaignResumedEvent) -> Unit)? = null
     var onComponentStatusChanged: ((ComponentStatusChangedEvent) -> Unit)? = null
     var onComponentConfigUpdated: ((ComponentConfigUpdatedEvent) -> Unit)? = null
+    var onPollReceived: ((Poll) -> Unit)? = null
+    var onContestReceived: ((Contest) -> Unit)? = null
     var onConnectionStatusChanged: ((Boolean) -> Unit)? = null
 
     private val client = OkHttpClient()
@@ -147,6 +151,10 @@ class CampaignWebSocketManager(
                     onComponentStatusChanged?.invoke(mapper.treeToValue(node, ComponentStatusChangedEvent::class.java))
                 "component_config_updated" ->
                     onComponentConfigUpdated?.invoke(mapper.treeToValue(node, ComponentConfigUpdatedEvent::class.java))
+                "poll" ->
+                    onPollReceived?.invoke(mapper.treeToValue(node, Poll::class.java))
+                "contest" ->
+                    onContestReceived?.invoke(mapper.treeToValue(node, Contest::class.java))
                 else -> {
                     println("[$COMPONENT] Unknown event type received: $eventType")
                     VioLogger.warning("Unknown event type: $eventType (full message: $text)", COMPONENT)

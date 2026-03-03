@@ -155,6 +155,49 @@ class EngagementManager private constructor() {
             }
         }
     }
+
+    /**
+     * Añade o actualiza un poll en el estado local.
+     * Usado por el sistema de WebSocket para actualizaciones en tiempo real.
+     */
+    fun addOrUpdatePoll(poll: Poll) {
+        val broadcastId = poll.broadcastId
+        val currentMap = _pollsByBroadcast.value.toMutableMap()
+        val polls = currentMap[broadcastId]?.toMutableList() ?: mutableListOf()
+
+        val index = polls.indexOfFirst { it.id == poll.id }
+        if (index >= 0) {
+            polls[index] = poll
+        } else {
+            polls.add(poll)
+        }
+
+        currentMap[broadcastId] = polls
+        _pollsByBroadcast.value = currentMap
+
+        // Actualizar resultados
+        val optionsMetrics = poll.options.map { PollOptionResults(it.id, it.voteCount, it.percentage) }
+        updatePollResults(poll.id, PollResults(poll.id, poll.totalVotes, optionsMetrics))
+    }
+
+    /**
+     * Añade o actualiza un contest en el estado local.
+     */
+    fun addOrUpdateContest(contest: Contest) {
+        val broadcastId = contest.broadcastId
+        val currentMap = _contestsByBroadcast.value.toMutableMap()
+        val contests = currentMap[broadcastId]?.toMutableList() ?: mutableListOf()
+
+        val index = contests.indexOfFirst { it.id == contest.id }
+        if (index >= 0) {
+            contests[index] = contest
+        } else {
+            contests.add(contest)
+        }
+
+        currentMap[broadcastId] = contests
+        _contestsByBroadcast.value = currentMap
+    }
     
     fun updatePollResults(pollId: String, results: PollResults) {
         val currentResults = _pollResults.value.toMutableMap()

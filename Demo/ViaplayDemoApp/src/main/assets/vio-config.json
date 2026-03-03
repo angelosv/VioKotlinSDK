@@ -113,7 +113,7 @@
     "flag": "https://flagcdn.com/w320/no.png"
   },
   "liveShow": {
-    "campaignId": 3,
+    "campaignId": 35,
     "tipio": {
       "apiKey": "KCXF10Y-W5T4PCR-GG5119A-Z64SQ9S",
       "baseUrl": "https://stg-dev-microservices.tipioapp.com"
@@ -123,7 +123,7 @@
     "webSocketBaseURL": "https://api-dev.vio.live",
     "restAPIBaseURL": "https://api-dev.vio.live",
     "campaignApiKey": "viaplay_api_key_placeholder",
-    "campaignAdminApiKey": "viaplay_admin_api_key_placeholder"
+    "campaignAdminApiKey": "viaplay_api_key_0c611e983b314ff8"
   },
   "_cartOptions": {
     "_comment": "Available options for cart configuration",

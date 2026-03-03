@@ -13,6 +13,8 @@ import live.vio.VioCore.models.ComponentResponse
 import live.vio.VioCore.models.ComponentStatusChangedEvent
 import live.vio.VioCore.models.ComponentsResponseWrapper
 import live.vio.VioCore.models.*
+import live.vio.VioEngagementSystem.models.Contest
+import live.vio.VioEngagementSystem.models.Poll
 import live.vio.VioCore.utils.VioLogger
 import live.vio.sdk.core.helpers.JsonUtils
 import java.net.HttpURLConnection
@@ -682,6 +684,8 @@ class CampaignManager private constructor(
         manager.onCampaignResumed = { event -> scope.launch { handleCampaignResumed(event) } }
         manager.onComponentStatusChanged = { event -> scope.launch { handleComponentStatusChanged(event) } }
         manager.onComponentConfigUpdated = { event -> scope.launch { handleComponentConfigUpdated(event) } }
+        manager.onPollReceived = { poll -> scope.launch { _events.emit(CampaignNotification.PollReceived(poll)) } }
+        manager.onContestReceived = { contest -> scope.launch { _events.emit(CampaignNotification.ContestReceived(contest)) } }
         manager.onConnectionStatusChanged = { connected -> _isConnected.value = connected }
         webSocketManager = manager
         manager.connect()
@@ -909,4 +913,6 @@ sealed interface CampaignNotification {
     data class ComponentConfigUpdated(val event: ComponentConfigUpdatedEvent) : CampaignNotification
     data class CampaignLogoChanged(val oldLogoUrl: String?, val newLogoUrl: String?) : CampaignNotification
     data class CommerceConfigChanged(val commerce: live.vio.VioCore.models.CommerceConfig) : CampaignNotification
+    data class PollReceived(val poll: Poll) : CampaignNotification
+    data class ContestReceived(val contest: Contest) : CampaignNotification
 }
