@@ -1,16 +1,7 @@
-1. Los polls y contests tienen que llegar por WebSocket, no por polling HTTP. Esto elimina el spike de RAM y hace el engagement instantaneo.
-Que hacer:
-CampaignWebSocketManager: handlers para eventos poll y contest
-Callbacks: onPollReceived y onContestReceived
-EngagementManager: addOrUpdatePoll() y addOrUpdateContest() por broadcastId
-BroadcastContextSetup: cablea los callbacks al conectar el WS
-El backend envia snapshot del estado actual al conectarse
-Referencia Swift: Sources/VioEngagementSystem/Services/BroadcastContextSetup.swift
-
-2. La app de demo de Android tiene que conectarse a la campana 35 con los mismos datos que la demo de Viaplay en iOS.
-vio-config.json:
-apiKey: viaplay_api_key_0c611e983b314ff8
-backendUrl: Vio - Real-time Event Management
-contentId: real-madrid-barcelona-2025-01-24
-country: NO
-marketFallback: { countryCode: NO, currencyCode: NOK }
+1. VioEngagementProductOverlay.kt es un Composable completamente vacio. Es el overlay principal de producto en Android y hay que implementarlo.
+Que debe mostrar:
+Header con avatar del sponsor (sponsorConfig.avatarUrl) via Coil
+Grid de productos: imagen, nombre, precio en NOK, boton CTA por producto
+Sponsor badge en el footer
+Referencia Swift: Sources/VioEngagementUI/Components/VEngagementProductGridCard.swift
+Criterio: el overlay aparece en Android con los productos de Elkjop y el avatar del sponsor visible.

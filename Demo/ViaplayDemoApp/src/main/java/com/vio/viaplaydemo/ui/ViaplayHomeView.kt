@@ -160,13 +160,13 @@ fun ViaplayHomeView(
             )
 
             VioProductBanner(
-                // modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 locationId = "sport-detail-banner",
                 // imageLoader = VioCoilImageLoader,
                 //onBannerClick = { state -> openProductDetailById(state.productId) },
                 //onCtaClick = { state -> openProductDetailById(state.productId) },
-                // showSponsor = true,
-                // sponsorPosition = "top_right",
+                showSponsor = true,
+                sponsorPosition = "top_right",
             )
             // VioProductSlider(
                 // cartManager = cartManager,
