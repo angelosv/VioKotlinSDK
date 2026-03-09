@@ -64,6 +64,7 @@ class VioConfiguration private constructor() {
             }
 
         fun configure(
+            context: android.content.Context,
             apiKey: String,
             environment: VioEnvironment = VioEnvironment.PRODUCTION,
             theme: VioTheme? = null,
@@ -101,6 +102,7 @@ class VioConfiguration private constructor() {
                     demoData = demoDataConfig ?: DemoDataConfiguration.default(),
                     isConfigured = true,
                 )
+                live.vio.VioCore.utils.VioContextManager.init(context)
                 VioLocalization.configure(instance._state.value.localization)
                 AnalyticsManager.configure(instance._state.value.analytics)
                 live.vio.VioEngagementSystem.VioEngagementSystem.configure()
@@ -115,8 +117,9 @@ class VioConfiguration private constructor() {
             }
         }
 
-        fun configure(apiKey: String) {
+        fun configure(context: android.content.Context, apiKey: String) {
             configure(
+                context = context,
                 apiKey = apiKey,
                 environment = VioEnvironment.PRODUCTION,
             )

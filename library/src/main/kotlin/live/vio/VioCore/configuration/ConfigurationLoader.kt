@@ -28,6 +28,7 @@ object ConfigurationLoader {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     fun loadConfiguration(
+        context: android.content.Context,
         fileName: String? = null,
         basePath: String,
         userCountryCode: String? = null,
@@ -43,29 +44,31 @@ object ConfigurationLoader {
                 val data = readFile(path)
                 println("🔍 [ConfigurationLoader] File read successful, length: ${data.length}")
                 val config = resolveConfigurationFromString(data)
-                applyConfiguration(config, basePath, resolvedCountry)
+                applyConfiguration(context, config, basePath, resolvedCountry)
             } else {
                 VioLogger.warning("No config file found, using defaults", COMPONENT)
                 println("⚠️ [ConfigurationLoader] No config file found, using defaults")
-                applyDefaultConfiguration(resolvedCountry)
+                applyDefaultConfiguration(context, resolvedCountry)
             }
         } catch (t: Throwable) {
             VioLogger.error("Error loading configuration: ${t.message}", COMPONENT)
-            applyDefaultConfiguration(userCountryCode)
+            applyDefaultConfiguration(context, userCountryCode)
         }
     }
 
     suspend fun loadFromRemote(
+        context: android.content.Context,
         url: URL,
         basePath: String = "",
         userCountryCode: String? = null,
     ) {
         val data = withContext(Dispatchers.IO) { url.readText() }
         val config = json.decodeFromString<JsonConfiguration>(data)
-        applyConfiguration(config, basePath, userCountryCode ?: System.getenv("VIO_USER_COUNTRY"))
+        applyConfiguration(context, config, basePath, userCountryCode ?: System.getenv("VIO_USER_COUNTRY"))
     }
 
     private fun applyConfiguration(
+        context: android.content.Context,
         config: JsonConfiguration,
         basePath: String,
         userCountryCode: String?,
@@ -94,6 +97,7 @@ object ConfigurationLoader {
         val demoData = loadDemoDataConfiguration(basePath = basePath)
 
         VioConfiguration.configure(
+            context = context,
             apiKey = (envApi ?: config.apiKey).orEmpty(),
             environment = environment,
             theme = theme,
@@ -121,8 +125,9 @@ object ConfigurationLoader {
         }
     }
 
-    private fun applyDefaultConfiguration(userCountryCode: String?) {
+    private fun applyDefaultConfiguration(context: android.content.Context, userCountryCode: String?) {
         VioConfiguration.configure(
+            context = context,
             apiKey = "",
             environment = VioEnvironment.SANDBOX,
             theme = VioTheme.defaultTheme(),

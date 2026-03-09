@@ -61,12 +61,14 @@ dependencies {
     implementation("io.socket:socket.io-client:2.1.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("io.coil-kt:coil-svg:2.6.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // JUnit 5 (unit tests)
     testImplementation(platform("org.junit:junit-bom:5.10.1"))
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("io.mockk:mockk:1.13.9")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 

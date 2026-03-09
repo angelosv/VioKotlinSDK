@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
         // Initialize Vio SDK
         try {
             copyConfigToFilesDir("vio-config.json")
-            ConfigurationLoader.loadConfiguration("vio-config", filesDir.absolutePath + "/")
+            ConfigurationLoader.loadConfiguration(this, "vio-config", filesDir.absolutePath + "/")
         } catch (e: Exception) {
             e.printStackTrace()
         }

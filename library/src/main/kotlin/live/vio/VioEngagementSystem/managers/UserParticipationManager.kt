@@ -1,102 +1,118 @@
 package live.vio.VioEngagementSystem.managers
 
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import live.vio.VioCore.utils.VioContextManager
 import live.vio.VioCore.utils.VioLogger
-import live.vio.sdk.core.helpers.JsonUtils
-import java.util.prefs.Preferences
-import com.fasterxml.jackson.core.type.TypeReference
+
+private val Context.participationDataStore: DataStore<Preferences> by preferencesDataStore(name = "vio_participation")
 
 /**
  * Manages user participation state for polls and contests.
  * Kotlin port of the Swift `UserParticipationManager`.
  */
-class UserParticipationManager private constructor(
-    private val preferences: Preferences = Preferences.userRoot().node("vio.participation")
-) {
+class UserParticipationManager private constructor() {
     companion object {
         val shared = UserParticipationManager()
     }
 
-    private val pollsKey = "vio.participated.polls"
-    private val contestsKey = "vio.participated.contests"
-    private val votesKey = "vio.poll.votes"
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val dataStore: DataStore<Preferences>
+        get() = VioContextManager.context.participationDataStore
 
-    var participatedPolls: Set<String> = emptySet()
-        private set
-    var participatedContests: Set<String> = emptySet()
-        private set
-    var pollVotes: Map<String, String> = emptyMap()
-        private set
+    // In-memory cache for synchronous access
+    private var cachedPrefs: Preferences? = null
 
     init {
-        loadState()
+        // Initial load (using runBlocking for the very first access if needed, 
+        // but typically the collector will catch up quickly)
+        scope.launch {
+            dataStore.data.collect { prefs ->
+                cachedPrefs = prefs
+            }
+        }
+    }
+
+    private fun getPrefs(): Preferences {
+        return cachedPrefs ?: runBlocking { dataStore.data.first().also { cachedPrefs = it } }
     }
 
     // MARK: - Poll Participation
 
+    /**
+     * Requisito: hasVotedInPoll(pollId: String): Boolean
+     */
     fun hasVotedInPoll(pollId: String): Boolean {
-        return participatedPolls.contains(pollId)
+        val key = stringPreferencesKey("poll_${pollId}voted")
+        return getPrefs()[key] != null
     }
 
+    /**
+     * Requisito: markPollVoted(pollId: String, optionId: String)
+     */
+    fun markPollVoted(pollId: String, optionId: String) {
+        val key = stringPreferencesKey("poll_${pollId}voted")
+        scope.launch {
+            dataStore.edit { preferences ->
+                preferences[key] = optionId
+            }
+        }
+    }
+
+    /**
+     * Helper para obtener el voto anterior si es necesario (no requerido por tareas.txt pero útil)
+     */
     fun getVote(pollId: String): String? {
-        return pollVotes[pollId]
-    }
-
-    fun recordPollVote(pollId: String, optionId: String) {
-        participatedPolls = participatedPolls + pollId
-        pollVotes = pollVotes + (pollId to optionId)
-        saveState()
+        val key = stringPreferencesKey("poll_${pollId}voted")
+        return getPrefs()[key]
     }
 
     // MARK: - Contest Participation
 
+    /**
+     * Requisito: hasParticipatedInContest(contestId: String): Boolean
+     */
     fun hasParticipatedInContest(contestId: String): Boolean {
-        return participatedContests.contains(contestId)
+        val key = stringPreferencesKey("contest${contestId}_participated")
+        return getPrefs()[key] != null
     }
 
-    fun recordContestParticipation(contestId: String) {
-        participatedContests = participatedContests + contestId
-        saveState()
-    }
-
-    // MARK: - Persistence
-
-    private fun loadState() {
-        try {
-            val pollsJson = preferences.get(pollsKey, null)
-            if (pollsJson != null) {
-                participatedPolls = JsonUtils.mapper.readValue(pollsJson, object : TypeReference<Set<String>>() {})
+    /**
+     * Marca la participación en un contest.
+     */
+    fun markContestParticipated(contestId: String) {
+        val key = stringPreferencesKey("contest${contestId}_participated")
+        scope.launch {
+            dataStore.edit { preferences ->
+                preferences[key] = "true" // Solo nos importa que exista
             }
-
-            val contestsJson = preferences.get(contestsKey, null)
-            if (contestsJson != null) {
-                participatedContests = JsonUtils.mapper.readValue(contestsJson, object : TypeReference<Set<String>>() {})
-            }
-
-            val votesJson = preferences.get(votesKey, null)
-            if (votesJson != null) {
-                pollVotes = JsonUtils.mapper.readValue(votesJson, object : TypeReference<Map<String, String>>() {})
-            }
-        } catch (e: Exception) {
-            VioLogger.error("Failed to load participation state: ${e.message}", "UserParticipationManager")
         }
     }
 
-    private fun saveState() {
-        try {
-            preferences.put(pollsKey, JsonUtils.stringify(participatedPolls))
-            preferences.put(contestsKey, JsonUtils.stringify(participatedContests))
-            preferences.put(votesKey, JsonUtils.stringify(pollVotes))
-        } catch (e: Exception) {
-            VioLogger.error("Failed to save participation state: ${e.message}", "UserParticipationManager")
-        }
-    }
+    // MARK: - Deprecated / Backward Compatibility
+    
+    @Deprecated("Use markPollVoted", ReplaceWith("markPollVoted(pollId, optionId)"))
+    fun recordPollVote(pollId: String, optionId: String) = markPollVoted(pollId, optionId)
+
+    @Deprecated("Use markContestParticipated", ReplaceWith("markContestParticipated(contestId)"))
+    fun recordContestParticipation(contestId: String) = markContestParticipated(contestId)
 
     // MARK: - Reset (for testing)
 
     fun resetAll() {
-        participatedPolls = emptySet()
-        participatedContests = emptySet()
-        pollVotes = emptyMap()
-        saveState()
+        scope.launch {
+            dataStore.edit { it.clear() }
+        }
     }
 }

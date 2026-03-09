@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity() {
                 input.copyTo(output)
             }
         }
-        ConfigurationLoader.loadConfiguration("vio-config", filesDir.absolutePath + "/")
+        ConfigurationLoader.loadConfiguration(this, "vio-config", filesDir.absolutePath + "/")
 
         // Initialize CartManager (auto-bootstrap creates cart and loads markets)
         cartManager = CartManager()

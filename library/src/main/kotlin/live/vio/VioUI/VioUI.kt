@@ -15,10 +15,11 @@ object VioUI {
      * wasn't pre-configured by the host application. This is typically used internally
      * or for quick setup without full [VioConfiguration] customization.
      */
-    fun configure(apiKey: String = "") {
+    fun configure(context: android.content.Context, apiKey: String = "") {
         val configuration = VioConfiguration.shared
         if (!configuration.isValidConfiguration()) {
             VioConfiguration.configure(
+                context = context,
                 apiKey = apiKey,
                 environment = VioEnvironment.SANDBOX,
             )

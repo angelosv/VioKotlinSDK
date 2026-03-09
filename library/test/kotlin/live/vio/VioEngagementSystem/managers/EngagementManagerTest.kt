@@ -22,19 +22,26 @@ import org.junit.jupiter.api.Test
 class EngagementManagerTest {
 
     private val testDispatcher = UnconfinedTestDispatcher()
+    private val mockUserParticipation = io.mockk.mockk<UserParticipationManager>(relaxed = true)
+
+    private val mockContext = io.mockk.mockk<android.content.Context>(relaxed = true)
 
     @BeforeEach
     fun setUp() {
-        // Configurar el SDK en entorno DEVELOPMENT para forzar el uso de repositorio demo
+        io.mockk.mockkObject(UserParticipationManager)
+        io.mockk.every { UserParticipationManager.shared } returns mockUserParticipation
+        
+        kotlinx.coroutines.Dispatchers.setMain(testDispatcher)
         VioConfiguration.configure(
+            context = mockContext,
             apiKey = "test-api-key",
             environment = VioEnvironment.DEVELOPMENT,
         )
-        kotlinx.coroutines.Dispatchers.setMain(testDispatcher)
     }
 
     @AfterEach
     fun tearDown() {
+        io.mockk.unmockkObject(UserParticipationManager)
         kotlinx.coroutines.Dispatchers.resetMain()
     }
 
@@ -88,7 +95,7 @@ class EngagementManagerTest {
         )
 
         // Verificar que se marca la participación y que los resultados se actualizan en memoria
-        assertTrue(manager.hasVotedInPoll(poll.id))
+        io.mockk.verify { mockUserParticipation.markPollVoted(poll.id, "opt-1") }
 
         val updatedResults = manager.pollResults.value[poll.id]!!
         assertEquals(1, updatedResults.totalVotes, "El total de votos debe incrementarse optimistamente")

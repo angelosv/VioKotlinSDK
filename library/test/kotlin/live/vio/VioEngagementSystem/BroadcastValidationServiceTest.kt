@@ -9,8 +9,13 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.resetMain
 
 /**
  * Pruebas unitarias para [BroadcastValidationService].
@@ -18,14 +23,25 @@ import org.junit.jupiter.api.Test
  * Los tests verifican el parsing de JSON y la lógica de selección del API key.
  * Las llamadas de red reales no se ejecutan en las pruebas unitarias.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 class BroadcastValidationServiceTest {
+
+    private val testDispatcher = UnconfinedTestDispatcher()
+    private val mockContext = io.mockk.mockk<android.content.Context>(relaxed = true)
 
     @BeforeEach
     fun setUp() {
+        kotlinx.coroutines.Dispatchers.setMain(testDispatcher)
         VioConfiguration.configure(
+            context = mockContext,
             apiKey = "general-api-key",
             environment = VioEnvironment.SANDBOX,
         )
+    }
+
+    @AfterEach
+    fun tearDown() {
+        kotlinx.coroutines.Dispatchers.resetMain()
     }
 
     // ── Tests de parseo de JSON a través del DTO ──────────────────────────────
@@ -100,6 +116,7 @@ class BroadcastValidationServiceTest {
     fun `configuración con campaignAdminApiKey usa esa clave como prioritaria`() {
         // Configurar con campaignAdminApiKey específico
         VioConfiguration.configure(
+            context = mockContext,
             apiKey = "general-key",
             environment = VioEnvironment.SANDBOX,
             campaignConfig = CampaignConfiguration(
@@ -119,6 +136,7 @@ class BroadcastValidationServiceTest {
     fun `sin campaignAdminApiKey hace fallback al apiKey general`() {
         // CampaignConfiguration sin campaignAdminApiKey (null por defecto)
         VioConfiguration.configure(
+            context = mockContext,
             apiKey = "general-key",
             environment = VioEnvironment.SANDBOX,
             campaignConfig = CampaignConfiguration(
@@ -137,6 +155,7 @@ class BroadcastValidationServiceTest {
     @Test
     fun `campaignAdminApiKey en blanco hace fallback al apiKey general`() {
         VioConfiguration.configure(
+            context = mockContext,
             apiKey = "general-key",
             environment = VioEnvironment.SANDBOX,
             campaignConfig = CampaignConfiguration(

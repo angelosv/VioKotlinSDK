@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         copyConfigToFilesDir("vio-config.json")
-        ConfigurationLoader.loadConfiguration("vio-config", filesDir.absolutePath + "/")
+        ConfigurationLoader.loadConfiguration(this, "vio-config", filesDir.absolutePath + "/")
 
         cartManager = CartManager()
         VioImageLoaderDefaults.install(VioCoilImageLoader)

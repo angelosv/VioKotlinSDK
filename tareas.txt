@@ -1,11 +1,8 @@
-1. Hay que persistir localmente si el usuario ya voto en un poll o participo en un contest, para no mostrar el CTA de nuevo.
-Referencia Swift: Sources/VioEngagementSystem/Managers/UserParticipationManager.swift
-Almacenamiento: SharedPreferences o DataStore
-Claves: poll_{id}voted, contest{id}_participated
-Criterio: si el usuario vota en un poll y cierra la app, al volver no aparece como si no hubiera votado.
-
-* UserParticipationManager object (singleton)
-* hasVotedInPoll(pollId: String): Boolean
-* hasParticipatedInContest(contestId: String): Boolean
-* markPollVoted(pollId: String, optionId: String)
-* Persistir en DataStore (no en memoria, sobrevive al restart)
+1. Errores en  
+    ConfigurationLoader.kt
+        Argument type mismatch: actual type is 'kotlin.String?', but 'android.content.Context' was expected.
+        No value passed for parameter 'userCountryCode'.
+    VioUI.kt
+        None of the following candidates is applicable:
+        fun configure(context: Context, apiKey: String, environment: VioEnvironment = ..., theme: VioTheme? = ..., cartConfig: CartConfiguration? = ..., networkConfig: NetworkConfiguration? = ..., uiConfig: UIConfiguration? = ..., liveShowConfig: LiveShowConfiguration? = ..., marketConfig: MarketConfiguration? = ..., productDetailConfig: ProductDetailConfiguration? = ..., localizationConfig: LocalizationConfiguration? = ..., campaignConfig: CampaignConfiguration? = ..., analyticsConfig: AnalyticsConfiguration? = ..., demoDataConfig: DemoDataConfiguration? = ...): Unit
+        fun configure(context: Context, apiKey: String): Unit

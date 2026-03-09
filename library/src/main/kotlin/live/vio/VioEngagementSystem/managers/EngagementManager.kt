@@ -121,7 +121,7 @@ class EngagementManager private constructor() {
             throw EngagementError.AlreadyVoted()
         }
 
-        userParticipation.recordPollVote(pollId, optionId)
+        userParticipation.markPollVoted(pollId, optionId)
         
         // Optimistic update
         updatePollResultsOptimistically(pollId, optionId)
@@ -145,7 +145,7 @@ class EngagementManager private constructor() {
              // throw EngagementError.ContestClosed() // Assuming such error exists or just generic logic
         }
 
-        userParticipation.recordContestParticipation(contestId)
+        userParticipation.markContestParticipated(contestId)
         
         scope.launch {
             try {
