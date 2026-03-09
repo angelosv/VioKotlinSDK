@@ -8,9 +8,12 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -20,6 +23,7 @@ import okhttp3.WebSocketListener
 import okio.ByteString
 import org.json.JSONArray
 import org.json.JSONObject
+import live.vio.VioCore.utils.VioLogger
 
 class WebSocketManager(
     private val url: String = DEFAULT_URL,
@@ -28,6 +32,14 @@ class WebSocketManager(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var webSocket: WebSocket? = null
+
+    private var pingJob: Job? = null
+    private var reconnectJob: Job? = null
+    private var reconnectAttempts: Int = 0
+    @Volatile
+    private var lastActivityAt: Long = 0L
+    @Volatile
+    private var manualClose: Boolean = false
 
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
@@ -47,11 +59,18 @@ class WebSocketManager(
 
     fun connect() {
         if (_isConnected.value) return
+        manualClose = false
+        reconnectJob?.cancel()
+        reconnectAttempts = 0
         val request = Request.Builder().url(url).build()
         webSocket = client.newWebSocket(request, listener)
     }
 
     fun disconnect() {
+        manualClose = true
+        pingJob?.cancel()
+        reconnectJob?.cancel()
+        reconnectAttempts = 0
         webSocket?.close(NORMAL_CLOSURE_STATUS, null)
         webSocket = null
         _isConnected.value = false
@@ -60,9 +79,13 @@ class WebSocketManager(
     private val listener = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             _isConnected.value = true
+            lastActivityAt = System.currentTimeMillis()
+            VioLogger.info("[WS] connected", "DemoWebSocket")
+            startPingLoop()
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
+            lastActivityAt = System.currentTimeMillis()
             scope.launch { handleMessage(text) }
         }
 
@@ -72,10 +95,61 @@ class WebSocketManager(
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             _isConnected.value = false
+            pingJob?.cancel()
+            if (manualClose || code == NORMAL_CLOSURE_STATUS) {
+                VioLogger.info("[WS] closed (code=$code, reason=$reason)", "DemoWebSocket")
+                manualClose = false
+                return
+            }
+            VioLogger.warning("[WS] unexpected close code=$code reason=$reason", "DemoWebSocket")
+            scheduleReconnect()
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             _isConnected.value = false
+            pingJob?.cancel()
+            if (manualClose) {
+                VioLogger.warning("[WS] failure after manual close: ${t.message}", "DemoWebSocket")
+                return
+            }
+            VioLogger.error("[WS] failure: ${t.message}", "DemoWebSocket")
+            scheduleReconnect()
+        }
+    }
+
+    private fun startPingLoop() {
+        pingJob?.cancel()
+        pingJob = scope.launch {
+            while (isActive && _isConnected.value) {
+                delay(30_000L)
+                if (!_isConnected.value) break
+                val idleMs = System.currentTimeMillis() - lastActivityAt
+                if (idleMs >= 30_000L) {
+                    runCatching {
+                        webSocket?.send("ping")
+                    }.onSuccess {
+                        VioLogger.debug("[WS] ping sent", "DemoWebSocket")
+                    }.onFailure {
+                        VioLogger.warning("[WS] ping failed: ${it.message}", "DemoWebSocket")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun scheduleReconnect() {
+        if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+            VioLogger.error("[WS] giving up after $reconnectAttempts attempts", "DemoWebSocket")
+            return
+        }
+        reconnectAttempts += 1
+        val attempt = reconnectAttempts
+        val delaySeconds = minOf(1 shl (attempt - 1), 30)
+        VioLogger.warning("[WS] reconnecting attempt $attempt/$MAX_RECONNECT_ATTEMPTS in ${delaySeconds}s", "DemoWebSocket")
+        reconnectJob?.cancel()
+        reconnectJob = scope.launch {
+            delay(delaySeconds * 1_000L)
+            connect()
         }
     }
 
@@ -158,6 +232,7 @@ class WebSocketManager(
     companion object {
         private const val DEFAULT_URL = "wss://event-streamer-angelo100.replit.app/ws/3"
         private const val NORMAL_CLOSURE_STATUS = 1000
+        private const val MAX_RECONNECT_ATTEMPTS = 5
 
         private val defaultClient: OkHttpClient = OkHttpClient.Builder()
             .readTimeout(0, TimeUnit.MILLISECONDS)

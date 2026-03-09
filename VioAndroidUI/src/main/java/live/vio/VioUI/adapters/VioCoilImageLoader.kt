@@ -50,13 +50,13 @@ val VioCoilImageLoader: VioImageLoader = VioImageLoader { url, contentDescriptio
     val imageLoader = ImageLoader.Builder(context)
         .memoryCache {
             MemoryCache.Builder(context)
-                .maxSizePercent(0.25)
+                .maxSizePercent(0.15)
                 .build()
         }
         .diskCache {
             DiskCache.Builder()
                 .directory(File(context.cacheDir, "vio-image-cache"))
-                .maxSizePercent(0.02)
+                .maxSizeBytes(50L * 1024L * 1024L)
                 .build()
         }
         .components {
