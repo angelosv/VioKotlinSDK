@@ -57,6 +57,8 @@ import kotlinx.coroutines.withContext
 import java.util.UUID
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.TabRowDefaults
+import androidx.compose.runtime.LaunchedEffect
+import com.vio.viaplaydemo.viewmodel.MatchHeaderViewModel
 
 val BrandPink = Color(0xFFF5146B)
 val BrandDarkBg = Color(0xFF1B1B25)
@@ -93,12 +95,26 @@ fun CastingActiveView(
         onDispose { webSocketManager.disconnect() }
     }
 
+    val matchHeaderViewModel = remember { MatchHeaderViewModel() }
+    val headerState by matchHeaderViewModel.state.collectAsState()
+
+    LaunchedEffect(match.contentId, match.countryCode) {
+        matchHeaderViewModel.start(
+            contentId = match.contentId,
+            country = match.countryCode,
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize().background(BrandDarkBg)) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
             // Header Section
-            HeaderSection(match = match, onClose = onClose)
+            HeaderSection(
+                match = match,
+                state = headerState,
+                onClose = onClose,
+            )
             
             // Tabs Section
             ScrollableTabRow(
@@ -180,7 +196,11 @@ fun CastingActiveView(
 }
 
 @Composable
-private fun HeaderSection(match: Match, onClose: () -> Unit) {
+private fun HeaderSection(
+    match: Match,
+    state: com.vio.viaplaydemo.viewmodel.MatchHeaderViewModel.State,
+    onClose: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -226,27 +246,40 @@ private fun HeaderSection(match: Match, onClose: () -> Unit) {
                     modifier = Modifier.size(60.dp).background(Color.White.copy(alpha = 0.1f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    coil.compose.AsyncImage(
-                        model = com.vio.viaplaydemo.utils.LogoResolver.resolveLogo("barcelona_logo"),
-                        contentDescription = "Barcelona",
-                        modifier = Modifier.size(44.dp)
+                    val homeLogoModel = state.homeLogoUrl
+                        ?: com.vio.viaplaydemo.utils.LogoResolver.resolveLogo(match.homeTeam.logo)
+                    AsyncImage(
+                        model = homeLogoModel,
+                        contentDescription = state.homeTeamName ?: match.homeTeam.name,
+                        modifier = Modifier.size(44.dp),
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("FC Barcelona", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                Text(
+                    text = state.homeTeamName ?: match.homeTeam.name,
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                )
             }
 
             // Score
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                val homeScoreText = (state.homeScore ?: 0).toString()
+                val awayScoreText = (state.awayScore ?: 0).toString()
+                val minuteText = state.minute?.let { "$it'" }
+                val periodText = state.period
+                val statusText = listOfNotNull(minuteText, periodText).joinToString(" ").ifBlank { "-15'" }
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("0", color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.Bold)
+                    Text(homeScoreText, color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.width(8.dp))
                     Box(modifier = Modifier.size(6.dp).background(BrandPink, CircleShape))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("0", color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.Bold)
+                    Text(awayScoreText, color = Color.White, fontSize = 36.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.height(4.dp))
-                Text("-15'", color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
+                Text(statusText, color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
             }
 
             // Away Team
@@ -255,14 +288,21 @@ private fun HeaderSection(match: Match, onClose: () -> Unit) {
                     modifier = Modifier.size(60.dp).background(Color.White.copy(alpha = 0.1f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    coil.compose.AsyncImage(
-                        model = com.vio.viaplaydemo.utils.LogoResolver.resolveLogo("psg_logo"),
-                        contentDescription = "PSG",
-                        modifier = Modifier.size(44.dp)
+                    val awayLogoModel = state.awayLogoUrl
+                        ?: com.vio.viaplaydemo.utils.LogoResolver.resolveLogo(match.awayTeam.logo)
+                    AsyncImage(
+                        model = awayLogoModel,
+                        contentDescription = state.awayTeamName ?: match.awayTeam.name,
+                        modifier = Modifier.size(44.dp),
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Paris Saint-Germain", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                Text(
+                    text = state.awayTeamName ?: match.awayTeam.name,
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                )
             }
         }
         

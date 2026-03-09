@@ -4,10 +4,23 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
+ * Información básica de un equipo asociada a un broadcast.
+ *
+ * Incluye, entre otros, la URL del logo que se usará en cabeceras como el
+ * marcador del partido.
+ */
+data class MatchTeamInfo(
+    val name: String? = null,
+    val shortName: String? = null,
+    val logoUrl: String? = null,
+)
+
+/**
  * Resultado de la validación de broadcast via el endpoint GET /v1/sdk/broadcast.
  *
  * Indica si hay engagement activo para un contentId dado y, en caso afirmativo,
- * proporciona el broadcastId necesario para cargar polls/contests.
+ * proporciona el broadcastId necesario para cargar polls/contests y metadatos
+ * como los equipos y sus logos.
  */
 data class BroadcastValidationResult(
     /** Si hay engagement activo para este broadcast. */
@@ -26,6 +39,10 @@ data class BroadcastValidationResult(
     val campaignComponents: List<String> = emptyList(),
     /** Componentes disponibles en el broadcast. */
     val broadcastComponents: List<String> = emptyList(),
+    /** Información del equipo local (nombre, logo, etc.). */
+    val homeTeam: MatchTeamInfo? = null,
+    /** Información del equipo visitante (nombre, logo, etc.). */
+    val awayTeam: MatchTeamInfo? = null,
 )
 
 /**
@@ -49,6 +66,10 @@ internal data class BroadcastValidationDto(
     val campaignComponents: List<String> = emptyList(),
     @SerialName("broadcastComponents")
     val broadcastComponents: List<String> = emptyList(),
+    @SerialName("homeTeam")
+    val homeTeam: MatchTeamInfoDto? = null,
+    @SerialName("awayTeam")
+    val awayTeam: MatchTeamInfoDto? = null,
 ) {
     fun toDomain() = BroadcastValidationResult(
         hasEngagement = hasEngagement,
@@ -59,5 +80,23 @@ internal data class BroadcastValidationDto(
         websocketChannel = websocketChannel,
         campaignComponents = campaignComponents,
         broadcastComponents = broadcastComponents,
+        homeTeam = homeTeam?.toDomain(),
+        awayTeam = awayTeam?.toDomain(),
+    )
+}
+
+@Serializable
+internal data class MatchTeamInfoDto(
+    @SerialName("name")
+    val name: String? = null,
+    @SerialName("shortName")
+    val shortName: String? = null,
+    @SerialName("logoUrl")
+    val logoUrl: String? = null,
+) {
+    fun toDomain() = MatchTeamInfo(
+        name = name,
+        shortName = shortName,
+        logoUrl = logoUrl,
     )
 }

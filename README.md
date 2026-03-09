@@ -7,7 +7,7 @@ The Vio Kotlin SDK allows you to integrate Vio payment and checkout features int
 Add the dependency to your `build.gradle.kts`:
 
 ```kotlin
-implementation("live.vio:vio-kotlin-sdk:0.0.1")
+implementation("live.vio:vio-kotlin-sdk:1.0.0-alpha")
 ```
 
 ## Usage

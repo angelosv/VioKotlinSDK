@@ -84,7 +84,7 @@ tasks.withType<Test> { useJUnitPlatform() }
 
 mavenPublishing {
     // Define las coordenadas de tu librería
-    coordinates("live.vio", "vio-kotlin-sdk", "1.0.1")
+    coordinates("io.github.angelosv", "vio-kotlin-sdk", "1.0.0-alpha")
 
     // Configura el POM con toda la información necesaria para Maven Central
     pom {

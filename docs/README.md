@@ -53,7 +53,7 @@ repositories {
 }
 
 dependencies {
-    implementation("live.vio:vio-kotlin-sdk:<version>")
+    implementation("live.vio:vio-kotlin-sdk:1.0.0-alpha")
 }
 ```
 
@@ -71,7 +71,7 @@ dependencies {
   - `SdkException` plus `AuthException`, `ValidationException`, `RateLimitException`, etc.
   - Repositories throw these exceptions for uniform error handling.
 
-- **Repositories** (`src/main/kotlin/io/reachu/sdk/modules`)
+- **Repositories** (`src/main/kotlin/live/vio/sdk/modules`)
   - `CartRepositoryGraphQL`, `CheckoutRepositoryGraphQL`, `DiscountRepositoryGraphQL`,
     `PaymentRepositoryGraphQL`, `MarketRepositoryGraphQL`, `Channel*RepositoryGraphQL`, `ProductRepositoryGraphQL`.
 
@@ -349,7 +349,7 @@ When `VIO_ENVIRONMENT` is omitted the loader uses the `defaultEnvironment` defin
 ## Project Layout
 
 ```
-src/main/kotlin/io/reachu/sdk/
+src/main/kotlin/live/vio/sdk/
   core/
   core/graphql/operations/
   domain/models/
