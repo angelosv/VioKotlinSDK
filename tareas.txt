@@ -1,24 +1,5 @@
-Swift proyectruta en mi PC Desktop/IQPlus/VioSwiftSDK/ 
-
-Tarjeta desarrollada en Swift VIO-008 era esta:
-El MatchHeaderView tiene los logos hardcodeados con URLs de Wikipedia y el score es estático. Hay que conectarlo al backend.
-BackendMatchDataService ya existe y funciona — solo falta cablearlo a la vista.
-Qué hacer:
-MatchHeaderView recibe el servicio como @observedobject
-Score: .score.home / .away / .minute / .period
-Logos de equipo desde BroadcastValidationResult.homeTeam.logoUrl y awayTeam.logoUrl → AsyncImage
-Polling de respaldo cada 30s si el WS no trae el score
-Endpoint: GET /v1/sdk/broadcasts/:id/score
-Header: x-api-key: viaplay_api_key_0c611e983b314ff8
-Criterio: el marcador Real Madrid 2-1 Barcelona aparece en la app sin estar hardcodeado. Los logos vienen del backend.
-
-1. Igual que en iOS (VIO-008), el MatchHeaderView en Android tiene datos hardcodeados. Hay que conectarlo al backend.
-Endpoints disponibles:
-GET /v1/sdk/broadcasts/:id/score → { home, away, minute, period }
-GET /v1/sdk/broadcast?contentId=...&country=NO → incluye homeTeam.logoUrl y awayTeam.logoUrl
-Que hacer:
-BackendMatchDataService en Kotlin con fetchScore() y polling cada 30s
-MatchHeaderViewModel con StateFlow de score y logos
-AsyncImage via Coil para los logos
-Quitar las URLs de Wikipedia hardcodeadas
-Criterio: Real Madrid 2-1 Barcelona con logos reales. Score actualizable sin rebuild.
+1. Hay que centralizar todos los logs en un VioLogger que se pueda activar/desactivar. Ningun println() en el SDK — todo pasa por VioLogger.
+Referencia Swift: VioLogger en VioCore
+Niveles: debug, info, warning, error
+Control: VioConfiguration.shared.loggingEnabled = true/false
+Criterio: ningun println() en el SDK. Los logs se activan con una linea en el vio-config.json.

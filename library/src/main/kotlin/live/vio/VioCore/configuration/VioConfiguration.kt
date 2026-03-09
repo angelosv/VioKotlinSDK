@@ -2,6 +2,7 @@ package live.vio.VioCore.configuration
 
 import live.vio.VioCore.analytics.AnalyticsManager
 import live.vio.VioCore.managers.CampaignManager
+import live.vio.VioCore.utils.VioLogger
 import live.vio.sdk.domain.models.GetAvailableMarketsDto
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,6 +48,21 @@ class VioConfiguration private constructor() {
 
         private val isConfiguring = AtomicBoolean(false)
 
+        /**
+         * Flag global para activar/desactivar logs del SDK.
+         *
+         * Atajo sobre [State.network.enableLogging] para alinearse con el API de Swift:
+         * `VioConfiguration.shared.loggingEnabled`.
+         */
+        var loggingEnabled: Boolean
+            get() = shared._state.value.network.enableLogging
+            set(value) {
+                val current = shared._state.value
+                shared._state.value = current.copy(
+                    network = current.network.copy(enableLogging = value),
+                )
+            }
+
         fun configure(
             apiKey: String,
             environment: VioEnvironment = VioEnvironment.PRODUCTION,
@@ -63,7 +79,7 @@ class VioConfiguration private constructor() {
             demoDataConfig: DemoDataConfiguration? = null,
         ) {
             if (!isConfiguring.compareAndSet(false, true)) {
-                println("⚠️ VioConfiguration.configure() ya está en curso, ignorando llamada concurrente")
+                VioLogger.warning("VioConfiguration.configure() ya está en curso, ignorando llamada concurrente", "VioConfiguration")
                 return
             }
 
@@ -90,10 +106,10 @@ class VioConfiguration private constructor() {
                 live.vio.VioEngagementSystem.VioEngagementSystem.configure()
                 CampaignManager.shared.reinitialize()
 
-                println("🔧 Vio SDK configured successfully")
-                println("   API Key: ${apiKey.take(8)}...")
-                println("   Environment: $environment")
-                println("   Theme: ${instance._state.value.theme.name}")
+                VioLogger.success("Vio SDK configured successfully", "VioConfiguration")
+                VioLogger.info("API Key: ${apiKey.take(8)}...", "VioConfiguration")
+                VioLogger.info("Environment: $environment", "VioConfiguration")
+                VioLogger.info("Theme: ${instance._state.value.theme.name}", "VioConfiguration")
             } finally {
                 isConfiguring.set(false)
             }

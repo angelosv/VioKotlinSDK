@@ -10,7 +10,7 @@ object VioLogger {
         get() = VioConfiguration.shared.state.value.network
 
     private val isEnabled: Boolean
-        get() = networkConfig.enableLogging
+        get() = VioConfiguration.loggingEnabled
 
     private val minLevel: Level
         get() = when (networkConfig.logLevel) {
