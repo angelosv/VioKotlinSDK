@@ -9,26 +9,3 @@ Criterio: si el usuario vota en un poll y cierra la app, al volver no aparece co
 * hasParticipatedInContest(contestId: String): Boolean
 * markPollVoted(pollId: String, optionId: String)
 * Persistir en DataStore (no en memoria, sobrevive al restart)
-
-2. Si la demo es larga y no hay eventos WS, la conexion puede cerrarse por idle timeout. Hay que enviar un ping periodico para mantenerla activa.
-Implementacion: ping cada 30s si no hay actividad
-Reconexion automatica con backoff exponencial si se cae (1s, 2s, 4s, max 30s)
-Criterio: la conexion WS no se cae en una demo de 30 minutos sin eventos.
-
-* Ping WS cada 30s usando corrutina (cancelar al desconectar)
-* Detectar desconexion inesperada (onFailure / onClosed con codigo != 1000)
-* Reconexion automatica con backoff: 1s, 2s, 4s, 8s, max 30s
-* Maximo 5 intentos de reconexion antes de notificar error al SDK
-* Log claro en VioLogger: [WS] reconnecting attempt X/5
-
-3. El SDK puede cargar muchas imagenes (logos, productos, avatars) sin limites de cache, causando spikes de RAM similares al bug que tuvimos en Swift.
-Que hacer:
-Configurar Coil con limites explicitos de memoria y disco
-Aplicar en el punto de inicializacion del SDK (VioSDK.initialize())
-Criterio: la app no sube mas de 50MB de RAM al cargar una campana con 4 productos y logos.
-
-Configuracion Coil
-* memoryCache { maxSizePercent(0.15) } — maximo 15% de la RAM disponible
-* diskCache { maxSizeBytes(50 * 1024 * 1024) } — maximo 50MB en disco
-* Aplicar en ImageLoader personalizado en VioSDK.initialize()
-* Verificar: abrir y cerrar la campana 5 veces no aumenta el heap

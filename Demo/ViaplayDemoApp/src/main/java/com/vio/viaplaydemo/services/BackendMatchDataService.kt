@@ -4,10 +4,8 @@ import java.net.HttpURLConnection
 import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import live.vio.VioCore.configuration.VioConfiguration
+import org.json.JSONObject
 
 /**
  * Servicio simple para obtener el marcador de un broadcast desde el backend.
@@ -19,22 +17,12 @@ import live.vio.VioCore.configuration.VioConfiguration
  *
  * El `baseUrl` y el apiKey se leen de `VioConfiguration.shared.state.value.campaign`.
  */
-class BackendMatchDataService(
-    private val json: Json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-    },
-) {
+class BackendMatchDataService {
 
-    @Serializable
     private data class ScoreDto(
-        @SerialName("home")
         val home: Int,
-        @SerialName("away")
         val away: Int,
-        @SerialName("minute")
         val minute: Int? = null,
-        @SerialName("period")
         val period: String? = null,
     )
 
@@ -72,7 +60,13 @@ class BackendMatchDataService(
                 null
             } else {
                 runCatching {
-                    val dto = json.decodeFromString<ScoreDto>(response.body)
+                    val obj = JSONObject(response.body)
+                    val dto = ScoreDto(
+                        home = obj.optInt("home"),
+                        away = obj.optInt("away"),
+                        minute = if (obj.has("minute") && !obj.isNull("minute")) obj.optInt("minute") else null,
+                        period = obj.optString("period").takeIf { it.isNotBlank() },
+                    )
                     MatchScore(
                         home = dto.home,
                         away = dto.away,
