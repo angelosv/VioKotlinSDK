@@ -189,6 +189,7 @@
   "campaigns": {
     "webSocketBaseURL": "https://api-dev.vio.live",
     "restAPIBaseURL": "https://api-dev.vio.live",
-    "campaignAdminApiKey": "viaplay_api_key_0c611e983b314ff8""hasApplePay": true
+    "campaignAdminApiKey": "viaplay_api_key_0c611e983b314ff8",
+    "hasApplePay": true
   }
 }
