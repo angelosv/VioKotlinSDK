@@ -2,7 +2,7 @@ package live.vio.VioCore
 
 import live.vio.VioCore.models.CheckoutConfig
 import live.vio.VioCore.models.DynamicConfig
-import live.vio.VioCore.models.PaymentMethod
+import live.vio.VioCore.models.VioPaymentMethod
 import live.vio.sdk.core.helpers.JsonUtils
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -32,9 +32,9 @@ class CheckoutConfigTest {
     }
 
     @Test
-    fun `PaymentMethod fromString handles case sensitivity`() {
-        assertEquals(PaymentMethod.APPLE_PAY, PaymentMethod.fromString("apple_pay"))
-        assertEquals(PaymentMethod.APPLE_PAY, PaymentMethod.fromString("APPLE_PAY"))
-        assertEquals(PaymentMethod.KLARNA, PaymentMethod.fromString("klarna"))
+    fun `VioPaymentMethod fromString handles case sensitivity`() {
+        assertEquals(VioPaymentMethod.APPLE_PAY, VioPaymentMethod.fromString("apple_pay"))
+        assertEquals(VioPaymentMethod.APPLE_PAY, VioPaymentMethod.fromString("APPLE_PAY"))
+        assertEquals(VioPaymentMethod.KLARNA, VioPaymentMethod.fromString("klarna"))
     }
 }

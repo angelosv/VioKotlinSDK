@@ -140,25 +140,14 @@ private fun ProductGridItem(
 
             Spacer(modifier = Modifier.height(VioSpacing.sm.dp))
 
-            // CTA Button
-            Button(
-                onClick = onAddToCart,
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(VioBorderRadius.small.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = VioColors.primary.toVioColor(),
-                    contentColor = Color.Black
-                ),
-                contentPadding = PaddingValues(vertical = 4.dp)
-            ) {
-                Text(
-                    text = "KJØP",
-                    style = MaterialTheme.typography.labelLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
-                    )
-                )
-            }
+            Spacer(modifier = Modifier.height(VioSpacing.sm.dp))
+
+            // Unified Payment Sheet
+            live.vio.VioUI.Components.VPaymentSheet(
+                onPaymentMethodSelected = { method ->
+                    onAddToCart()
+                }
+            )
         }
     }
 }

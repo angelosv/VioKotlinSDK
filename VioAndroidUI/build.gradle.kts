@@ -47,6 +47,7 @@ dependencies {
     implementation("io.coil-kt:coil-svg:2.6.0")
     implementation("com.klarna.mobile:sdk:2.10.0")
     implementation("com.stripe:stripe-android:20.49.0")
+    implementation("com.google.android.gms:play-services-wallet:19.4.0")
     implementation(project(":library"))
 }
 
