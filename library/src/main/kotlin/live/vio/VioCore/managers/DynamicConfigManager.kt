@@ -48,5 +48,11 @@ class DynamicConfigManager private constructor() {
             VioLogger.success("Updating commerce config: ${it.apiKey}", TAG)
             VioConfiguration.updateDynamicCommerceConfig(it)
         }
+
+        // Update Checkout Config
+        config.checkout?.let {
+            VioLogger.success("Updating checkout config: ${it.paymentMethods.size} methods", TAG)
+            VioConfiguration.updateCheckoutConfig(it)
+        }
     }
 }

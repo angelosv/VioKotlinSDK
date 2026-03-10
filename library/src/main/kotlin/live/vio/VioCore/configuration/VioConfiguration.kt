@@ -41,6 +41,7 @@ class VioConfiguration private constructor() {
         val isConfigured: Boolean = false,
         val sponsor: live.vio.VioCore.models.SponsorConfig? = null,
         val commerce: live.vio.VioCore.models.CommerceConfig? = null,
+        val checkout: live.vio.VioCore.models.CheckoutConfig? = null,
     )
 
     companion object {
@@ -143,6 +144,11 @@ class VioConfiguration private constructor() {
             live.vio.VioUI.Services.ProductService.clearCache()
             // Notify components and integrators
             CampaignManager.shared.notifyCommerceChanged(commerce)
+        }
+
+        fun updateCheckoutConfig(checkout: live.vio.VioCore.models.CheckoutConfig) {
+            shared._state.value = shared._state.value.copy(checkout = checkout)
+            VioLogger.info("Checkout configuration updated with ${checkout.paymentMethods.size} methods", "VioConfiguration")
         }
 
         /**

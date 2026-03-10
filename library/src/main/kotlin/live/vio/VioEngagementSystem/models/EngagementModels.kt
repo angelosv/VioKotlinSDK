@@ -40,6 +40,7 @@ data class Contest(
     val videoStartTime: Int? = null,
     val videoEndTime: Int? = null,
     val broadcastStartTime: String? = null,
+    val imageUrl: String? = null,
     val isActive: Boolean = true,
     val broadcastContext: BroadcastContext? = null
 )

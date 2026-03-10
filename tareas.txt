@@ -1,8 +1,27 @@
-1. Errores en  
-    ConfigurationLoader.kt
-        Argument type mismatch: actual type is 'kotlin.String?', but 'android.content.Context' was expected.
-        No value passed for parameter 'userCountryCode'.
-    VioUI.kt
-        None of the following candidates is applicable:
-        fun configure(context: Context, apiKey: String, environment: VioEnvironment = ..., theme: VioTheme? = ..., cartConfig: CartConfiguration? = ..., networkConfig: NetworkConfiguration? = ..., uiConfig: UIConfiguration? = ..., liveShowConfig: LiveShowConfiguration? = ..., marketConfig: MarketConfiguration? = ..., productDetailConfig: ProductDetailConfiguration? = ..., localizationConfig: LocalizationConfiguration? = ..., campaignConfig: CampaignConfiguration? = ..., analyticsConfig: AnalyticsConfiguration? = ..., demoDataConfig: DemoDataConfiguration? = ...): Unit
-        fun configure(context: Context, apiKey: String): Unit
+1. Contest.imageUrl — añadir campo al modelo Kotlin
+Gap detectado nightly audit 2026-03-04
+Swift (commit 248a322 / 5705916) añadió imageUrl al modelo Contest end-to-end:
+Contest model: campo imageUrl
+BroadcastContextSetup pasa imageUrl
+VCastingContestCard muestra la imagen
+Que hacer en Kotlin
+Añadir imageUrl: String? a Contest / EngagementModels.kt
+Parsear desde el payload WS en CampaignWebSocketManager
+Mostrar en REngagementContestCard
+Referencia Swift: Sources/VioEngagementSystem/Models/EngagementModels.swift
+
+2. CheckoutConfig + PaymentMethod enum
+Contexto
+En Swift creamos VioPaymentConfig.swift con dos estructuras:
+PaymentMethod enum: apple_pay, klarna, vipps, stripe
+CheckoutConfig: contiene la lista de métodos activos y computed vars hasApplePay, hasKlarna, hasVipps
+El backend devuelve esto en /v1/campaigns/:id/config bajo la clave checkout.paymentMethods.
+Campaña 35 (Viaplay) y 36 (TV2) ya devuelven ["apple_pay"].
+Lo que se espera en Kotlin
+Crear el equivalente en el módulo VioCore:
+enum class PaymentMethod { APPLE_PAY, KLARNA, VIPPS, STRIPE }
+data class CheckoutConfig(val paymentMethods: List<PaymentMethod>)
+Propiedades: val hasApplePay, val hasKlarna, val hasVipps
+Parsear desde el JSON del backend (snake_case → camelCase)
+Exponerlo en VioConfiguration como checkoutConfig
+Referencia Swift: Sources/VioCore/Models/VioPaymentConfig.swift
