@@ -306,6 +306,10 @@ data class CampaignConfiguration(
      * Si es null o en blanco, se debe hacer fallback al API key general del SDK.
      */
     val campaignAdminApiKey: String? = null,
+    /**
+     * Mapeado desde el flag de Apple Pay para mostrar Google Pay en Android.
+     */
+    val hasApplePay: Boolean = false,
 ) {
     companion object { fun default() = CampaignConfiguration() }
 }

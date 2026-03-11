@@ -58,10 +58,12 @@ import live.vio.VioCore.analytics.AnalyticsManager
 import live.vio.VioCore.configuration.CloseButtonStyle
 import live.vio.VioCore.configuration.ProductDetailConfiguration
 import live.vio.VioCore.configuration.VioConfiguration
+import live.vio.VioCore.utils.VioLogger
 import live.vio.VioCore.managers.CampaignManager
 import live.vio.VioDesignSystem.Tokens.VioBorderRadius
 import live.vio.VioDesignSystem.Tokens.VioColors
 import live.vio.VioDesignSystem.Tokens.VioSpacing
+import live.vio.VioUI.Components.VPaymentSheet
 import live.vio.VioDesignSystem.Tokens.VioTypography
 import live.vio.VioUI.Components.VioProductCardConfig
 import live.vio.VioUI.Components.compose.utils.toVioColor
@@ -140,9 +142,12 @@ fun VioProductDetailOverlay(
     }
 
 
+    val configState by VioConfiguration.shared.state.collectAsState()
+    val checkoutConfig = configState.checkout
+
     if (!shouldShow) return
 
-    val detailConfig = VioConfiguration.shared.state.value.productDetail
+    val detailConfig = configState.productDetail
     val scope = rememberCoroutineScope()
     val variants = remember(product) { product.variants }
     val sortedOptions = remember(product) { product.options?.sortedBy { it.order } ?: emptyList() }
@@ -183,6 +188,8 @@ fun VioProductDetailOverlay(
     val maxQuantity = max(1, selectedVariant?.quantity ?: product.quantity ?: 1)
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val hasPaymentSheet = checkoutConfig?.hasApplePay == true
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -289,31 +296,46 @@ fun VioProductDetailOverlay(
                     Spacer(Modifier.height(16.dp))
                     SpecificationsSection(product = product, selectedVariant = selectedVariant)
                 }
+                
                 Spacer(Modifier.height(16.dp))
-                Button(
-                    onClick = {
-                        if (!isAdding && isInStock) {
-                            isAdding = true
-                            scope.launch {
-                                onAddToCart(selectedVariant, quantity)
-                                isAdding = false
-                                showSuccess = true
-                                delay(600)
-                                showSuccess = false
-                                onDismiss()
+
+                // Standard CTA button - hidden if payment sheet is active
+                if (!hasPaymentSheet) {
+                    Button(
+                        onClick = {
+                            if (!isAdding && isInStock) {
+                                isAdding = true
+                                scope.launch {
+                                    onAddToCart(selectedVariant, quantity)
+                                    isAdding = false
+                                    showSuccess = true
+                                    delay(600)
+                                    showSuccess = false
+                                    onDismiss()
+                                }
                             }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = VioSpacing.lg.dp),
-                    enabled = isInStock && !isAdding,
-                ) {
-                    Text(
-                        if (isAdding) "Processing..." else "Add to Cart • ${formatPrice(displayCurrency, currentPriceValue * quantity)}",
-                        fontWeight = FontWeight.SemiBold,
-                    )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = VioSpacing.lg.dp),
+                        enabled = isInStock && !isAdding,
+                    ) {
+                        Text(
+                            if (isAdding) "Processing..." else "Add to Cart • ${formatPrice(displayCurrency, currentPriceValue * quantity)}",
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
                 }
+
+                // VPaymentSheet is always present but only shows internal buttons based on config
+                VPaymentSheet(
+                    modifier = Modifier.padding(horizontal = VioSpacing.lg.dp),
+                    onPaymentMethodSelected = { method ->
+                        // Handle payment method selection
+                        VioLogger.info("Payment method selected: $method", "VioProductDetailOverlay")
+                        // In a real scenario, this would trigger the checkout flow
+                    }
+                )
             }
             if (showSuccess) {
                 SuccessOverlay(productTitle = product.title, quantity = quantity)

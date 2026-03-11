@@ -156,7 +156,23 @@ class CampaignManager private constructor(
         val id = campaignId
         if (id == null || id <= 0) return true
         if (!_isCampaignActive.value) return false
-        return _activeComponents.value.any { it.type == type && it.isActive }
+        
+        return _activeComponents.value.any { it.type == type && shouldShowComponent(it) }
+    }
+
+    /**
+     * Determina si un componente debe mostrarse basándose en su contexto de match.
+     * Basado en la lógica de Swift:
+     * - Siempre visible si no tiene matchContext (campaign-level)
+     * - Visible si tiene matchContext que coincide con el match activo
+     */
+    fun shouldShowComponent(component: Component): Boolean {
+        if (!_isCampaignActive.value) return false
+        
+        val componentMatchId = component.matchContext?.matchId ?: return true // Campaign-level, always show
+        
+        // Si tiene matchId, solo mostrar si coincide con el partido activo
+        return componentMatchId == currentMatchId
     }
 
     fun getActiveComponent(type: String, componentId: String? = null): Component? {
@@ -251,21 +267,29 @@ class CampaignManager private constructor(
      * Lógica de filtrado:
      * - Si componente NO tiene matchContext → Mostrar para todos los matches (backward compatibility)
      * - Si componente tiene matchContext.matchId → Solo mostrar si coincide con context.matchId
+     * - Si no hay matchContext activo → Solo mostrar componentes sin matchContext
      */
-    private fun filterComponentsByContext(context: MatchContext) {
+    private fun filterComponentsByContext(context: MatchContext?) {
         val allComponents = _activeComponents.value
         val filtered = allComponents.filter { component ->
-            // Incluir componentes sin matchContext (backward compatibility)
             val componentMatchId = component.matchContext?.matchId
-            if (componentMatchId == null) {
-                return@filter true  // Mostrar componentes sin matchContext para todos los matches
+            
+            // Si no hay contexto activo, solo mostramos componentes que NO están ligados a un partido
+            if (context == null) {
+                return@filter componentMatchId == null
             }
+            
+            // Incluir componentes sin matchContext (backward compatibility / campaign-level)
+            if (componentMatchId == null) {
+                return@filter true
+            }
+            
             // Incluir componentes que coinciden con el matchId actual
             componentMatchId == context.matchId
         }
         
         if (filtered.size != allComponents.size) {
-            VioLogger.debug("Filtered components: ${allComponents.size} -> ${filtered.size} for match: ${context.matchId}", COMPONENT)
+            VioLogger.debug("Filtered components: ${allComponents.size} -> ${filtered.size} for match: ${context?.matchId ?: "none"}", COMPONENT)
             _activeComponents.value = filtered
             scope.launch {
                 CacheManager.shared.saveComponents(filtered)
@@ -886,6 +910,38 @@ class CampaignManager private constructor(
             HttpResponse(status, body)
         } catch (error: Exception) {
             VioLogger.error("HTTP request failed: ${error.message}", COMPONENT)
+            null
+        } finally {
+            connection.disconnect()
+        }
+    }
+
+    private suspend fun httpPost(url: String, jsonBody: String, timeout: Int = 30_000): HttpResponse? = withContext(Dispatchers.IO) {
+        val connection = (URL(url).openConnection() as HttpURLConnection).apply {
+            requestMethod = "POST"
+            connectTimeout = timeout
+            readTimeout = timeout
+            setRequestProperty("Content-Type", "application/json")
+            setRequestProperty("Accept", "application/json")
+            
+            appBundleId?.let { setRequestProperty("X-App-Bundle-ID", it) }
+            
+            val effectiveApiKey = campaignAdminApiKey?.takeIf { it.isNotBlank() } ?: apiKey
+            if (effectiveApiKey.isNotBlank()) {
+                setRequestProperty("X-API-Key", effectiveApiKey)
+            }
+            
+            doOutput = true
+        }
+        try {
+            connection.outputStream.use { it.write(jsonBody.toByteArray()) }
+            
+            val status = connection.responseCode
+            val stream = if (status in 200..299) connection.inputStream else connection.errorStream
+            val body = stream?.bufferedReader()?.use { it.readText() } ?: ""
+            HttpResponse(status, body)
+        } catch (error: Exception) {
+            VioLogger.error("HTTP POST request failed: ${error.message}", COMPONENT)
             null
         } finally {
             connection.disconnect()

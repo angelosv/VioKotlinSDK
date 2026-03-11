@@ -495,6 +495,7 @@ private data class CampaignJSON(
     val campaignAdminApiKey: String? = null,
     val autoDiscover: Boolean? = null,
     val channelId: Int? = null,
+    val hasApplePay: Boolean? = null,
 ) {
     fun toDomain() = CampaignConfiguration(
         webSocketBaseURL = webSocketBaseURL ?: CampaignConfiguration.default().webSocketBaseURL,
@@ -503,6 +504,7 @@ private data class CampaignJSON(
         campaignAdminApiKey = campaignAdminApiKey ?: CampaignConfiguration.default().campaignAdminApiKey,
         autoDiscover = autoDiscover ?: CampaignConfiguration.default().autoDiscover,
         channelId = channelId ?: CampaignConfiguration.default().channelId,
+        hasApplePay = hasApplePay ?: CampaignConfiguration.default().hasApplePay,
     )
 }
 
