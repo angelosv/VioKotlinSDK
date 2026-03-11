@@ -145,6 +145,9 @@ fun VioCheckoutOverlay(
                                 },
                             )
                         }
+                        if (cartManager.shippingAddress != null || cartManager.billingAddress != null) {
+                            item { AddressSection(cartManager) }
+                        }
                     }
                     Divider()
                     Button(
@@ -306,6 +309,44 @@ private fun SummaryRow(label: String, currency: String, amount: Double, color: C
     ) {
         Text(label, style = MaterialTheme.typography.bodyMedium, color = VioColors.textSecondary.toColor())
         Text("$currency ${String.format("%.2f", amount)}", style = MaterialTheme.typography.bodyMedium, color = color)
+    }
+}
+
+@Composable
+private fun AddressSection(cartManager: CartManager) {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        cartManager.shippingAddress?.let { addr ->
+            Text("Shipping Address", style = VioTypography.title3.toComposeTextStyle(), color = VioColors.textPrimary.toColor())
+            AddressCard(addr)
+        }
+        cartManager.customerEmail?.let { email ->
+            Text("Contact Info", style = VioTypography.title3.toComposeTextStyle(), color = VioColors.textPrimary.toColor())
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            ) {
+                Text(email, modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    }
+}
+
+@Composable
+private fun AddressCard(address: Map<String, Any?>) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(address["name"] as? String ?: "", fontWeight = FontWeight.SemiBold)
+            Text(address["address1"] as? String ?: "")
+            val addr2 = address["address2"] as? String
+            if (!addr2.isNullOrEmpty()) Text(addr2)
+            Text("${address["postalCode"]} ${address["city"]}")
+            Text(address["countryCode"] as? String ?: "")
+        }
     }
 }
 

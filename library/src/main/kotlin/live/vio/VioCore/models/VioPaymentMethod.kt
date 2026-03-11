@@ -12,6 +12,7 @@ import kotlin.jvm.JvmStatic
 @Serializable
 enum class VioPaymentMethod(private val value: String) {
     APPLE_PAY("apple_pay"),
+    GOOGLE_PAY("google_pay"),
     KLARNA("klarna"),
     VIPPS("vipps"),
     STRIPE("stripe");

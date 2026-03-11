@@ -11,6 +11,8 @@ import live.vio.sdk.domain.models.ConfirmPaymentKlarnaNativeDto
 import live.vio.sdk.domain.models.GetAvailablePaymentMethodsDto
 import live.vio.sdk.domain.models.InitPaymentKlarnaDto
 import live.vio.sdk.domain.models.InitPaymentKlarnaNativeDto
+import live.vio.sdk.domain.models.InitGooglePayDto
+import live.vio.sdk.domain.models.ConfirmGooglePayDto
 import live.vio.sdk.domain.models.InitPaymentStripeDto
 import live.vio.sdk.domain.models.InitPaymentVippsDto
 import live.vio.sdk.domain.models.KlarnaNativeConfirmInputDto
@@ -202,6 +204,29 @@ class PaymentRepositoryGraphQL(
         val obj: Map<String, Any?> = GraphQLPick.pickPath(response.data, listOf("Payment", "GetKlarnaOrderNative"))
             ?: throw SdkException("Empty response in Payment.klarnaNativeOrder", code = "EMPTY_RESPONSE")
         return GraphQLPick.decodeJSON<KlarnaNativeOrderDto>(obj)
+    }
+
+    override suspend fun googlePayInit(checkoutId: String): InitGooglePayDto {
+        Validation.requireNonEmpty(checkoutId, "checkoutId")
+        val response = client.runMutationSafe(
+            PaymentGraphQL.GOOGLE_PAY_INIT_MUTATION,
+            mapOf("checkoutId" to checkoutId),
+        )
+        val obj: Map<String, Any?> = GraphQLPick.pickPath(response.data, listOf("Payment", "CreatePaymentInitGooglePay"))
+            ?: throw SdkException("Empty response in Payment.googlePayInit", code = "EMPTY_RESPONSE")
+        return GraphQLPick.decodeJSON<InitGooglePayDto>(obj)
+    }
+
+    override suspend fun googlePayConfirm(checkoutId: String, googlePayToken: String): ConfirmGooglePayDto {
+        Validation.requireNonEmpty(checkoutId, "checkoutId")
+        Validation.requireNonEmpty(googlePayToken, "googlePayToken")
+        val response = client.runMutationSafe(
+            PaymentGraphQL.GOOGLE_PAY_CONFIRM_MUTATION,
+            mapOf("checkoutId" to checkoutId, "googlePayToken" to googlePayToken),
+        )
+        val obj: Map<String, Any?> = GraphQLPick.pickPath(response.data, listOf("Payment", "CreatePaymentConfirmGooglePay"))
+            ?: throw SdkException("Empty response in Payment.googlePayConfirm", code = "EMPTY_RESPONSE")
+        return GraphQLPick.decodeJSON<ConfirmGooglePayDto>(obj)
     }
 
     private fun encodeToMap(value: Any): Map<String, Any?> {

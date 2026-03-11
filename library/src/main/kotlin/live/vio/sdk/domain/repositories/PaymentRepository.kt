@@ -10,6 +10,8 @@ import live.vio.sdk.domain.models.KlarnaNativeConfirmInputDto
 import live.vio.sdk.domain.models.KlarnaNativeInitInputDto
 import live.vio.sdk.domain.models.KlarnaNativeOrderDto
 import live.vio.sdk.domain.models.PaymentIntentStripeDto
+import live.vio.sdk.domain.models.InitGooglePayDto
+import live.vio.sdk.domain.models.ConfirmGooglePayDto
 
 interface PaymentRepository {
     suspend fun getAvailableMethods(): List<GetAvailablePaymentMethodsDto>
@@ -43,6 +45,9 @@ interface PaymentRepository {
         checkoutId: String,
         input: KlarnaNativeConfirmInputDto,
     ): ConfirmPaymentKlarnaNativeDto
+
+    suspend fun googlePayInit(checkoutId: String): InitGooglePayDto
+    suspend fun googlePayConfirm(checkoutId: String, googlePayToken: String): ConfirmGooglePayDto
 
     suspend fun klarnaNativeOrder(
         orderId: String,

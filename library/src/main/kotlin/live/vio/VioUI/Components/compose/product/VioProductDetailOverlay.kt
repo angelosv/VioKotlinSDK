@@ -80,6 +80,24 @@ import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import android.text.method.LinkMovementMethod
 import androidx.compose.ui.graphics.toArgb
+import android.app.Activity
+import androidx.compose.ui.platform.LocalContext
+import live.vio.VioCore.managers.VioGooglePayManager
+import live.vio.VioUI.Managers.initGooglePay
+import live.vio.VioUI.Managers.CartManager
+import live.vio.VioUI.Managers.confirmGooglePay
+import live.vio.VioCore.models.VioPaymentMethod
+import android.content.Context
+import android.content.ContextWrapper
+
+private fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    return null
+}
 
 private fun String.toColor(): Color = toVioColor()
 
@@ -189,8 +207,9 @@ fun VioProductDetailOverlay(
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    val hasPaymentSheet = checkoutConfig?.hasApplePay == true
-
+    // hasGooglePay is the master switch in Android
+    val isGooglePayEnabled = configState.campaign.hasGooglePay
+    val hasPaymentSheet = isGooglePayEnabled && (checkoutConfig?.hasGooglePay ?: true)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
@@ -327,16 +346,49 @@ fun VioProductDetailOverlay(
                     }
                 }
 
-                // VPaymentSheet is always present but only shows internal buttons based on config
-                VPaymentSheet(
-                    modifier = Modifier.padding(horizontal = VioSpacing.lg.dp),
+                if (isGooglePayEnabled) {
+                    val context = LocalContext.current
+                    VPaymentSheet(
+                        modifier = Modifier.padding(horizontal = VioSpacing.lg.dp),
                     onPaymentMethodSelected = { method ->
-                        // Handle payment method selection
                         VioLogger.info("Payment method selected: $method", "VioProductDetailOverlay")
-                        // In a real scenario, this would trigger the checkout flow
+                        if (method == VioPaymentMethod.GOOGLE_PAY) {
+                            val activity = context.findActivity()
+                            if (activity == null) {
+                                VioLogger.error("Cannot start Google Pay: Activity not found in context", "VioProductDetailOverlay")
+                                return@VPaymentSheet
+                            }
+                            
+                            VioLogger.info("Launching Google Pay coroutine", "VioProductDetailOverlay")
+                            scope.launch {
+                                try {
+                                    val cartManager = CartManager(autoBootstrap = false)
+                                    VioLogger.info("Initializing Google Pay transaction...", "VioProductDetailOverlay")
+                                    val initDto = cartManager.initGooglePay()
+                                    if (initDto != null) {
+                                        VioLogger.info("Google Pay init successful: gateway=${initDto.gateway}", "VioProductDetailOverlay")
+                                        val priceStr = String.format("%.2f", currentPriceValue * quantity)
+                                        val request = VioGooglePayManager.createPaymentDataRequest(
+                                            gateway = initDto.gateway,
+                                            gatewayMerchantId = initDto.gatewayMerchantId,
+                                            price = priceStr,
+                                            currency = product.price.currencyCode.ifBlank { "USD" }
+                                        )
+                                        VioLogger.info("Launching Google Pay Sheet (Price: $priceStr)", "VioProductDetailOverlay")
+                                        VioGooglePayManager.launchGooglePay(activity, request)
+                                    } else {
+                                        VioLogger.error("Failed to initialize Google Pay: initDto is null", "VioProductDetailOverlay")
+                                    }
+                                } catch (e: Exception) {
+                                    VioLogger.error("Google Pay flow exception: ${e.message}", "VioProductDetailOverlay")
+                                    e.printStackTrace()
+                                }
+                            }
+                        }
                     }
                 )
             }
+        }
             if (showSuccess) {
                 SuccessOverlay(productTitle = product.title, quantity = quantity)
             }

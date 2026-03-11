@@ -246,4 +246,26 @@ object PaymentGraphQL {
       }
     }
     """.trimIndent()
+
+    val GOOGLE_PAY_INIT_MUTATION = """
+    mutation CreatePaymentInitGooglePay(${'$'}checkoutId: String!) {
+      Payment {
+        CreatePaymentInitGooglePay(checkout_id: ${'$'}checkoutId) {
+          gateway
+          gateway_merchant_id
+        }
+      }
+    }
+    """.trimIndent()
+
+    val GOOGLE_PAY_CONFIRM_MUTATION = """
+    mutation CreatePaymentConfirmGooglePay(${'$'}checkoutId: String!, ${'$'}googlePayToken: String!) {
+      Payment {
+        CreatePaymentConfirmGooglePay(checkout_id: ${'$'}checkoutId, google_pay_token: ${'$'}googlePayToken) {
+          order_id
+          status
+        }
+      }
+    }
+    """.trimIndent()
 }

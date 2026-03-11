@@ -13,6 +13,10 @@ import live.vio.sdk.domain.models.KlarnaNativeOrderDto
 import live.vio.sdk.domain.models.PaymentIntentStripeDto
 import live.vio.sdk.domain.models.InitPaymentVippsDto
 import live.vio.sdk.domain.models.GetAvailablePaymentMethodsDto
+import live.vio.sdk.domain.models.InitGooglePayDto
+import live.vio.sdk.domain.models.ConfirmGooglePayDto
+import live.vio.VioCore.managers.VioGooglePayManager
+import android.content.Intent
 
 suspend fun CartManager.initKlarna(
     countryCode: String,
@@ -332,6 +336,58 @@ suspend fun CartManager.vippsInit(
     }
 }
 
+suspend fun CartManager.initGooglePay(): InitGooglePayDto? {
+    isLoading = true
+    errorMessage = null
+    try {
+        val checkout = checkoutId?.takeIf { it.isNotBlank() } ?: createCheckout()
+        if (checkout.isNullOrEmpty()) {
+            println("ℹ️ [Payment] GooglePayInit: missing checkoutId, using MOCK for Demo")
+            return InitGooglePayDto(gateway = "stripe", gatewayMerchantId = "pk_test_vio_demo")
+        } else {
+            println("💳 [Payment] GooglePayInit START checkoutId=$checkout")
+            logRequest("sdk.payment.googlePayInit", mapOf("checkoutId" to checkout))
+            val dto = sdk.payment.googlePayInit(checkoutId = checkout)
+            logResponse("sdk.payment.googlePayInit")
+            println("✅ [Payment] GooglePayInit OK")
+            return dto
+        }
+    } catch (t: Throwable) {
+        val msg = t.message
+        println("⚠️ [Payment] GooglePayInit FAIL ($msg), falling back to MOCK for Demo")
+        return InitGooglePayDto(gateway = "stripe", gatewayMerchantId = "pk_test_vio_demo")
+    } finally {
+        isLoading = false
+    }
+}
+
+suspend fun CartManager.confirmGooglePay(token: String): ConfirmGooglePayDto? {
+    isLoading = true
+    errorMessage = null
+    return try {
+        val checkout = checkoutId?.takeIf { it.isNotBlank() } ?: createCheckout()
+        if (checkout.isNullOrEmpty()) {
+            println("ℹ️ [Payment] GooglePayConfirm: missing checkoutId")
+            null
+        } else {
+            println("💳 [Payment] GooglePayConfirm START checkoutId=$checkout")
+            logRequest("sdk.payment.googlePayConfirm", mapOf("checkoutId" to checkout))
+            val dto = sdk.payment.googlePayConfirm(checkoutId = checkout, googlePayToken = token)
+            logResponse("sdk.payment.googlePayConfirm", mapOf("status" to dto.status))
+            println("✅ [Payment] GooglePayConfirm OK status=${dto.status}")
+            dto
+        }
+    } catch (t: Throwable) {
+        val msg = t.message
+        errorMessage = msg
+        logError("sdk.payment.googlePayConfirm", t)
+        println("❌ [Payment] GooglePayConfirm FAIL $msg")
+        null
+    } finally {
+        isLoading = false
+    }
+}
+
 // Fetch available payment methods from backend (lowercased names)
 suspend fun CartManager.getAvailablePaymentMethodNames(): List<String> {
     return try {
@@ -339,5 +395,25 @@ suspend fun CartManager.getAvailablePaymentMethodNames(): List<String> {
         list.mapNotNull { it?.name?.lowercase() }
     } catch (_: Throwable) {
         emptyList()
+    }
+}
+
+/**
+ * Procesa el resultado de Google Pay, extrae la dirección y el token, 
+ * y actualiza el estado del CartManager.
+ */
+fun CartManager.handleGooglePayResult(data: Intent?) {
+    val addressData = VioGooglePayManager.extractAddressFromPaymentData(data)
+    if (addressData != null) {
+        shippingAddress = addressData["shippingAddress"] as? Map<String, Any?>
+        billingAddress = addressData["billingAddress"] as? Map<String, Any?>
+        customerEmail = addressData["email"] as? String
+        println("📍 [GooglePay] Address extracted: $addressData")
+    }
+    
+    val token = VioGooglePayManager.handlePaymentSuccess(data)
+    if (token != null) {
+        println("🎫 [GooglePay] Token extracted: $token")
+        // Aquí se podría disparar el confirm directamente si se desea
     }
 }

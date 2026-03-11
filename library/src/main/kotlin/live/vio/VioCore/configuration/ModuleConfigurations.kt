@@ -309,7 +309,7 @@ data class CampaignConfiguration(
     /**
      * Mapeado desde el flag de Apple Pay para mostrar Google Pay en Android.
      */
-    val hasApplePay: Boolean = false,
+    val hasGooglePay: Boolean = false,
 ) {
     companion object { fun default() = CampaignConfiguration() }
 }

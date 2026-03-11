@@ -1,67 +1,27 @@
-1. VProductDetailOverlay — ocultar CTA si hay método de pago activo
-Contexto
-En Swift, VProductDetailOverlay tiene un botón estándar "Legg til i handlekurv".
-Cuando el backend tiene apple_pay activo en checkoutConfig, ese botón se oculta y aparece VPaymentSheet en su lugar. La lógica es dinámica: el overlay observa VioConfiguration y reacciona cuando llega la config del backend.
-Código Swift relevante:
+1. corregir errores
+    VioProductDetailOverlay.kt
+        Unresolved reference 'VioPaymentMethod'.
+        Unresolved reference 'variant'.
+        Unresolved reference 'times' for operator '*'.
+        Unresolved reference 'gateway'.
+        Unresolved reference 'gatewayMerchantId'.
+        Unresolved reference 'currency'.
+    PaymentManager.kt
+        Unresolved reference 'InitGooglePayDto'.
+        Unresolved reference 'ConfirmGooglePayDto'.
+        Not enough information to infer type argument for 'V'.
+        Not enough information to infer type argument for 'B'.
+        Unresolved reference 'status'.
+        Unresolved reference 'status'.
+    PaymentRepository.kt
+        Unresolved reference 'InitGooglePayDto'.
+        Unresolved reference 'ConfirmGooglePayDto'.
+    PaymentRepositoryGraphQL.kt
+        Unresolved reference 'InitGooglePayDto'.
+        Unresolved reference 'InitGooglePayDto'.
+        Argument type mismatch: actual type is 'kotlin.collections.Map<kotlin.String, kotlin.Any?>', but 'kotlin.Any?' was expected.
+        Unresolved reference 'ConfirmGooglePayDto'.
+        Unresolved reference 'ConfirmGooglePayDto'.
+        Argument type mismatch: actual type is 'kotlin.collections.Map<kotlin.String, kotlin.Any?>', but 'kotlin.Any?' was expected.
 
-
-@observedobject private var vioConfig = VioConfiguration.shared
-if !vioConfig.checkoutConfig.hasApplePay {
-    // mostrar botón addToCart
-}
-VPaymentSheet(...) // siempre presente
-Lo que se espera en Kotlin
-En VioProductDetailOverlay.kt (o el equivalente Composable):
-Observar checkoutConfig de VioConfiguration
-Si hasApplePay == true → ocultar el botón CTA estándar
-Mostrar VPaymentSheet en su lugar
-Referencia Swift: Sources/VioUI/Components/VProductDetailOverlay.swift
-
-2. VioCommerceService — fetch de producto por GraphQL
-
-Contexto
-En Swift y en el demo de Apple TV creamos VioCommerceService que consulta el backend de Commerce para obtener datos reales de producto (nombre, imagen, precio en NOK).
-Endpoint: https://graph-ql-dev.vio.live/graphql
-Auth header: Authorization: <apiKey> (viene de integrations.commerce.apiKey en la campaña)
-API Key demo: KCXF10Y-W5T4PCR-GG5119A-Z64SQ9S
-Query GraphQL:
-
-
-{
-  Channel {
-    GetProductById(id: "408895", countryCode: "NO", currencyCode: "NOK") {
-      id name
-      images { url order }
-      price { amount amount_incl_taxes currency_code }
-    }
-  }
-}
-Productos demo: 408841 (FCB Jersey 759kr), 408874 (PSG Jersey 999kr), 408895 (Samsung TV 17990kr), 408896 (Soundbar 6999kr)
-Lo que se espera en Kotlin
-Crear VioCommerceService.kt en VioCore/Managers:
-Función suspend fun fetchProduct(id: String): CommerceProduct?
-Usar Retrofit o HttpClient con la query GraphQL
-Nunca hardcodear el apiKey — leerlo de VioConfiguration.shared.commerceApiKey
-Modelo CommerceProduct con: id, name, primaryImageUrl, formattedPrice
-Referencia Swift: Sources/VioCore/Managers/VioCommerceService.swift (en repo InteractiveAds-vio también)
-
-3. shouldShowComponent — componentes de campaña siempre visibles
-Contexto
-Había un bug en Swift donde el carousel de productos y el banner de sponsor desaparecían aunque la campaña estuviera activa. El problema era que shouldShowComponent ocultaba componentes de nivel campaña cuando broadcastContext aún no estaba seteado.
-Fix aplicado en Swift (CampaignManager.swift, commit e8febaf):
-Componentes sin broadcastContext (carousel, banner) → siempre visibles si la campaña está activa
-Solo ocultar si el componente tiene un broadcastContext.broadcastId que no coincide con el broadcast activo
-
-
-func shouldShowComponent(_ component: CampaignComponent) -> Bool {
-    guard isCampaignActive else { return false }
-    guard let componentBroadcastId = component.broadcastContext?.broadcastId else {
-        return true // campaign-level component, always show
-    }
-    return componentBroadcastId == currentBroadcastContext?.broadcastId
-}
-Lo que se espera en Kotlin
-Revisar la lógica equivalente en Kotlin SDK (probablemente en CampaignManager.kt):
-Confirmar que componentes sin broadcastContext se muestran siempre
-Si la lógica actual oculta todo cuando broadcastContext es null → corregir
-Referencia Swift: Sources/VioCore/Managers/CampaignManager.swift método shouldShowComponent
+2. crear archivo en la raiz de como debería ser el servicio de backend usando la tecnología NestJS

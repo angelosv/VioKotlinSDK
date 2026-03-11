@@ -33,19 +33,24 @@ fun VPaymentSheet(
     val checkoutConfig = configState.checkout
     val campaignConfig = configState.campaign
 
+    if (campaignConfig.hasGooglePay != true) {
+        // Master switch is OFF
+        return
+    }
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(VioSpacing.sm.dp)
     ) {
         if (checkoutConfig == null) {
             // Check campaign config first if no dynamic checkout config is available
-            if (campaignConfig.hasApplePay) {
-                GooglePayButton(onClick = { onPaymentMethodSelected(VioPaymentMethod.APPLE_PAY) })
+            if (campaignConfig.hasGooglePay) {
+                GooglePayButton(onClick = { onPaymentMethodSelected(VioPaymentMethod.GOOGLE_PAY) })
             }
         } else {
             // Google Pay (Mapping from Apple Pay config as per requirement)
-            if (checkoutConfig.hasApplePay || campaignConfig.hasApplePay) {
-                GooglePayButton(onClick = { onPaymentMethodSelected(VioPaymentMethod.APPLE_PAY) })
+            if (checkoutConfig.hasGooglePay || campaignConfig.hasGooglePay) {
+                GooglePayButton(onClick = { onPaymentMethodSelected(VioPaymentMethod.GOOGLE_PAY) })
             }
 
             // Klarna

@@ -78,6 +78,9 @@ class CartManager(
     var currencySymbol: String by mutableStateOf("$")
     var phoneCode: String by mutableStateOf("+1")
     var flagURL: String? by mutableStateOf(null)
+    var shippingAddress: Map<String, Any?>? by mutableStateOf(null)
+    var billingAddress: Map<String, Any?>? by mutableStateOf(null)
+    var customerEmail: String? by mutableStateOf(null)
     internal var trustBackendTotals: Boolean = false
 
     internal var currentCartId: String? = null

@@ -496,16 +496,22 @@ private data class CampaignJSON(
     val autoDiscover: Boolean? = null,
     val channelId: Int? = null,
     val hasApplePay: Boolean? = null,
+    val hasGooglePay: Boolean? = null,
 ) {
-    fun toDomain() = CampaignConfiguration(
-        webSocketBaseURL = webSocketBaseURL ?: CampaignConfiguration.default().webSocketBaseURL,
-        restAPIBaseURL = restAPIBaseURL ?: CampaignConfiguration.default().restAPIBaseURL,
-        campaignApiKey = campaignApiKey ?: CampaignConfiguration.default().campaignApiKey,
-        campaignAdminApiKey = campaignAdminApiKey ?: CampaignConfiguration.default().campaignAdminApiKey,
-        autoDiscover = autoDiscover ?: CampaignConfiguration.default().autoDiscover,
-        channelId = channelId ?: CampaignConfiguration.default().channelId,
-        hasApplePay = hasApplePay ?: CampaignConfiguration.default().hasApplePay,
-    )
+    fun toDomain(): CampaignConfiguration {
+        val domainHasGooglePay = hasGooglePay ?: hasApplePay ?: CampaignConfiguration.default().hasGooglePay
+        VioLogger.info("Parsing Campaign Config: hasGooglePay=$hasGooglePay, hasApplePay=$hasApplePay -> Result=$domainHasGooglePay", "Config")
+        
+        return CampaignConfiguration(
+            webSocketBaseURL = webSocketBaseURL ?: CampaignConfiguration.default().webSocketBaseURL,
+            restAPIBaseURL = restAPIBaseURL ?: CampaignConfiguration.default().restAPIBaseURL,
+            campaignApiKey = campaignApiKey ?: CampaignConfiguration.default().campaignApiKey,
+            campaignAdminApiKey = campaignAdminApiKey ?: CampaignConfiguration.default().campaignAdminApiKey,
+            autoDiscover = autoDiscover ?: CampaignConfiguration.default().autoDiscover,
+            channelId = channelId ?: CampaignConfiguration.default().channelId,
+            hasGooglePay = domainHasGooglePay,
+        )
+    }
 }
 
 @Serializable

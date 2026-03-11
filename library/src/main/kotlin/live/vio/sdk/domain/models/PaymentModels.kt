@@ -175,3 +175,13 @@ data class KlarnaNativeConfirmInputDto(
     @JsonProperty("billing_address") var billingAddress: KlarnaNativeAddressInputDto? = null,
     @JsonProperty("shipping_address") var shippingAddress: KlarnaNativeAddressInputDto? = null,
 )
+
+data class InitGooglePayDto(
+    @JsonProperty("gateway") val gateway: String = "",
+    @JsonProperty("gateway_merchant_id") val gatewayMerchantId: String = "",
+)
+
+data class ConfirmGooglePayDto(
+    @JsonProperty("order_id") val orderId: String = "",
+    @JsonProperty("status") val status: String = "",
+)
