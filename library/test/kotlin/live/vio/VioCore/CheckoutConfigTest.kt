@@ -25,7 +25,7 @@ class CheckoutConfigTest {
 
         org.junit.jupiter.api.Assertions.assertNotNull(checkout)
         assertEquals(3, checkout!!.paymentMethods.size)
-        assertTrue(checkout.hasApplePay)
+        assertTrue(checkout.hasGooglePay)
         assertTrue(checkout.hasKlarna)
         assertTrue(checkout.hasStripe)
         assertTrue(!checkout.hasVipps)

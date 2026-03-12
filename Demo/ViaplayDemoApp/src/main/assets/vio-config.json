@@ -2,6 +2,11 @@
   "name": "TV2 Demo Configuration",
   "version": "1.0.0",
   "apiKey": "KCXF10Y-W5T4PCR-GG5119A-Z64SQ9S",
+  "integrations": {
+    "commerce": {
+      "apiKey": "KCXF10Y-W5T4PCR-GG5119A-Z64SQ9S"
+    }
+  },
   "environment": "development",
   "theme": {
     "name": "TV2 Dark Theme",
@@ -123,7 +128,9 @@
     "webSocketBaseURL": "https://api-dev.vio.live",
     "restAPIBaseURL": "https://api-dev.vio.live",
     "campaignApiKey": "viaplay_api_key_0c611e983b314ff8",
-    "campaignAdminApiKey": "viaplay_api_key_0c611e983b314ff8"
+    "campaignAdminApiKey": "viaplay_api_key_0c611e983b314ff8",
+    "hasGooglePay": true,
+    "hasApplePay": true
   },
   "network": {
     "enableLogging": true,

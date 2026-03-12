@@ -248,9 +248,9 @@ object PaymentGraphQL {
     """.trimIndent()
 
     val GOOGLE_PAY_INIT_MUTATION = """
-    mutation CreatePaymentInitGooglePay(${'$'}checkoutId: String!) {
+    mutation CreatePaymentGooglePay(${'$'}checkoutId: String!) {
       Payment {
-        CreatePaymentInitGooglePay(checkout_id: ${'$'}checkoutId) {
+        CreatePaymentGooglePay(checkout_id: ${'$'}checkoutId) {
           gateway
           gateway_merchant_id
         }
@@ -259,9 +259,14 @@ object PaymentGraphQL {
     """.trimIndent()
 
     val GOOGLE_PAY_CONFIRM_MUTATION = """
-    mutation CreatePaymentConfirmGooglePay(${'$'}checkoutId: String!, ${'$'}googlePayToken: String!) {
+    mutation ConfirmPaymentGooglePay(${'$'}checkoutId: String!, ${'$'}googlePayToken: String!, ${'$'}email: String, ${'$'}shippingAddress: GooglePayAddressInput) {
       Payment {
-        CreatePaymentConfirmGooglePay(checkout_id: ${'$'}checkoutId, google_pay_token: ${'$'}googlePayToken) {
+        ConfirmPaymentGooglePay(
+          checkout_id: ${'$'}checkoutId, 
+          google_pay_token: ${'$'}googlePayToken,
+          email: ${'$'}email,
+          shipping_address: ${'$'}shippingAddress
+        ) {
           order_id
           status
         }

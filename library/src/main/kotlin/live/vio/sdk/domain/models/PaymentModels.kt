@@ -185,3 +185,30 @@ data class ConfirmGooglePayDto(
     @JsonProperty("order_id") val orderId: String = "",
     @JsonProperty("status") val status: String = "",
 )
+
+data class VioShippingContact(
+    val name: String?,
+    val phone: String?,
+    val address1: String?,
+    val address2: String?,
+    val city: String?,
+    val administrativeArea: String?,
+    val countryCode: String?,
+    val postalCode: String?
+)
+
+data class ShippingAddressInputDto(
+    @JsonProperty("first_name") val firstName: String? = null,
+    @JsonProperty("last_name") val lastName: String? = null,
+    @JsonProperty("zip") val zip: String? = null,
+    @JsonProperty("city") val city: String? = null,
+    @JsonProperty("phone_code") val phoneCode: String? = null,
+    @JsonProperty("phone") val phone: String? = null,
+    @JsonProperty("company") val company: String? = null,
+    @JsonProperty("address1") val address1: String? = null,
+    @JsonProperty("address2") val address2: String? = null,
+    @JsonProperty("province") val province: String? = null,
+    @JsonProperty("province_code") val provinceCode: String? = null,
+    @JsonProperty("country") val country: String? = null,
+    @JsonProperty("country_code") val countryCode: String? = null,
+)

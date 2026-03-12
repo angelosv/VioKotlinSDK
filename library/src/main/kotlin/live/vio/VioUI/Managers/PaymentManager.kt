@@ -15,6 +15,8 @@ import live.vio.sdk.domain.models.InitPaymentVippsDto
 import live.vio.sdk.domain.models.GetAvailablePaymentMethodsDto
 import live.vio.sdk.domain.models.InitGooglePayDto
 import live.vio.sdk.domain.models.ConfirmGooglePayDto
+import live.vio.sdk.domain.models.ShippingAddressInputDto
+import live.vio.sdk.domain.models.VioShippingContact
 import live.vio.VioCore.managers.VioGooglePayManager
 import android.content.Intent
 
@@ -361,7 +363,11 @@ suspend fun CartManager.initGooglePay(): InitGooglePayDto? {
     }
 }
 
-suspend fun CartManager.confirmGooglePay(token: String): ConfirmGooglePayDto? {
+suspend fun CartManager.confirmGooglePay(
+    token: String,
+    email: String? = null,
+    shippingAddress: ShippingAddressInputDto? = null
+): ConfirmGooglePayDto? {
     isLoading = true
     errorMessage = null
     return try {
@@ -371,8 +377,17 @@ suspend fun CartManager.confirmGooglePay(token: String): ConfirmGooglePayDto? {
             null
         } else {
             println("💳 [Payment] GooglePayConfirm START checkoutId=$checkout")
-            logRequest("sdk.payment.googlePayConfirm", mapOf("checkoutId" to checkout))
-            val dto = sdk.payment.googlePayConfirm(checkoutId = checkout, googlePayToken = token)
+            logRequest("sdk.payment.googlePayConfirm", mapOf(
+                "checkoutId" to checkout,
+                "email" to email,
+                "hasShipping" to (shippingAddress != null)
+            ))
+            val dto = sdk.payment.googlePayConfirm(
+                checkoutId = checkout,
+                googlePayToken = token,
+                email = email,
+                shippingAddress = shippingAddress
+            )
             logResponse("sdk.payment.googlePayConfirm", mapOf("status" to dto.status))
             println("✅ [Payment] GooglePayConfirm OK status=${dto.status}")
             dto
@@ -386,6 +401,27 @@ suspend fun CartManager.confirmGooglePay(token: String): ConfirmGooglePayDto? {
     } finally {
         isLoading = false
     }
+}
+
+/**
+ * Convierte un VioShippingContact del Manager de Google Pay al DTO de entrada del Repositorio.
+ */
+fun VioShippingContact.toInputDto(): ShippingAddressInputDto {
+    val nameParts = name?.split(" ", limit = 2) ?: listOf("", "")
+    val firstName = nameParts.getOrNull(0) ?: ""
+    val lastName = nameParts.getOrNull(1) ?: ""
+    
+    return ShippingAddressInputDto(
+        firstName = firstName,
+        lastName = lastName,
+        zip = postalCode,
+        city = city,
+        address1 = address1,
+        address2 = address2,
+        province = administrativeArea,
+        countryCode = countryCode,
+        phone = phone?.filter { it.isDigit() }
+    )
 }
 
 // Fetch available payment methods from backend (lowercased names)
