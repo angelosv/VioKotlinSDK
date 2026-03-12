@@ -6,6 +6,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
 import live.vio.VioCore.utils.VioLogger
 import live.vio.sdk.core.helpers.JsonUtils
+import live.vio.sdk.domain.models.VioShippingContact
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -21,6 +22,17 @@ object VioGooglePayManager {
     private val baseRequest = JSONObject().apply {
         put("apiVersion", 2)
         put("apiVersionMinor", 0)
+    }
+
+    /**
+     * Maps Vio SDK environment to Google Pay constants.
+     */
+    fun getGooglePayEnvironment(vioEnv: live.vio.VioCore.configuration.VioEnvironment): Int {
+        return if (vioEnv == live.vio.VioCore.configuration.VioEnvironment.PRODUCTION) {
+            WalletConstants.ENVIRONMENT_PRODUCTION
+        } else {
+            WalletConstants.ENVIRONMENT_TEST
+        }
     }
 
     private fun getBaseCardPaymentMethod(): JSONObject {
@@ -45,12 +57,17 @@ object VioGooglePayManager {
 
     /**
      * Check if Google Pay is available for the user.
+     * @param environment Google Pay environment (e.g., WalletConstants.ENVIRONMENT_TEST)
      */
-    fun isGooglePayAvailable(activity: Activity, callback: (Boolean) -> Unit) {
+    fun isGooglePayAvailable(
+        activity: Activity,
+        environment: Int = WalletConstants.ENVIRONMENT_TEST,
+        callback: (Boolean) -> Unit
+    ) {
         val paymentsClient = Wallet.getPaymentsClient(
             activity,
             Wallet.WalletOptions.Builder()
-                .setEnvironment(WalletConstants.ENVIRONMENT_TEST) // TODO: Toggle based on config
+                .setEnvironment(environment)
                 .build()
         )
         
@@ -71,12 +88,16 @@ object VioGooglePayManager {
      * @param gatewayMerchantId Vio backend merchant identifier.
      * @param price Total price in decimal format (e.g., "10.00").
      * @param currency Currency code (e.g., "USD").
+     * @param shippingAddressRequired Whether shipping address is required.
+     * @param phoneNumberRequired Whether phone number is required in shipping address.
      */
     fun createPaymentDataRequest(
         gateway: String,
         gatewayMerchantId: String,
         price: String,
-        currency: String
+        currency: String,
+        shippingAddressRequired: Boolean = false,
+        phoneNumberRequired: Boolean = false
     ): JSONObject {
         val cardPaymentMethod = getBaseCardPaymentMethod().apply {
             put("tokenizationSpecification", JSONObject().apply {
@@ -98,22 +119,30 @@ object VioGooglePayManager {
             put("merchantInfo", JSONObject().apply {
                 put("merchantName", "Vio Merchant")
             })
-            put("shippingAddressRequired", true)
-            put("shippingAddressParameters", JSONObject().apply {
-                put("allowedCountryCodes", JSONArray(listOf("US", "GB", "NO", "ES"))) // Example countries
-                put("phoneNumberRequired", true)
-            })
+            
+            if (shippingAddressRequired) {
+                put("shippingAddressRequired", true)
+                put("shippingAddressParameters", JSONObject().apply {
+                    put("allowedCountryCodes", JSONArray(listOf("US", "GB", "NO", "ES", "IT", "FR", "DE"))) // Expanded countries
+                    put("phoneNumberRequired", phoneNumberRequired)
+                })
+            }
         }
     }
 
     /**
      * Launch the Google Pay sheet.
+     * @param environment Google Pay environment (e.g., WalletConstants.ENVIRONMENT_TEST)
      */
-    fun launchGooglePay(activity: Activity, paymentDataRequestJson: JSONObject) {
+    fun launchGooglePay(
+        activity: Activity,
+        paymentDataRequestJson: JSONObject,
+        environment: Int = WalletConstants.ENVIRONMENT_TEST
+    ) {
         val paymentsClient = Wallet.getPaymentsClient(
             activity,
             Wallet.WalletOptions.Builder()
-                .setEnvironment(WalletConstants.ENVIRONMENT_TEST)
+                .setEnvironment(environment)
                 .build()
         )
 
@@ -126,24 +155,89 @@ object VioGooglePayManager {
     }
 
     /**
+     * Data class to hold all relevant information from a Google Pay payment result.
+     */
+    data class VioGooglePayResult(
+        val token: String,
+        val email: String? = null,
+        val shippingContact: VioShippingContact? = null
+    )
+
+    /**
      * Handle the result from the Google Pay activity.
      */
     fun handlePaymentSuccess(data: Intent?): String? {
+        return extractFullPaymentData(data)?.token
+    }
+
+    /**
+     * Extracts all relevant data from Google Pay result.
+     */
+    fun extractFullPaymentData(data: Intent?): VioGooglePayResult? {
         val paymentData = PaymentData.getFromIntent(data ?: return null) ?: return null
         val paymentInformation = paymentData.toJson()
         
         return try {
-            val paymentMethodData = JSONObject(paymentInformation).getJSONObject("paymentMethodData")
+            val root = JSONObject(paymentInformation)
+            val paymentMethodData = root.getJSONObject("paymentMethodData")
             val token = paymentMethodData.getJSONObject("tokenizationData").getString("token")
-            token
+            val email = root.optString("email").takeIf { it.isNotEmpty() }
+            
+            val shippingContact = if (root.has("shippingAddress")) {
+                val sa = root.getJSONObject("shippingAddress")
+                VioShippingContact(
+                    name = sa.optString("name").takeIf { it.isNotEmpty() },
+                    phone = sa.optString("phoneNumber").takeIf { it.isNotEmpty() },
+                    address1 = sa.optString("address1").takeIf { it.isNotEmpty() },
+                    address2 = sa.optString("address2").takeIf { it.isNotEmpty() },
+                    city = sa.optString("locality").takeIf { it.isNotEmpty() },
+                    administrativeArea = sa.optString("administrativeArea").takeIf { it.isNotEmpty() },
+                    countryCode = sa.optString("countryCode").takeIf { it.isNotEmpty() },
+                    postalCode = sa.optString("postalCode").takeIf { it.isNotEmpty() }
+                )
+            } else null
+
+            VioGooglePayResult(token, email, shippingContact)
         } catch (e: Exception) {
-            VioLogger.error("Error parsing Google Pay token: ${e.message}", TAG)
+            VioLogger.error("Error parsing Google Pay result: ${e.message}", TAG)
+            null
+        }
+    }
+
+    /**
+     * Extracts shipping information from Google Pay PaymentData.
+     */
+    fun extractShippingContact(data: Intent?): VioShippingContact? {
+        val paymentData = PaymentData.getFromIntent(data ?: return null) ?: return null
+        val paymentInformation = paymentData.toJson()
+        
+        return try {
+            val root = JSONObject(paymentInformation)
+            
+            if (root.has("shippingAddress")) {
+                val sa = root.getJSONObject("shippingAddress")
+                VioShippingContact(
+                    name = sa.optString("name").takeIf { it.isNotEmpty() },
+                    phone = sa.optString("phoneNumber").takeIf { it.isNotEmpty() },
+                    address1 = sa.optString("address1").takeIf { it.isNotEmpty() },
+                    address2 = sa.optString("address2").takeIf { it.isNotEmpty() },
+                    city = sa.optString("locality").takeIf { it.isNotEmpty() },
+                    administrativeArea = sa.optString("administrativeArea").takeIf { it.isNotEmpty() },
+                    countryCode = sa.optString("countryCode").takeIf { it.isNotEmpty() },
+                    postalCode = sa.optString("postalCode").takeIf { it.isNotEmpty() }
+                )
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            VioLogger.error("Error extracting shipping contact: ${e.message}", TAG)
             null
         }
     }
 
     /**
      * Extrae información de dirección del resultado de Google Pay.
+     * @deprecated Use [extractShippingContact] instead for specific shipping info.
      */
     fun extractAddressFromPaymentData(data: Intent?): Map<String, Any?>? {
         val paymentData = PaymentData.getFromIntent(data ?: return null) ?: return null
@@ -161,6 +255,7 @@ object VioGooglePayManager {
                     "address1" to sa.optString("address1"),
                     "address2" to sa.optString("address2"),
                     "city" to sa.optString("locality"),
+                    "administrativeArea" to sa.optString("administrativeArea"),
                     "countryCode" to sa.optString("countryCode"),
                     "postalCode" to sa.optString("postalCode"),
                     "phone" to sa.optString("phoneNumber")
@@ -178,6 +273,7 @@ object VioGooglePayManager {
                         "address1" to ba.optString("address1"),
                         "address2" to ba.optString("address2"),
                         "city" to ba.optString("locality"),
+                        "administrativeArea" to ba.optString("administrativeArea"),
                         "countryCode" to ba.optString("countryCode"),
                         "postalCode" to ba.optString("postalCode"),
                         "phone" to ba.optString("phoneNumber")

@@ -368,14 +368,17 @@ fun VioProductDetailOverlay(
                                     if (initDto != null) {
                                         VioLogger.info("Google Pay init successful: gateway=${initDto.gateway}", "VioProductDetailOverlay")
                                         val priceStr = String.format("%.2f", currentPriceValue * quantity)
+                                        val gpEnv = VioGooglePayManager.getGooglePayEnvironment(configState.environment)
                                         val request = VioGooglePayManager.createPaymentDataRequest(
                                             gateway = initDto.gateway,
                                             gatewayMerchantId = initDto.gatewayMerchantId,
                                             price = priceStr,
-                                            currency = product.price.currencyCode.ifBlank { "USD" }
+                                            currency = product.price.currencyCode.ifBlank { "USD" },
+                                            shippingAddressRequired = true,
+                                            phoneNumberRequired = configState.cart.requirePhoneNumber
                                         )
-                                        VioLogger.info("Launching Google Pay Sheet (Price: $priceStr)", "VioProductDetailOverlay")
-                                        VioGooglePayManager.launchGooglePay(activity, request)
+                                        VioLogger.info("Launching Google Pay Sheet (Price: $priceStr, Env: $gpEnv)", "VioProductDetailOverlay")
+                                        VioGooglePayManager.launchGooglePay(activity, request, gpEnv)
                                     } else {
                                         VioLogger.error("Failed to initialize Google Pay: initDto is null", "VioProductDetailOverlay")
                                     }

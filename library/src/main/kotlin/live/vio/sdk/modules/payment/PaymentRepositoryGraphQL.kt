@@ -19,6 +19,7 @@ import live.vio.sdk.domain.models.KlarnaNativeConfirmInputDto
 import live.vio.sdk.domain.models.KlarnaNativeInitInputDto
 import live.vio.sdk.domain.models.KlarnaNativeOrderDto
 import live.vio.sdk.domain.models.PaymentIntentStripeDto
+import live.vio.sdk.domain.models.ShippingAddressInputDto
 import live.vio.sdk.domain.repositories.PaymentRepository
 
 class PaymentRepositoryGraphQL(
@@ -212,19 +213,32 @@ class PaymentRepositoryGraphQL(
             PaymentGraphQL.GOOGLE_PAY_INIT_MUTATION,
             mapOf("checkoutId" to checkoutId),
         )
-        val obj: Map<String, Any?> = GraphQLPick.pickPath(response.data, listOf("Payment", "CreatePaymentInitGooglePay"))
+        val obj: Map<String, Any?> = GraphQLPick.pickPath(response.data, listOf("Payment", "CreatePaymentGooglePay"))
             ?: throw SdkException("Empty response in Payment.googlePayInit", code = "EMPTY_RESPONSE")
         return GraphQLPick.decodeJSON<InitGooglePayDto>(obj)
     }
 
-    override suspend fun googlePayConfirm(checkoutId: String, googlePayToken: String): ConfirmGooglePayDto {
+    override suspend fun googlePayConfirm(
+        checkoutId: String,
+        googlePayToken: String,
+        email: String?,
+        shippingAddress: ShippingAddressInputDto?
+    ): ConfirmGooglePayDto {
         Validation.requireNonEmpty(checkoutId, "checkoutId")
         Validation.requireNonEmpty(googlePayToken, "googlePayToken")
+        
+        val variables = buildMap<String, Any?> {
+            put("checkoutId", checkoutId)
+            put("googlePayToken", googlePayToken)
+            put("email", email)
+            shippingAddress?.let { sa: ShippingAddressInputDto -> put("shippingAddress", encodeToMap(sa)) }
+        }.filterValues { it != null }
+
         val response = client.runMutationSafe(
             PaymentGraphQL.GOOGLE_PAY_CONFIRM_MUTATION,
-            mapOf("checkoutId" to checkoutId, "googlePayToken" to googlePayToken),
+            variables,
         )
-        val obj: Map<String, Any?> = GraphQLPick.pickPath(response.data, listOf("Payment", "CreatePaymentConfirmGooglePay"))
+        val obj: Map<String, Any?> = GraphQLPick.pickPath(response.data, listOf("Payment", "ConfirmPaymentGooglePay"))
             ?: throw SdkException("Empty response in Payment.googlePayConfirm", code = "EMPTY_RESPONSE")
         return GraphQLPick.decodeJSON<ConfirmGooglePayDto>(obj)
     }

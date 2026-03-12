@@ -46,10 +46,11 @@ object ProductService {
             
             // Re-fetch state to be sure we have the latest after lock
             val currentState = VioConfiguration.shared.state.value
-            val commerceConfig = currentState.commerce
-            
+            //println("**** currentState: $currentState")
+            // val commerceConfig = currentState.commerce
+            // println("**** commerceConfig: $commerceConfig")
             // PRIORITY: Use commerce-specific API key if available
-            val apiKey = commerceConfig?.apiKey 
+            val apiKey = currentState?.apiKey 
                 ?: throw ProductServiceError.InvalidConfiguration("Commerce API key not configured (integrations.commerce.apiKey missing)")
 
             val baseUrl = try {

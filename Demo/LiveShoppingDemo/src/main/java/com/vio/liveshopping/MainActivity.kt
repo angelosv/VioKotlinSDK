@@ -35,8 +35,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import live.vio.VioUI.Managers.CartManager
 import live.vio.VioUI.Managers.Product
-import live.vio.VioUI.Components.compose.product.VioImageLoaderDefaults
-import live.vio.VioUI.adapters.VioCoilImageLoader
+import live.vio.VioCore.managers.VioGooglePayManager
+import live.vio.VioUI.Managers.confirmGooglePay
+import live.vio.VioUI.Managers.toInputDto
+import android.content.Intent
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import android.app.Activity
+import com.google.android.gms.wallet.AutoResolveHelper
 
 class MainActivity : ComponentActivity() {
     
@@ -63,6 +69,40 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     LiveShoppingScreen(cartManager = cartManager)
+                }
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == VioGooglePayManager.LOAD_PAYMENT_DATA_REQUEST_CODE) {
+            when (resultCode) {
+                Activity.RESULT_OK -> {
+                    val result = VioGooglePayManager.extractFullPaymentData(data)
+                    if (result != null) {
+                        lifecycleScope.launch {
+                            println("🚀 [Demo] Confirming Google Pay with backend...")
+                            val confirmDto = cartManager.confirmGooglePay(
+                                token = result.token,
+                                email = result.email,
+                                shippingAddress = result.shippingContact?.toInputDto()
+                            )
+                            if (confirmDto != null && confirmDto.status == "SUCCESS") {
+                                println("✅ [Demo] Order confirmed: ${confirmDto.orderId}")
+                                // Handle success
+                            } else {
+                                println("❌ [Demo] Google Pay confirmation failed")
+                            }
+                        }
+                    }
+                }
+                Activity.RESULT_CANCELED -> {
+                    println("ℹ️ [Demo] Google Pay cancelled by user")
+                }
+                AutoResolveHelper.RESULT_ERROR -> {
+                    val status = AutoResolveHelper.getStatusFromIntent(data)
+                    println("❌ [Demo] Google Pay error: ${status?.statusMessage}")
                 }
             }
         }

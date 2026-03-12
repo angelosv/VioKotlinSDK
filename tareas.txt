@@ -1,27 +1,3 @@
-1. corregir errores
-    VioProductDetailOverlay.kt
-        Unresolved reference 'VioPaymentMethod'.
-        Unresolved reference 'variant'.
-        Unresolved reference 'times' for operator '*'.
-        Unresolved reference 'gateway'.
-        Unresolved reference 'gatewayMerchantId'.
-        Unresolved reference 'currency'.
+1. solucionar errores
     PaymentManager.kt
-        Unresolved reference 'InitGooglePayDto'.
-        Unresolved reference 'ConfirmGooglePayDto'.
-        Not enough information to infer type argument for 'V'.
-        Not enough information to infer type argument for 'B'.
-        Unresolved reference 'status'.
-        Unresolved reference 'status'.
-    PaymentRepository.kt
-        Unresolved reference 'InitGooglePayDto'.
-        Unresolved reference 'ConfirmGooglePayDto'.
-    PaymentRepositoryGraphQL.kt
-        Unresolved reference 'InitGooglePayDto'.
-        Unresolved reference 'InitGooglePayDto'.
-        Argument type mismatch: actual type is 'kotlin.collections.Map<kotlin.String, kotlin.Any?>', but 'kotlin.Any?' was expected.
-        Unresolved reference 'ConfirmGooglePayDto'.
-        Unresolved reference 'ConfirmGooglePayDto'.
-        Argument type mismatch: actual type is 'kotlin.collections.Map<kotlin.String, kotlin.Any?>', but 'kotlin.Any?' was expected.
-
-2. crear archivo en la raiz de como debería ser el servicio de backend usando la tecnología NestJS
+        Argument type mismatch: actual type is 'kotlin.Double?', but 'kotlin.String?' was expected.

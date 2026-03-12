@@ -33,6 +33,7 @@ fun VPaymentSheet(
     val checkoutConfig = configState.checkout
     val campaignConfig = configState.campaign
 
+    println("**** campaignConfig.hasGooglePay: ${campaignConfig.hasGooglePay}")
     if (campaignConfig.hasGooglePay != true) {
         // Master switch is OFF
         return
