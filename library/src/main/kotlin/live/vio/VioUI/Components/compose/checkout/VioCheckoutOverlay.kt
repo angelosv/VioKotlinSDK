@@ -198,6 +198,10 @@ fun VioCheckoutOverlay(
                                         }
                                         isProcessing = false
                                     }
+                                    VioCheckoutOverlayController.PaymentMethod.GooglePay -> {
+                                        ToastManager.showInfo("Google Pay not supported in this view")
+                                        isProcessing = false
+                                    }
                                 }
                             }
                         },
@@ -211,6 +215,7 @@ fun VioCheckoutOverlay(
                                 VioCheckoutOverlayController.PaymentMethod.Stripe -> "Pay with card"
                                 VioCheckoutOverlayController.PaymentMethod.Klarna -> "Continue with Klarna"
                                 VioCheckoutOverlayController.PaymentMethod.Vipps -> "Continue with Vipps"
+                                VioCheckoutOverlayController.PaymentMethod.GooglePay -> "Pay with Google Pay"
                             }
                         )
                     }
@@ -377,6 +382,7 @@ private fun PaymentMethodSelector(
                             VioCheckoutOverlayController.PaymentMethod.Stripe -> "Credit Card"
                             VioCheckoutOverlayController.PaymentMethod.Klarna -> "Klarna"
                             VioCheckoutOverlayController.PaymentMethod.Vipps -> "Vipps"
+                            VioCheckoutOverlayController.PaymentMethod.GooglePay -> "Google Pay"
                         },
                         style = MaterialTheme.typography.bodyLarge,
                         color = VioColors.textPrimary.toColor(),

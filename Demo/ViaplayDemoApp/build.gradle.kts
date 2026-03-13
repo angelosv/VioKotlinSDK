@@ -67,6 +67,9 @@ dependencies {
     implementation("androidx.media3:media3-ui:1.4.1")
     implementation("androidx.media3:media3-common:1.4.1")
 
+    // Google Pay
+    implementation("com.google.android.gms:play-services-wallet:19.4.0")
+
     // Consume the SDK modules locally while developing inside this repo
     implementation(project(":library"))
     implementation(project(":VioAndroidUI"))

@@ -59,6 +59,13 @@ import com.vio.viaplaydemo.ui.ViaplayHomeView
 import com.vio.viaplaydemo.ui.theme.ViaplayTheme
 import com.vio.viaplaydemo.utils.CacheHelper
 import com.vio.viaplaydemo.ui.model.TabItem
+import live.vio.VioCore.managers.VioGooglePayManager
+import live.vio.VioUI.Managers.confirmGooglePay
+import live.vio.VioUI.Managers.updateCheckout
+import live.vio.VioUI.Managers.toInputDto
+import android.content.Intent
+import android.app.Activity
+import com.google.android.gms.wallet.AutoResolveHelper
 
 class MainActivity : AppCompatActivity() {
 
@@ -104,6 +111,11 @@ class MainActivity : AppCompatActivity() {
                 CheckoutDeepLinkBus.emit(CheckoutDeepLinkBus.Event(status))
             }
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // Note: Google Pay result is now handled internally by VioCheckoutOverlay
     }
 
     private fun copyConfigToFilesDir(fileName: String) {

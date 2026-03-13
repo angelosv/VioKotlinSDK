@@ -48,8 +48,11 @@ import live.vio.VioUI.Managers.CartItem
 import live.vio.VioUI.Managers.ToastManager
 import live.vio.VioUI.Managers.setShippingOption
 import live.vio.VioUI.Managers.clearCart
+import live.vio.VioUI.Managers.refreshCheckoutTotals
 import live.vio.VioUI.Managers.resetCartAndCreateNew
+import live.vio.VioUI.Managers.discountApply
 import live.vio.VioUI.Managers.discountApplyOrCreate
+import live.vio.VioUI.Managers.updateCheckout
 import live.vio.VioUI.Managers.vippsInit
 import live.vio.VioUI.Managers.applyCheapestShippingPerSupplier
 import live.vio.VioUI.Managers.refreshShippingOptions
@@ -95,6 +98,10 @@ import androidx.activity.ComponentActivity
 import live.vio.VioDesignSystem.Tokens.VioTypography
 import live.vio.VioDesignSystem.Tokens.VioColors
 import live.vio.VioDesignSystem.Tokens.VioBorderRadius
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.app.Activity
+import live.vio.VioUI.Managers.toInputDto
 import live.vio.VioDesignSystem.Tokens.VioSpacing
 import live.vio.VioDesignSystem.Components.VioButtonModel
 import live.vio.VioUI.PaymentSheetBridge
@@ -102,6 +109,13 @@ import live.vio.VioCore.configuration.VioConfiguration
 import live.vio.VioCore.configuration.KlarnaMode
 import live.vio.VioCore.managers.CampaignManager
 import live.vio.VioUI.Managers.VippsPaymentHandler
+import live.vio.VioCore.managers.VioGooglePayManager
+import live.vio.VioCore.models.VioPaymentMethod
+import live.vio.VioUI.Managers.initGooglePay
+import live.vio.VioUI.Managers.confirmGooglePay
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.draw.shadow
 
 private fun live.vio.VioCore.configuration.TypographyToken.toComposeTextStyle(): androidx.compose.ui.text.TextStyle {
     val weight = when (fontWeight.lowercase()) {
@@ -297,6 +311,67 @@ fun VioCheckoutOverlay(
     val activity = context as? ComponentActivity
     var editingAddress by remember { mutableStateOf(false) }
 
+    // --- Google Pay Result Handler ---
+    val googlePayLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { activityResult ->
+        if (activityResult.resultCode == Activity.RESULT_OK) {
+            val result = VioGooglePayManager.extractFullPaymentData(activityResult.data)
+            if (result != null) {
+                overlay.goToStep(VioCheckoutOverlayController.CheckoutStep.Processing)
+                scope.launch {
+                    try {
+                        val shippingDto = result.shippingContact?.toInputDto()
+                        val shippingMap: Map<String, Any?>? = shippingDto?.let {
+                            mapOf(
+                                "first_name" to it.firstName,
+                                "last_name" to it.lastName,
+                                "address1" to it.address1,
+                                "address2" to it.address2,
+                                "city" to it.city,
+                                "zip" to it.zip,
+                                "province" to it.province,
+                                "country_code" to it.countryCode,
+                                "phone" to it.phone
+                            )
+                        }
+
+                        // Update checkout
+                        cartManager.updateCheckout(
+                            email = result.email,
+                            shippingAddress = shippingMap,
+                            paymentMethod = "google_pay",
+                            acceptsTerms = true,
+                            acceptsPurchaseConditions = true
+                        )
+
+                        // Confirm
+                        val confirmDto = cartManager.confirmGooglePay(
+                            token = result.token,
+                            email = result.email,
+                            shippingAddress = shippingDto
+                        )
+
+                        if (confirmDto != null && confirmDto.status == "SUCCESS") {
+                            scope.launch { cartManager.clearCart() }
+                            overlay.goToStep(VioCheckoutOverlayController.CheckoutStep.Success)
+                        } else {
+                            overlay.goToStep(VioCheckoutOverlayController.CheckoutStep.Review)
+                            ToastManager.showError("Google Pay failed: ${confirmDto?.status}")
+                        }
+                    } catch (e: Exception) {
+                        overlay.goToStep(VioCheckoutOverlayController.CheckoutStep.Review)
+                        ToastManager.showError("Error: ${e.message}")
+                    }
+                }
+            }
+        } else if (activityResult.resultCode == Activity.RESULT_CANCELED) {
+            ToastManager.showInfo("Payment canceled")
+        } else {
+            ToastManager.showError("Google Pay error")
+        }
+    }
+
     // Apply pretty hardcoded defaults for NO and US when draft is empty
     LaunchedEffect(cartManager.country, cartManager.currency) {
         fun applyDefaults(
@@ -375,11 +450,13 @@ fun VioCheckoutOverlay(
                     ) { onBack() }
             )
             Card(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(16.dp)
+                    .align(Alignment.BottomCenter)
+                    .padding(top = 40.dp) // Leave a bit of safe area at top for status bar
                     .fillMaxHeight()
+                    .fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
                     // Handle bar (tap to dismiss)
@@ -528,7 +605,7 @@ fun VioCheckoutOverlay(
                                     verticalArrangement = Arrangement.spacedBy(12.dp),
                                     modifier = Modifier
                                         .verticalScroll(rememberScrollState())
-                                        .padding(bottom = 84.dp) // leave room for fixed CTA
+                                        .padding(bottom = 280.dp) // room for fixed panel (discount + buttons)
                                 ) {
                                     Text("Cart", fontWeight = FontWeight.SemiBold)
                                     itemsState.forEach { item ->
@@ -990,10 +1067,16 @@ fun VioCheckoutOverlay(
                                                                 item.id,
                                                                 opt.id
                                                             )
-                                                            itemsState = cartManager.items
-                                                            shippingTotalState =
-                                                                cartManager.shippingTotal
-                                                            cartTotalState = cartManager.cartTotal
+                                                            scope.launch {
+                                                                cartManager.applyCheapestShippingPerSupplier()
+                                                                // Sync local state after backend update
+                                                                itemsState = cartManager.items
+                                                                shippingTotalState = cartManager.shippingTotal
+                                                                cartTotalState = cartManager.cartTotal
+                                                                subtotalState = cartManager.subtotal
+                                                                taxTotalState = cartManager.taxTotal
+                                                                discountTotalState = cartManager.discountTotal
+                                                            }
                                                         }
                                                         .padding(12.dp),
                                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -1005,10 +1088,16 @@ fun VioCheckoutOverlay(
                                                                 item.id,
                                                                 opt.id
                                                             )
-                                                            itemsState = cartManager.items
-                                                            shippingTotalState =
-                                                                cartManager.shippingTotal
-                                                            cartTotalState = cartManager.cartTotal
+                                                            scope.launch {
+                                                                cartManager.applyCheapestShippingPerSupplier()
+                                                                // Sync local state
+                                                                itemsState = cartManager.items
+                                                                shippingTotalState = cartManager.shippingTotal
+                                                                cartTotalState = cartManager.cartTotal
+                                                                subtotalState = cartManager.subtotal
+                                                                taxTotalState = cartManager.taxTotal
+                                                                discountTotalState = cartManager.discountTotal
+                                                            }
                                                         }, enabled = !managerLoading)
                                                         Spacer(Modifier.width(4.dp))
                                                         Column {
@@ -1166,14 +1255,103 @@ fun VioCheckoutOverlay(
                                              color = MaterialTheme.colorScheme.primary
                                          )
                                      }
-
-                                    // extra space no longer needed (CTA is fixed)
                                 }
+                                // Fixed bottom panel — sits above scroll
                                 Column(
-                                    Modifier.align(Alignment.BottomCenter).fillMaxWidth()
-                                        .padding(16.dp),
+                                    Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .fillMaxWidth()
+                                        .shadow(
+                                            elevation = 8.dp,
+                                            shape = androidx.compose.foundation.shape.RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                                        )
+                                        .background(
+                                            MaterialTheme.colorScheme.surface,
+                                            shape = androidx.compose.foundation.shape.RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                                        )
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
                                     verticalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
+                                    // --- Discount Code Section ---
+                                    HorizontalDivider()
+                                    var discountCodeInput by remember { mutableStateOf("") }
+                                    var discountMessage by remember { mutableStateOf("") }
+                                    var isApplyingDiscount by remember { mutableStateOf(false) }
+                                    Text(
+                                        "Discount Code",
+                                        style = VioTypography.title3.toComposeTextStyle(),
+                                        color = dsColors.textPrimary
+                                    )
+                                    Row(
+                                        Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        OutlinedTextField(
+                                            value = discountCodeInput,
+                                            onValueChange = { discountCodeInput = it },
+                                            label = { Text("Enter code") },
+                                            singleLine = true,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        Button(
+                                             onClick = {
+                                                 val code = discountCodeInput.trim()
+                                                 if (code.isNotEmpty() && !isApplyingDiscount) {
+                                                     isApplyingDiscount = true
+                                                     scope.launch {
+                                                         try {
+                                                             val applied = cartManager.discountApply(code)
+                                                             discountMessage = if (applied) {
+                                                                 discountCodeInput = ""
+                                                                 "Discount applied: $code"
+                                                             } else {
+                                                                 cartManager.errorMessage ?: "Invalid discount code"
+                                                             }
+                                                             
+                                                             // CRITICAL: Force the backend to recalculate the checkout session with the new discount
+                                                             cartManager.updateCheckout(checkoutId = cartManager.checkoutId)
+
+                                                             // Refresh totals from backend mapping
+                                                             cartManager.refreshCheckoutTotals()
+                                                             
+                                                             // Explicitly update all local UI states
+                                                             subtotalState = cartManager.subtotal
+                                                             shippingTotalState = cartManager.shippingTotal
+                                                             discountTotalState = cartManager.discountTotal
+                                                             taxTotalState = cartManager.taxTotal
+                                                             cartTotalState = cartManager.cartTotal
+                                                             
+                                                             // Trigger overlay update for full consistency
+                                                             overlay.updateCheckout(advanceToSuccess = false)
+                                                         } finally {
+                                                             isApplyingDiscount = false
+                                                         }
+                                                     }
+                                                 }
+                                             },
+                                             enabled = discountCodeInput.isNotBlank() && !isApplyingDiscount
+                                         ) {
+                                            if (isApplyingDiscount) {
+                                                CircularProgressIndicator(
+                                                    strokeWidth = 2.dp,
+                                                    modifier = Modifier.size(18.dp),
+                                                    color = Color.White
+                                                )
+                                            } else {
+                                                Text("Apply")
+                                            }
+                                        }
+                                    }
+                                    if (discountMessage.isNotEmpty()) {
+                                        val isSuccess = discountMessage.startsWith("Discount applied")
+                                        Text(
+                                            discountMessage,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = if (isSuccess) Color(0xFF2E7D32) else Color(0xFFB00020)
+                                        )
+                                    }
+                                    HorizontalDivider()
                                     val isEmpty = items.isEmpty()
                                     val itemsMissingShipping =
                                         itemsState.filter { it.shippingId.isNullOrBlank() }
@@ -1231,9 +1409,79 @@ fun VioCheckoutOverlay(
                                             }
                                         }
                                     }
+                                    // --- Google Pay button (solo si está habilitado) ---
+                                    val checkoutConfigState by VioConfiguration.shared.state.collectAsState()
+                                    val isGooglePayEnabled = checkoutConfigState.campaign.hasGooglePay
+                                    val googlePayCheckout = checkoutConfigState.checkout?.hasGooglePay ?: true
+                                    if (isGooglePayEnabled && googlePayCheckout && canProceed) {
+                                        Button(
+                                            onClick = {
+                                                if (!proceedLoading && canProceed) {
+                                                    proceedLoading = true
+                                                    scope.launch {
+                                                        try {
+                                                            val initDto = cartManager.initGooglePay()
+                                                            if (initDto != null) {
+                                                                val totalPrice = String.format("%.2f", cartManager.cartTotal)
+                                                                val gpEnv = VioGooglePayManager.getGooglePayEnvironment(checkoutConfigState.environment)
+                                                                val request = VioGooglePayManager.createPaymentDataRequest(
+                                                                    gateway = initDto.gateway,
+                                                                    gatewayMerchantId = initDto.gatewayMerchantId,
+                                                                    price = totalPrice,
+                                                                    currency = cartManager.currency.ifBlank { "USD" },
+                                                                    shippingAddressRequired = true,
+                                                                    phoneNumberRequired = checkoutConfigState.cart.requirePhoneNumber
+                                                                )
+                                                                activity?.let { act ->
+                                                                     googlePayLauncher.launch(VioGooglePayManager.getGooglePayIntent(act, request, gpEnv))
+                                                                 } ?: ToastManager.showError("Activity not available")
+                                                            } else {
+                                                                ToastManager.showError("Google Pay initialization failed")
+                                                            }
+                                                        } catch (e: Exception) {
+                                                            ToastManager.showError("Google Pay error: ${e.message}")
+                                                        }
+                                                        proceedLoading = false
+                                                    }
+                                                }
+                                            },
+                                            enabled = canProceed && !proceedLoading,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(44.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color.Black,
+                                                contentColor = Color.White
+                                            ),
+                                            shape = RoundedCornerShape(VioBorderRadius.medium.dp),
+                                            contentPadding = PaddingValues(0.dp)
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.Center
+                                            ) {
+                                                Text(
+                                                    text = "Pay with ",
+                                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                                        fontWeight = FontWeight.Medium,
+                                                        fontSize = androidx.compose.ui.unit.TextUnit(15f, androidx.compose.ui.unit.TextUnitType.Sp)
+                                                    )
+                                                )
+                                                Text(
+                                                    text = "Google Pay",
+                                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                                        fontWeight = FontWeight.Bold,
+                                                        fontSize = androidx.compose.ui.unit.TextUnit(17f, androidx.compose.ui.unit.TextUnitType.Sp)
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    // --- Continuar a Payment ---
                                     VioButton(
                                         model = VioButtonModel(
-                                            title = "Proceed to Checkout",
+                                            title = "Continue to Payment",
                                             style = VioButtonModel.Style.Primary,
                                             size = VioButtonModel.Size.Large,
                                             isLoading = proceedLoading,
@@ -2100,6 +2348,35 @@ fun VioCheckoutOverlay(
                                                                 } else {
                                                                     isPaymentProcessing = false
                                                                     ToastManager.showError("Vipps init failed")
+                                                                }
+                                                            }
+                                                        }
+
+                                                        VioCheckoutOverlayController.PaymentMethod.GooglePay -> {
+                                                            scope.launch {
+                                                                try {
+                                                                    val initDto = cartManager.initGooglePay()
+                                                                    if (initDto != null) {
+                                                                        val totalPrice = String.format("%.2f", cartManager.cartTotal)
+                                                                        val gpEnv = VioGooglePayManager.getGooglePayEnvironment(VioConfiguration.shared.state.value.environment)
+                                                                        val request = VioGooglePayManager.createPaymentDataRequest(
+                                                                            gateway = initDto.gateway,
+                                                                            gatewayMerchantId = initDto.gatewayMerchantId,
+                                                                            price = totalPrice,
+                                                                            currency = cartManager.currency.ifBlank { "USD" },
+                                                                            shippingAddressRequired = true,
+                                                                            phoneNumberRequired = VioConfiguration.shared.state.value.cart.requirePhoneNumber
+                                                                        )
+                                                                        activity?.let { act ->
+                                                                            googlePayLauncher.launch(VioGooglePayManager.getGooglePayIntent(act, request, gpEnv))
+                                                                        } ?: ToastManager.showError("Activity not available")
+                                                                    } else {
+                                                                        ToastManager.showError("Google Pay initialization failed")
+                                                                    }
+                                                                } catch (e: Exception) {
+                                                                    ToastManager.showError("Google Pay error: ${e.message}")
+                                                                } finally {
+                                                                    isPaymentProcessing = false
                                                                 }
                                                             }
                                                         }

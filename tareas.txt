@@ -1,3 +1,12 @@
-1. solucionar errores
-    PaymentManager.kt
-        Argument type mismatch: actual type is 'kotlin.Double?', but 'kotlin.String?' was expected.
+1. Cambiar el flujo de Google Pay
+    a. El botón de Google Pay ya no se mostrará en el Product Detail.
+    b. Mover el segmento de código de descuento desde la vista Payment a la vista Checkout.
+    c. En la vista Checkout, el orden de los elementos al final de la página debe quedar así:
+        Todo lo demas (productos, shipping info, etc)
+        ↓
+        Nuevo -> Código de descuento
+        ↓
+        Nuevo Botón Google Pay (solo si está habilitado)
+        ↓
+        Botón "Continuar a Payment" para los otros métodos de pago
+        d. El botón Google Pay solo debe mostrarse si la opción está activada para el checkout.

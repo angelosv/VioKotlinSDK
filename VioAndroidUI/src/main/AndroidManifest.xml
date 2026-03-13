@@ -11,6 +11,10 @@
             android:name="live.vio.VioUI.KlarnaWebActivity"
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.DayNight" />
+        <activity
+            android:name="live.vio.VioUI.VioGooglePayActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

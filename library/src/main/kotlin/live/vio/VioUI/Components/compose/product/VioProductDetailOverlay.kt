@@ -63,7 +63,6 @@ import live.vio.VioCore.managers.CampaignManager
 import live.vio.VioDesignSystem.Tokens.VioBorderRadius
 import live.vio.VioDesignSystem.Tokens.VioColors
 import live.vio.VioDesignSystem.Tokens.VioSpacing
-import live.vio.VioUI.Components.VPaymentSheet
 import live.vio.VioDesignSystem.Tokens.VioTypography
 import live.vio.VioUI.Components.VioProductCardConfig
 import live.vio.VioUI.Components.compose.utils.toVioColor
@@ -80,24 +79,6 @@ import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import android.text.method.LinkMovementMethod
 import androidx.compose.ui.graphics.toArgb
-import android.app.Activity
-import androidx.compose.ui.platform.LocalContext
-import live.vio.VioCore.managers.VioGooglePayManager
-import live.vio.VioUI.Managers.initGooglePay
-import live.vio.VioUI.Managers.CartManager
-import live.vio.VioUI.Managers.confirmGooglePay
-import live.vio.VioCore.models.VioPaymentMethod
-import android.content.Context
-import android.content.ContextWrapper
-
-private fun Context.findActivity(): Activity? {
-    var context = this
-    while (context is ContextWrapper) {
-        if (context is Activity) return context
-        context = context.baseContext
-    }
-    return null
-}
 
 private fun String.toColor(): Color = toVioColor()
 
@@ -159,12 +140,9 @@ fun VioProductDetailOverlay(
         campaignActive && currentCampaign?.isPaused != true
     }
 
-
-    val configState by VioConfiguration.shared.state.collectAsState()
-    val checkoutConfig = configState.checkout
-
     if (!shouldShow) return
 
+    val configState by VioConfiguration.shared.state.collectAsState()
     val detailConfig = configState.productDetail
     val scope = rememberCoroutineScope()
     val variants = remember(product) { product.variants }
@@ -206,10 +184,6 @@ fun VioProductDetailOverlay(
     val maxQuantity = max(1, selectedVariant?.quantity ?: product.quantity ?: 1)
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    // hasGooglePay is the master switch in Android
-    val isGooglePayEnabled = configState.campaign.hasGooglePay
-    val hasPaymentSheet = isGooglePayEnabled && (checkoutConfig?.hasGooglePay ?: true)
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
@@ -318,86 +292,37 @@ fun VioProductDetailOverlay(
                 
                 Spacer(Modifier.height(16.dp))
 
-                // Standard CTA button - hidden if payment sheet is active
-                if (!hasPaymentSheet) {
-                    Button(
-                        onClick = {
-                            if (!isAdding && isInStock) {
-                                isAdding = true
-                                scope.launch {
-                                    onAddToCart(selectedVariant, quantity)
-                                    isAdding = false
-                                    showSuccess = true
-                                    delay(600)
-                                    showSuccess = false
-                                    onDismiss()
-                                }
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = VioSpacing.lg.dp),
-                        enabled = isInStock && !isAdding,
-                    ) {
-                        Text(
-                            if (isAdding) "Processing..." else "Add to Cart • ${formatPrice(displayCurrency, currentPriceValue * quantity)}",
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                    }
-                }
-
-                if (isGooglePayEnabled) {
-                    val context = LocalContext.current
-                    VPaymentSheet(
-                        modifier = Modifier.padding(horizontal = VioSpacing.lg.dp),
-                    onPaymentMethodSelected = { method ->
-                        VioLogger.info("Payment method selected: $method", "VioProductDetailOverlay")
-                        if (method == VioPaymentMethod.GOOGLE_PAY) {
-                            val activity = context.findActivity()
-                            if (activity == null) {
-                                VioLogger.error("Cannot start Google Pay: Activity not found in context", "VioProductDetailOverlay")
-                                return@VPaymentSheet
-                            }
-                            
-                            VioLogger.info("Launching Google Pay coroutine", "VioProductDetailOverlay")
+                // Add to Cart CTA button
+                Button(
+                    onClick = {
+                        if (!isAdding && isInStock) {
+                            isAdding = true
                             scope.launch {
-                                try {
-                                    val cartManager = CartManager(autoBootstrap = false)
-                                    VioLogger.info("Initializing Google Pay transaction...", "VioProductDetailOverlay")
-                                    val initDto = cartManager.initGooglePay()
-                                    if (initDto != null) {
-                                        VioLogger.info("Google Pay init successful: gateway=${initDto.gateway}", "VioProductDetailOverlay")
-                                        val priceStr = String.format("%.2f", currentPriceValue * quantity)
-                                        val gpEnv = VioGooglePayManager.getGooglePayEnvironment(configState.environment)
-                                        val request = VioGooglePayManager.createPaymentDataRequest(
-                                            gateway = initDto.gateway,
-                                            gatewayMerchantId = initDto.gatewayMerchantId,
-                                            price = priceStr,
-                                            currency = product.price.currencyCode.ifBlank { "USD" },
-                                            shippingAddressRequired = true,
-                                            phoneNumberRequired = configState.cart.requirePhoneNumber
-                                        )
-                                        VioLogger.info("Launching Google Pay Sheet (Price: $priceStr, Env: $gpEnv)", "VioProductDetailOverlay")
-                                        VioGooglePayManager.launchGooglePay(activity, request, gpEnv)
-                                    } else {
-                                        VioLogger.error("Failed to initialize Google Pay: initDto is null", "VioProductDetailOverlay")
-                                    }
-                                } catch (e: Exception) {
-                                    VioLogger.error("Google Pay flow exception: ${e.message}", "VioProductDetailOverlay")
-                                    e.printStackTrace()
-                                }
+                                onAddToCart(selectedVariant, quantity)
+                                isAdding = false
+                                showSuccess = true
+                                delay(600)
+                                showSuccess = false
+                                onDismiss()
                             }
                         }
-                    }
-                )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = VioSpacing.lg.dp),
+                    enabled = isInStock && !isAdding,
+                ) {
+                    Text(
+                        if (isAdding) "Processing..." else "Add to Cart • ${formatPrice(displayCurrency, currentPriceValue * quantity)}",
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
             }
-        }
             if (showSuccess) {
                 SuccessOverlay(productTitle = product.title, quantity = quantity)
             }
         }
     }
-
 }
 
 @Composable

@@ -5,6 +5,7 @@ import android.content.Intent
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.wallet.*
 import live.vio.VioCore.utils.VioLogger
+import live.vio.VioUI.VioGooglePayActivity
 import live.vio.sdk.core.helpers.JsonUtils
 import live.vio.sdk.domain.models.VioShippingContact
 import org.json.JSONArray
@@ -104,7 +105,12 @@ object VioGooglePayManager {
                 put("type", "PAYMENT_GATEWAY")
                 put("parameters", JSONObject().apply {
                     put("gateway", gateway)
-                    put("gatewayMerchantId", gatewayMerchantId)
+                    if (gateway == "stripe") {
+                        put("stripe:version", "2023-10-16")
+                        put("stripe:publishableKey", gatewayMerchantId)
+                    } else {
+                        put("gatewayMerchantId", gatewayMerchantId)
+                    }
                 })
             })
         }
@@ -119,11 +125,13 @@ object VioGooglePayManager {
             put("merchantInfo", JSONObject().apply {
                 put("merchantName", "Vio Merchant")
             })
-            
+            // Request the email from the user's Google account
+            put("emailRequired", true)
+
             if (shippingAddressRequired) {
                 put("shippingAddressRequired", true)
                 put("shippingAddressParameters", JSONObject().apply {
-                    put("allowedCountryCodes", JSONArray(listOf("US", "GB", "NO", "ES", "IT", "FR", "DE"))) // Expanded countries
+                    put("allowedCountryCodes", JSONArray(listOf("US", "GB", "NO", "ES", "IT", "FR", "DE")))
                     put("phoneNumberRequired", phoneNumberRequired)
                 })
             }
@@ -155,6 +163,21 @@ object VioGooglePayManager {
     }
 
     /**
+     * Creates an Intent to launch Google Pay via VioGooglePayActivity.
+     * This is a bridge for ActivityResultLauncher<Intent>.
+     */
+    fun getGooglePayIntent(
+        activity: Activity,
+        paymentDataRequestJson: JSONObject,
+        environment: Int = WalletConstants.ENVIRONMENT_TEST
+    ): Intent {
+        val intent = Intent(activity, VioGooglePayActivity::class.java)
+        intent.putExtra("paymentDataRequestJson", paymentDataRequestJson.toString())
+        intent.putExtra("environment", environment)
+        return intent
+    }
+
+    /**
      * Data class to hold all relevant information from a Google Pay payment result.
      */
     data class VioGooglePayResult(
@@ -180,7 +203,8 @@ object VioGooglePayManager {
         return try {
             val root = JSONObject(paymentInformation)
             val paymentMethodData = root.getJSONObject("paymentMethodData")
-            val token = paymentMethodData.getJSONObject("tokenizationData").getString("token")
+            val rawToken = paymentMethodData.getJSONObject("tokenizationData").getString("token")
+            val token = extractTokenId(rawToken)
             val email = root.optString("email").takeIf { it.isNotEmpty() }
             
             val shippingContact = if (root.has("shippingAddress")) {
@@ -288,6 +312,41 @@ object VioGooglePayManager {
         } catch (e: Exception) {
             VioLogger.error("Error extracting address: ${e.message}", TAG)
             null
+        }
+    }
+
+    /**
+     * Parses the token string from Google Pay/Stripe and extracts the actual token ID.
+     * Google Pay with Stripe returns a JSON string, which sometimes can be nested.
+     * Extraction logic:
+     * 1. If it's a simple string like "tok_...", return it.
+     * 2. If it's a JSON object, look for "id" at the root.
+     * 3. Look for "card.token" as a JSON string and parse it recursively.
+     */
+    private fun extractTokenId(token: String): String {
+        if (!token.trim().startsWith("{")) return token
+
+        return try {
+            val json = JSONObject(token)
+            
+            // Case 1: {"id": "tok_..."}
+            if (json.has("id")) {
+                return json.getString("id")
+            }
+
+            // Case 2: {"type":"card","card":{"token":"{\n  \"id\": \"tok_...\"}"}}
+            if (json.has("card")) {
+                val card = json.getJSONObject("card")
+                if (card.has("token")) {
+                    val nestedToken = card.getString("token")
+                    return extractTokenId(nestedToken)
+                }
+            }
+
+            // Fallback: return as-is if no known structure found
+            token
+        } catch (e: Exception) {
+            token
         }
     }
 }

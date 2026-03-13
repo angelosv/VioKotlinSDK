@@ -342,6 +342,11 @@ suspend fun CartManager.applyCheapestShippingPerSupplier(): Int {
         }
 
         succeeded.forEach { pendingShippingSelections.remove(it) }
+        
+        // Final synchronization: ensure checkout totals reflect backend calculations (including taxes)
+        if (checkoutId != null) {
+            refreshCheckoutTotals()
+        }
 
         if (lastResponse != null) {
             sync(lastResponse!!)

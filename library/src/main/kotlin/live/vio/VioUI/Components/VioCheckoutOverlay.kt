@@ -81,6 +81,7 @@ class VioCheckoutOverlayController(
         Stripe("Credit Card"),
         Klarna("Pay with Klarna"),
         Vipps("Vipps"),
+        GooglePay("Google Pay"),
     }
 
     var currentStep by mutableStateOf(CheckoutStep.OrderSummary)
@@ -99,7 +100,7 @@ class VioCheckoutOverlayController(
         private set
 
     // Allowed methods after intersecting config and backend
-    var allowedPaymentMethods: List<PaymentMethod> = listOf(PaymentMethod.Stripe, PaymentMethod.Klarna, PaymentMethod.Vipps)
+    var allowedPaymentMethods: List<PaymentMethod> = listOf(PaymentMethod.Stripe, PaymentMethod.Klarna, PaymentMethod.Vipps, PaymentMethod.GooglePay)
         private set
 
     init {
@@ -216,10 +217,11 @@ class VioCheckoutOverlayController(
         val backendLower = runCatching { cartManager.getAvailablePaymentMethodNames().map { it.lowercase() } }.getOrElse { emptyList() }
 
         val mapping: (String) -> PaymentMethod? = { name ->
-            when (name.lowercase()) {
+            when (name) {
                 "stripe" -> PaymentMethod.Stripe
                 "klarna" -> PaymentMethod.Klarna
                 "vipps" -> PaymentMethod.Vipps
+                "google_pay" -> PaymentMethod.GooglePay
                 else -> null
             }
         }
@@ -228,7 +230,7 @@ class VioCheckoutOverlayController(
         val allowedLower = when {
             configLower.isNotEmpty() -> configLower
             backendLower.isNotEmpty() -> backendLower
-            else -> listOf("stripe", "klarna", "vipps")
+            else -> listOf("stripe", "klarna", "vipps", "google_pay")
         }
 
         val orderSource = if (configLower.isNotEmpty()) configLower else allowedLower

@@ -231,7 +231,14 @@ class PaymentRepositoryGraphQL(
             put("checkoutId", checkoutId)
             put("googlePayToken", googlePayToken)
             put("email", email)
-            shippingAddress?.let { sa: ShippingAddressInputDto -> put("shippingAddress", encodeToMap(sa)) }
+            shippingAddress?.let { sa: ShippingAddressInputDto ->
+                val encoded = encodeToMap(sa).toMutableMap()
+                // GooglePayAddressInput defines phone as Float on the backend
+                // Convert the phone string to a numeric value (Long) so GraphQL accepts it
+                val phoneStr = sa.phone?.filter { it.isDigit() }
+                encoded["phone"] = phoneStr?.toLongOrNull()
+                put("shippingAddress", encoded)
+            }
         }.filterValues { it != null }
 
         val response = client.runMutationSafe(
