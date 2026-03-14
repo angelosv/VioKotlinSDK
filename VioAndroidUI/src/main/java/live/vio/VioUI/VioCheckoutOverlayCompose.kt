@@ -269,7 +269,7 @@ fun VioCheckoutOverlay(
                     ) { res ->
                         res.onSuccess {
                             VippsPaymentHandler.stopPaymentTracking()
-                            scope.launch { cartManager.clearCart() }
+                            scope.launch { cartManager.resetCartAndCreateNew() }
                             overlay.goToStep(VioCheckoutOverlayController.CheckoutStep.Success)
                         }
                         res.onFailure {
@@ -353,7 +353,7 @@ fun VioCheckoutOverlay(
                         )
 
                         if (confirmDto != null && confirmDto.status == "SUCCESS") {
-                            scope.launch { cartManager.clearCart() }
+                            scope.launch { cartManager.resetCartAndCreateNew() }
                             overlay.goToStep(VioCheckoutOverlayController.CheckoutStep.Success)
                         } else {
                             overlay.goToStep(VioCheckoutOverlayController.CheckoutStep.Review)
