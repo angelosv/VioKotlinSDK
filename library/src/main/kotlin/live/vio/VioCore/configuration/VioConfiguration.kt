@@ -118,6 +118,50 @@ class VioConfiguration private constructor() {
             }
         }
 
+        /**
+         * Aplica una configuración remota del SDK sobre el estado actual.
+         *
+         * - Actualiza endpoints de campaña (REST y WebSocket).
+         * - Actualiza configuración de commerce para `VioCommerceService`.
+         * - Re-inicializa `CampaignManager` para que recoja los nuevos endpoints.
+         */
+        fun applyRemoteConfig(remote: VioRemoteConfig) {
+            val current = shared._state.value
+
+            fun normalizeBase(url: String?): String? {
+                if (url == null) return null
+                return if (url.startsWith("http://")) {
+                    url.replaceFirst("http://", "https://")
+                } else {
+                    url
+                }
+            }
+
+            val updatedCampaign = current.campaign.copy(
+                restAPIBaseURL = normalizeBase(remote.endpoints?.restBase) ?: current.campaign.restAPIBaseURL,
+                webSocketBaseURL = normalizeBase(remote.endpoints?.webSocketBase) ?: current.campaign.webSocketBaseURL,
+                channelId = remote.clientApp?.id ?: current.campaign.channelId,
+                autoDiscover = true,
+            )
+
+            val updatedCommerce = remote.commerce?.let {
+                live.vio.VioCore.models.CommerceConfig(
+                    enabled = !it.apiKey.isNullOrBlank(),
+                    apiKey = it.apiKey,
+                    endpoint = it.endpoint ?: remote.endpoints?.commerceGraphQL,
+                    channelId = it.channelId,
+                )
+            } ?: current.commerce
+
+            shared._state.value = current.copy(
+                campaign = updatedCampaign,
+                commerce = updatedCommerce,
+            )
+
+            updatedCommerce?.let { updateCommerce(it) }
+            CampaignManager.shared.reinitialize()
+        }
+
         fun configure(context: android.content.Context, apiKey: String) {
             configure(
                 context = context,

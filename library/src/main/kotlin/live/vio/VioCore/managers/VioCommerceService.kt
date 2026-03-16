@@ -22,6 +22,7 @@ object VioCommerceService {
     suspend fun fetchProduct(id: String): CommerceProduct? = withContext(Dispatchers.IO) {
         val commerceConfig = VioConfiguration.shared.state.value.commerce
         val apiKey = commerceConfig?.apiKey ?: ""
+        val endpoint = commerceConfig?.endpoint ?: GRAPHQL_URL
         
         if (apiKey.isBlank()) {
             VioLogger.warning("Commerce API Key is missing. Cannot fetch product $id", TAG)
@@ -47,8 +48,8 @@ object VioCommerceService {
         )
 
         val jsonPayload = JsonUtils.mapper.writeValueAsString(payload)
-        
-        val connection = (URL(GRAPHQL_URL).openConnection() as HttpURLConnection).apply {
+
+        val connection = (URL(endpoint).openConnection() as HttpURLConnection).apply {
             requestMethod = "POST"
             connectTimeout = 10000
             readTimeout = 10000

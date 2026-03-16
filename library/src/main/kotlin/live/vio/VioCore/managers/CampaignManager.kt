@@ -110,6 +110,7 @@ class CampaignManager private constructor(
     private var apiKey: String = ""
     private var restApiBaseUrl: String = ""
     private var webSocketBaseUrl: String = ""
+    private var campaignApiKey: String? = null
     private var campaignAdminApiKey: String? = null
     private var campaignId: Int? = null
     private var appBundleId: String? = null
@@ -307,6 +308,7 @@ class CampaignManager private constructor(
         apiKey = state.apiKey
         restApiBaseUrl = state.campaign.restAPIBaseURL
         webSocketBaseUrl = state.campaign.webSocketBaseURL
+        campaignApiKey = state.campaign.campaignApiKey
         campaignAdminApiKey = state.campaign.campaignAdminApiKey
         
         val autoDiscover = state.campaign.autoDiscover
@@ -461,12 +463,19 @@ class CampaignManager private constructor(
         currentMatchId = matchId
         val baseUrl = restApiBaseUrl.trimEnd('/')
         
-        // Use campaignAdminApiKey if available, otherwise fallback to general apiKey
-        val effectiveApiKey = campaignAdminApiKey?.takeIf { it.isNotBlank() } ?: apiKey
-        
-        val url = "$baseUrl/v1/sdk/campaigns?apiKey=$effectiveApiKey" +
-                if (matchId != null) "&matchId=$matchId" else ""
-        
+        // Selección de API key (campaign > admin > general)
+        val effectiveApiKey = when {
+            !campaignApiKey.isNullOrBlank() -> campaignApiKey!!
+            !campaignAdminApiKey.isNullOrBlank() -> campaignAdminApiKey!!
+            else -> apiKey
+        }
+
+        val url = buildString {
+            append("$baseUrl/v1/sdk/campaigns?apiKey=$effectiveApiKey")
+            if (matchId != null) {
+                append("&broadcastId=$matchId&matchId=$matchId")
+            }
+        }
         VioLogger.debug("[CampaignManager] Discovering campaigns from: $url")
 
         // Request with 10s timeout

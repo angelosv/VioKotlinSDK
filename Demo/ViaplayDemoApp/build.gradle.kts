@@ -14,6 +14,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "VIO_API_KEY", "\"viaplay_api_key_0c611e983b314ff8\"")
     }
 
     buildTypes {
@@ -28,6 +29,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {

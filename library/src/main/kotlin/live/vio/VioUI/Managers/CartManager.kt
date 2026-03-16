@@ -92,20 +92,31 @@ class CartManager(
     internal var lastLoadedProductCountry: String? = null
     internal var didLoadInitialProducts: Boolean = false
 
+    private val constructorProvidedSdk: CartManagingSDK? = sdk
+    private var cachedSdk: CartManagingSDK? = null
+    private var cachedSdkSignature: String? = null
+
     internal val sdk: CartManagingSDK
+        get() {
+            constructorProvidedSdk?.let { return it }
+            val cfg = CoreVioConfiguration.shared.state.value
+            val endpoint = cfg.commerce?.endpoint?.takeIf { it.isNotBlank() } ?: cfg.environment.graphQLUrl
+            println("****** endpoint ${endpoint}")
+            val apiKeyForCommerce = (cfg.commerce?.apiKey?.takeIf { it.isNotBlank() } ?: cfg.apiKey).ifBlank { "DEMO_KEY" }
+            println("****** apiKeyForCommerce ${apiKeyForCommerce}")
+            val overrideBase = System.getenv("REACHU_BASE_URL")?.trim()?.takeIf { it.isNotBlank() }
+            val overrideToken = System.getenv("REACHU_API_TOKEN")?.trim()?.takeIf { it.isNotBlank() }
+            val signature = "${overrideBase ?: endpoint}|${overrideToken ?: apiKeyForCommerce}"
+            if (cachedSdk == null || cachedSdkSignature != signature) {
+                cachedSdkSignature = signature
+                val baseUrl = URL(overrideBase ?: endpoint)
+                val apiKey = (overrideToken ?: apiKeyForCommerce).ifBlank { "DEMO_KEY" }
+                cachedSdk = VioSdkClient(baseUrl = baseUrl, apiKey = apiKey).asCartManagingSDK()
+            }
+            return cachedSdk!!
+        }
 
     init {
-        val providedSdk = sdk ?: run {
-            val cfg = CoreVioConfiguration.shared.state.value
-            val overrideBase = System.getenv("REACHU_BASE_URL")?.trim()?.takeIf { it.isNotBlank() }
-            val baseUrl = URL(overrideBase ?: cfg.environment.graphQLUrl)
-            val overrideToken = System.getenv("REACHU_API_TOKEN")?.trim()?.takeIf { it.isNotBlank() }
-            val apiKey = (overrideToken ?: cfg.apiKey).ifBlank { "DEMO_KEY" }
-            println("🔧 [CartManager] Initializing SDK Client (baseUrl=$baseUrl)")
-            VioSdkClient(baseUrl = baseUrl, apiKey = apiKey).asCartManagingSDK()
-        }
-        this.sdk = providedSdk
-
         val fallback = CoreVioConfiguration.shared.state.value.market
         val fallbackMarket = Market(
             code = fallback.countryCode,

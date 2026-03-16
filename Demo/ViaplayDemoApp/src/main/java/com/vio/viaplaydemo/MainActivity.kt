@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import live.vio.VioCore.configuration.ConfigurationLoader
 import live.vio.VioUI.CheckoutDeepLinkBus
 import live.vio.VioUI.Components.compose.feedback.VioToastOverlay
 import live.vio.VioUI.Components.compose.theme.ProvideAdaptiveVioColors
@@ -50,7 +49,6 @@ import live.vio.liveshow.models.LiveStreamLayout
 import live.vio.liveui.components.VioLiveMiniPlayer
 import live.vio.liveui.components.VioLiveShowFullScreenOverlay
 import live.vio.liveui.components.VioLiveShowOverlayController
-import java.io.File
 import kotlinx.coroutines.launch
 import com.vio.viaplaydemo.casting.CastingManager
 import com.vio.viaplaydemo.casting.CastingActiveOverlay
@@ -67,6 +65,9 @@ import android.content.Intent
 import android.app.Activity
 import com.google.android.gms.wallet.AutoResolveHelper
 
+import live.vio.sdk.VioSDK
+import live.vio.VioCore.configuration.VioEnvironment
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var cartManager: CartManager
@@ -74,8 +75,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        copyConfigToFilesDir("vio-config.json")
-        ConfigurationLoader.loadConfiguration(this, "vio-config", filesDir.absolutePath + "/")
+        // Configuración simplificada: solo apiKey y entorno.
+        // El resto de la configuración (endpoints, commerce, campañas, etc.)
+        // se obtiene automáticamente desde el backend via VioSDK.
+        val apiKey = BuildConfig.VIO_API_KEY
+        VioSDK.configure(
+            context = this,
+            apiKey = apiKey,
+            environment = VioEnvironment.SANDBOX,
+        )
 
         cartManager = CartManager()
         VioImageLoaderDefaults.install(VioCoilImageLoader)
@@ -119,15 +127,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun copyConfigToFilesDir(fileName: String) {
-        val output = File(filesDir, fileName)
-        // Eliminamos el check 'if (output.exists()) return' para forzar la actualización
-        // desde assets cada vez que se inicia la app durante el desarrollo.
-        println("📂 [MainActivity] Copying $fileName to internal storage")
-        assets.open(fileName).use { input ->
-            output.outputStream().use { outputStream ->
-                input.copyTo(outputStream)
-            }
-        }
+        // Ya no se usa vio-config.json local para este demo.
     }
 }
 
