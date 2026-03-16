@@ -686,12 +686,20 @@ suspend fun CartManager.clearCart() {
 suspend fun CartManager.resetCartAndCreateNew() {
     items = emptyList()
     cartTotal = 0.0
+    subtotal = 0.0
     shippingTotal = 0.0
+    discountTotal = 0.0
+    taxTotal = 0.0
+    totalOverride = null
     shippingCurrency = currency
     checkoutId = null
     lastDiscountCode = null
     lastDiscountId = null
     pendingShippingSelections.clear()
+
+    shippingAddress = null
+    billingAddress = null
+    customerEmail = null
 
     currentCartId = null
     cartId = null

@@ -1,12 +1,62 @@
-1. Cambiar el flujo de Google Pay
-    a. El botón de Google Pay ya no se mostrará en el Product Detail.
-    b. Mover el segmento de código de descuento desde la vista Payment a la vista Checkout.
-    c. En la vista Checkout, el orden de los elementos al final de la página debe quedar así:
-        Todo lo demas (productos, shipping info, etc)
-        ↓
-        Nuevo -> Código de descuento
-        ↓
-        Nuevo Botón Google Pay (solo si está habilitado)
-        ↓
-        Botón "Continuar a Payment" para los otros métodos de pago
-        d. El botón Google Pay solo debe mostrarse si la opción está activada para el checkout.
+1. Contexto
+
+El SDK ya no requiere vio-config.json. El cliente solo necesita su apiKey — todo lo demás viene del backend automáticamente.
+
+Endpoint live (verificado):
+GET https://api-dev.vio.live/v1/sdk/config?apiKey=<apiKey>
+Response incluye: clientApp, endpoints, features, commerce.apiKey, theme, markets.
+Equivalente Swift implementado en branch feature/zero-config:
+VioSDK.configure(apiKey: "xxx")
+VioSDK.setContent(id: stream.contentId)
+VioSDK.setUserId("user123")  // opcional, para push notifications
+
+Lo que se espera en Kotlin
+1. VioRemoteConfig.kt — modelo para la response
+data class VioRemoteConfig(
+    val clientApp: RemoteClientApp?,
+    val endpoints: RemoteEndpoints?,
+    val features: RemoteFeatures?,
+    val commerce: RemoteCommerceConfig?,
+    val theme: RemoteThemeConfig?,
+    val markets: List<String>?
+)
+// + data classes anidadas para cada sección
+
+2. VioSDKConfigService.kt
+class VioSDKConfigService {
+    suspend fun fetchConfig(apiKey: String, baseUrl: String): VioRemoteConfig?
+    // Fallback graceful: si falla retorna null, SDK sigue con defaults
+}
+
+3. VioSDK.kt — entry point público
+object VioSDK {
+    fun configure(apiKey: String, environment: VioEnvironment = VioEnvironment.PRODUCTION)
+    fun setContent(contentId: String)
+    fun setUserId(userId: String)  // para push notifications FCM
+    fun clearContent()
+    val isConfigured: Boolean
+}
+configure() debe:
+Guardar apiKey, aplicar defaults inmediatamente
+Llamar CampaignManager.reinitialize()
+Lanzar coroutine para fetchConfig() → cuando llega, applyRemoteConfig()
+
+4. VioConfiguration.applyRemoteConfig()
+Actualizar campaignConfiguration.restAPIBaseURL y webSocketBaseURL
+Guardar commerceApiKey para uso de VioCommerceService
+Llamar CampaignManager.reinitialize()
+
+Ref Swift
+Sources/VioCore/VioSDK.swift
+Sources/VioCore/Configuration/VioSDKConfigService.swift
+Sources/VioCore/Configuration/RemoteSDKConfig.swift
+
+Nota: implementar antes de Maven publish
+Esta tarjeta cambia la API pública del SDK. Publicar Maven solo cuando esté completo.
+
+
+Crear VioSDKConfigService que lee config del backend
+VioSDK.configure(apiKey:) — nuevo entry point público
+Eliminar dependencia de vio-config.json local
+Cachear config en memoria (TTL 5 min)
+Fallback graceful si el backend no responde
