@@ -15,7 +15,9 @@ data class SponsorConfig(
     @JsonProperty("avatarUrl") val avatarUrl: String? = null,
     @JsonProperty("primaryColor") val primaryColor: String? = null,
     @JsonProperty("secondaryColor") val secondaryColor: String? = null,
-    @JsonProperty("badgeText") val badgeText: String? = null
+    @JsonProperty("badgeText") val badgeText: String? = null,
+    @JsonProperty("type") val type: String? = null,
+    @JsonProperty("config") val config: Map<String, Any?>? = null
 )
 
 /**

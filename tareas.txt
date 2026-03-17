@@ -1,19 +1,16 @@
-PARTE del zero-config SDK (ver tarjeta KOTLIN-ZERO-CONFIG).
-Fix en discoverCampaigns():
-// Actual (incorrecto — adminApiKey tiene prioridad):
-val effectiveApiKey = campaignAdminApiKey?.takeIf { it.isNotBlank() } ?: apiKey
-// Correcto (campaignApiKey primero):
-val effectiveApiKey = when {
-!campaignApiKey.isNullOrBlank() -> campaignApiKey
-!campaignAdminApiKey.isNullOrBlank() -> campaignAdminApiKey
-else -> apiKey
-}
-Añadir broadcastId como param (mantener matchId para compat):
-val url = baseUrl + '/v1/sdk/campaigns?apiKey=' + effectiveApiKey +
-if (matchId != null) '&broadcastId=' + matchId + '&matchId=' + matchId else ''
-Ref Swift: CampaignManager.swift discoverCampaigns() / commit fcedfa9
+Sponsor Moments — campo type en sponsor slots
 
-Fix requerido
-discoverCampaigns() usa campaignApiKey del SDK, no adminApiKey
-broadcastId como parámetro opcional en discoverCampaigns()
-Tests unitarios para el nuevo flujo
+Los sponsor slots (antes Shoppable Ads, ahora Sponsor Moments) tienen un nuevo campo type en la API.
+Tipos: product | lead | poll_cta | contest_cta | link
+Cada tipo tiene su propio config JSON.
+LO QUE SE ESPERA EN KOTLIN:
+Añadir type: String y config: Map<String, Any?> al modelo SponsorSlot (o equivalente)
+La card de UI debe renderizar diferente según type:
+product → producto + precio + CTA compra (comportamiento actual)
+lead → form de captura (email/phone)
+poll_cta → botón que abre poll
+contest_cta → botón que abre contest
+link → botón que abre URL
+Por ahora alcanza manejar 'product' bien. Los otros tipos pueden ser fallback genérico.
+El nombre en la API sigue siendo sponsor_slots — solo cambia el label en la UI.
+No es blocker para el deal — es para cuando estén los tipos extra en el dashboard.

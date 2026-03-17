@@ -227,6 +227,17 @@ data class Component(
             )
         }
     }
+
+    /**
+     * Helper to parse the configuration as a SponsorSlot if the component type is "sponsor_slots".
+     */
+    fun toSponsorSlot(): SponsorSlot? {
+        if (type != "sponsor_slots") return null
+        return runCatching {
+            val json = JsonUtils.mapper.writeValueAsString(config)
+            JsonUtils.mapper.readValue(json, SponsorSlot::class.java)
+        }.getOrNull()
+    }
 }
 
 private fun Map<String, AnyCodable>.toPrimitiveMap(): Map<String, Any?> =

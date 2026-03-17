@@ -51,6 +51,9 @@ import live.vio.VioEngagementSystem.models.ContestType
 import live.vio.VioEngagementSystem.models.Poll as EngagementPoll
 import live.vio.VioEngagementSystem.models.PollOption as EngagementPollOption
 import live.vio.sdk.domain.models.ProductDto
+import live.vio.VioCore.models.SponsorSlot // NEW
+import live.vio.VioEngagementUI.Components.VioSponsorMomentCard // NEW
+import com.vio.viaplaydemo.services.events.SponsorSlotEventData // NEW
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -78,6 +81,7 @@ fun CastingActiveView(
     val poll by webSocketManager.currentPoll.collectAsState()
     val product by webSocketManager.currentProduct.collectAsState()
     val contest by webSocketManager.currentContest.collectAsState()
+    val sponsorSlot by webSocketManager.currentSponsorSlot.collectAsState()
 
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("All", "Chat", "Highlights", "Statistics", "Interaktivt", "Live Scores")
@@ -169,11 +173,13 @@ fun CastingActiveView(
                             poll = poll,
                             product = product,
                             contest = contest,
+                            sponsorSlot = sponsorSlot,
                             sdkClient = sdkClient,
                             cartManager = cartManager,
                             onDismissPoll = { webSocketManager.dismissPoll() },
                             onDismissProduct = { webSocketManager.dismissProduct() },
                             onDismissContest = { webSocketManager.dismissContest() },
+                            onDismissSponsorSlot = { webSocketManager.dismissSponsorSlot() },
                         )
                     }
                     5 -> CastingLiveResultsView(CastingDemoData.mockLiveMatches)
@@ -528,13 +534,29 @@ private fun InteractionCards(
     poll: PollEventData?,
     product: ProductEventData?,
     contest: ContestEventData?,
+    sponsorSlot: SponsorSlotEventData?,
     sdkClient: VioSdkClient,
     cartManager: CartManager,
     onDismissPoll: () -> Unit,
     onDismissProduct: () -> Unit,
     onDismissContest: () -> Unit,
+    onDismissSponsorSlot: () -> Unit,
 ) {
     when {
+        sponsorSlot != null -> {
+            VioSponsorMomentCard(
+                sponsorSlot = SponsorSlot(
+                    type = sponsorSlot.type,
+                    config = sponsorSlot.config
+                ),
+                sponsorLogoUrl = sponsorSlot.campaignLogo,
+                onDismiss = onDismissSponsorSlot,
+                onCtaClick = { type ->
+                    // Handle CTA clicks if needed
+                    onDismissSponsorSlot()
+                }
+            )
+        }
         poll != null -> {
             val engagementPoll = remember(poll.id) {
                 EngagementPoll(

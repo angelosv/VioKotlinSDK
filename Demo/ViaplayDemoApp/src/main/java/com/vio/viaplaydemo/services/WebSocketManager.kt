@@ -4,6 +4,7 @@ import com.vio.viaplaydemo.services.events.ContestEventData
 import com.vio.viaplaydemo.services.events.PollEventData
 import com.vio.viaplaydemo.services.events.PollOption
 import com.vio.viaplaydemo.services.events.ProductEventData
+import com.vio.viaplaydemo.services.events.SponsorSlotEventData
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,9 +54,13 @@ class WebSocketManager(
     private val _currentContest = MutableStateFlow<ContestEventData?>(null)
     val currentContest: StateFlow<ContestEventData?> = _currentContest.asStateFlow()
 
+    private val _currentSponsorSlot = MutableStateFlow<SponsorSlotEventData?>(null)
+    val currentSponsorSlot: StateFlow<SponsorSlotEventData?> = _currentSponsorSlot.asStateFlow()
+
     fun dismissPoll() { _currentPoll.value = null }
     fun dismissProduct() { _currentProduct.value = null }
     fun dismissContest() { _currentContest.value = null }
+    fun dismissSponsorSlot() { _currentSponsorSlot.value = null }
 
     fun connect() {
         if (_isConnected.value) return
@@ -160,6 +165,7 @@ class WebSocketManager(
                 "product" -> parseProduct(root)?.let { _currentProduct.value = it }
                 "poll" -> parsePoll(root)?.let { _currentPoll.value = it }
                 "contest" -> parseContest(root)?.let { _currentContest.value = it }
+                "sponsor_slots" -> parseSponsorSlot(root)?.let { _currentSponsorSlot.value = it }
             }
         } catch (_: Exception) {
             // Ignore malformed payloads in the demo environment.
@@ -226,6 +232,28 @@ class WebSocketManager(
             deadline = data.optString("deadline"),
             maxParticipants = data.optInt("maxParticipants"),
             campaignLogo = campaignLogo,
+        )
+    }
+
+    private fun parseSponsorSlot(json: JSONObject): SponsorSlotEventData? {
+        val data = json.optJSONObject("data") ?: return null
+        val campaignLogo = data.optString("campaignLogo")
+            .takeIf { it.isNotBlank() }
+            ?: json.optString("campaignLogo").takeIf { it.isNotBlank() }
+
+        val configObj = data.optJSONObject("config") ?: JSONObject()
+        val configMap = mutableMapOf<String, Any?>()
+        val keys = configObj.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            configMap[key] = configObj.get(key)
+        }
+
+        return SponsorSlotEventData(
+            id = data.optString("id"),
+            type = data.optString("type", "product"),
+            config = configMap,
+            campaignLogo = campaignLogo
         )
     }
 

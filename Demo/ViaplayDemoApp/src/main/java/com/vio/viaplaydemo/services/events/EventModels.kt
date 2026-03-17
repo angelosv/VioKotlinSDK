@@ -33,3 +33,10 @@ data class ContestEventData(
     val maxParticipants: Int,
     val campaignLogo: String? = null,
 )
+
+data class SponsorSlotEventData(
+    val id: String,
+    val type: String,
+    val config: Map<String, Any?>,
+    val campaignLogo: String? = null,
+)
