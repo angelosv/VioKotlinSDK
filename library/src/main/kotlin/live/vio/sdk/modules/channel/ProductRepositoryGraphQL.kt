@@ -107,16 +107,31 @@ class ProductRepositoryGraphQL(
         productIds?.let { requirePositiveIds(it, "productIds") }
         skuList?.let { requireNonEmptyStrings(it, "skuList") }
         barcodeList?.let { requireNonEmptyStrings(it, "barcodeList") }
+        
         val hasProductIds = !productIds.isNullOrEmpty()
         val hasBarcodeList = !barcodeList.isNullOrEmpty()
         val hasSkuList = !skuList.isNullOrEmpty()
         val hasCategoryIds = !categoryIds.isNullOrEmpty()
-        val loadAllProducts = !(hasProductIds || hasBarcodeList || hasSkuList || hasCategoryIds)
+        
+        val filtersCount = listOf(hasProductIds, hasBarcodeList, hasSkuList, hasCategoryIds).count { it }
+        val loadAllProducts = filtersCount == 0
 
-        return if (loadAllProducts) {
-            fetchAllProducts(currency, imageSize, shippingCountryCode)
-        } else {
-            fetchProducts(
+        return when {
+            loadAllProducts -> fetchAllProducts(currency, imageSize, shippingCountryCode)
+            filtersCount == 1 && hasProductIds -> getByIds(
+                productIds!!, 
+                currency, 
+                imageSize ?: "large", 
+                useCache, 
+                shippingCountryCode
+            )
+            filtersCount == 1 && hasCategoryIds -> getByCategoryIds(
+                categoryIds!!, 
+                currency, 
+                imageSize ?: "large", 
+                shippingCountryCode
+            )
+            else -> fetchProducts(
                 currency,
                 imageSize,
                 barcodeList,
@@ -142,16 +157,24 @@ class ProductRepositoryGraphQL(
             )
         }
         validateCommonFilters(currency, imageSize, shippingCountryCode)
-        return fetchProducts(
-            currency,
-            imageSize,
-            emptyList(),
-            listOf(categoryId),
-            emptyList(),
-            emptyList(),
-            true,
-            shippingCountryCode,
+        
+        val variables = buildMap<String, Any?> {
+            put("categoryId", categoryId)
+            put("currency", currency)
+            put("imageSize", imageSize)
+            put("shippingCountryCode", shippingCountryCode)
+        }
+
+        val response = client.runQuerySafe(
+            ChannelGraphQL.GET_PRODUCTS_BY_CATEGORY_CHANNEL_QUERY,
+            variables,
         )
+        val list: List<Any?> = GraphQLPick.pickPath(response.data, listOf("Channel", "GetProductsByCategory"))
+            ?: throw SdkException("Empty response in Product.getByCategoryId", code = "EMPTY_RESPONSE")
+        
+        val products = GraphQLPick.decodeJSON<List<ProductDto>>(list)
+        println("📦 [ProductRepository] getByCategoryId: got ${products.size} products for category $categoryId")
+        return products
     }
 
     override suspend fun getByCategoryIds(
@@ -162,16 +185,24 @@ class ProductRepositoryGraphQL(
     ): List<ProductDto> {
         requirePositiveIds(categoryIds, "categoryIds")
         validateCommonFilters(currency, imageSize, shippingCountryCode)
-        return fetchProducts(
-            currency,
-            imageSize,
-            emptyList(),
-            categoryIds,
-            emptyList(),
-            emptyList(),
-            true,
-            shippingCountryCode,
+        
+        val variables = buildMap<String, Any?> {
+            put("categoryIds", categoryIds)
+            put("currency", currency)
+            put("imageSize", imageSize)
+            put("shippingCountryCode", shippingCountryCode)
+        }
+
+        val response = client.runQuerySafe(
+            ChannelGraphQL.GET_PRODUCTS_BY_CATEGORIES_CHANNEL_QUERY,
+            variables,
         )
+        val list: List<Any?> = GraphQLPick.pickPath(response.data, listOf("Channel", "GetProductsByCategories"))
+            ?: throw SdkException("Empty response in Product.getByCategoryIds", code = "EMPTY_RESPONSE")
+        
+        val products = GraphQLPick.decodeJSON<List<ProductDto>>(list)
+        println("📦 [ProductRepository] getByCategoryIds: got ${products.size} products for categories $categoryIds")
+        return products
     }
 
     override suspend fun getByParams(
@@ -216,16 +247,25 @@ class ProductRepositoryGraphQL(
     ): List<ProductDto> {
         requirePositiveIds(productIds, "productIds")
         validateCommonFilters(currency, imageSize, shippingCountryCode)
-        return fetchProducts(
-            currency,
-            imageSize,
-            emptyList(),
-            emptyList(),
-            productIds,
-            emptyList(),
-            useCache,
-            shippingCountryCode,
+        
+        val variables = buildMap<String, Any?> {
+            put("productIds", productIds)
+            put("currency", currency)
+            put("imageSize", imageSize)
+            put("useCache", useCache)
+            put("shippingCountryCode", shippingCountryCode)
+        }
+
+        val response = client.runQuerySafe(
+            ChannelGraphQL.GET_PRODUCTS_BY_IDS_CHANNEL_QUERY,
+            variables,
         )
+        val list: List<Any?> = GraphQLPick.pickPath(response.data, listOf("Channel", "GetProductsByIds"))
+            ?: throw SdkException("Empty response in Product.getByIds", code = "EMPTY_RESPONSE")
+        
+        val products = GraphQLPick.decodeJSON<List<ProductDto>>(list)
+        println("📦 [ProductRepository] getByIds: requested ${productIds.size}, got ${products.size} products")
+        return products
     }
 
     override suspend fun getBySkus(

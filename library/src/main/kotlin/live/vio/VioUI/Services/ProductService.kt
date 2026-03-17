@@ -22,6 +22,8 @@ object ProductService {
     private var cachedVioSdkClient: VioSdkClient? = null
 
     private suspend fun getVioSdkClient(): VioSdkClient {
+        VioConfiguration.waitForRemoteConfig("ProductService")
+        
         val state = VioConfiguration.shared.state.value
         val commerceApiKey = state.commerce?.apiKey
         
@@ -46,17 +48,13 @@ object ProductService {
             
             // Re-fetch state to be sure we have the latest after lock
             val currentState = VioConfiguration.shared.state.value
-            //println("**** currentState: $currentState")
-            // val commerceConfig = currentState.commerce
-            // println("**** commerceConfig: $commerceConfig")
             // PRIORITY: Use commerce-specific API key if available
-            val apiKey = currentState?.apiKey 
-                ?: throw ProductServiceError.InvalidConfiguration("Commerce API key not configured (integrations.commerce.apiKey missing)")
+            val apiKey = currentState.commerce?.apiKey ?: currentState.apiKey
 
             val baseUrl = try {
-                URL(currentState.environment.graphQLUrl)
+                URL(currentState.commerce?.endpoint ?: currentState.environment.graphQLUrl)
             } catch (error: MalformedURLException) {
-                throw ProductServiceError.InvalidConfiguration("Invalid GraphQL URL: ${currentState.environment.graphQLUrl}")
+                throw ProductServiceError.InvalidConfiguration("Invalid GraphQL URL")
             }
             
             val client = VioSdkClient(baseUrl = baseUrl, apiKey = apiKey)
@@ -98,8 +96,9 @@ object ProductService {
         } else {
             VioLogger.debug("No product IDs provided - loading all products", "ProductService")
         }
-        VioLogger.debug("Currency: $currency, Country: $country", "ProductService")
+        println("📦 [ProductService] loadProducts: IDs=${productIds ?: "ALL"}, currency=$currency, country=$country")
         val dtos = fetchProducts(idsToUse, currency, country)
+        println("📦 [ProductService] loadProducts: got ${dtos.size} DTOs")
         if (idsToUse != null && dtos.size < idsToUse.size) {
             val foundIds = dtos.map { it.id }.toSet()
             val missing = idsToUse.filterNot(foundIds::contains)

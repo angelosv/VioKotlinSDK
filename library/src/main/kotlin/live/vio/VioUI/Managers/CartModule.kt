@@ -19,6 +19,8 @@ private data class ShippingSyncData(
 )
 
 suspend fun CartManager.createCart(currency: String = "USD", country: String = "US") {
+    waitForRemoteConfig()
+    
     if (currentCartId != null) {
         println("🛒 [Cart] createCart skipped — existing cartId=${currentCartId}")
         return
@@ -93,6 +95,8 @@ suspend fun CartManager.loadProducts(
     imageSize: String = "large",
     useCache: Boolean = true,
 ) {
+    waitForRemoteConfig()
+
     val requestedCurrency = currency ?: this.currency
     val requestedCountry = shippingCountryCode ?: this.country
 

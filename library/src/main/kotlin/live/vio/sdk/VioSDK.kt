@@ -39,6 +39,7 @@ object VioSDK {
         environment: VioEnvironment = VioEnvironment.PRODUCTION,
         baseUrl: String = "https://api-dev.vio.live",
     ) {
+        println("🚀 [VioSDK] configure called with apiKey=${apiKey.take(8)}...")
         // Aplicar configuración base inmediatamente (sin esperar a la red)
         VioConfiguration.configure(
             context = context,
@@ -48,6 +49,7 @@ object VioSDK {
 
         // Refrescar configuración remota de forma asíncrona
         scope.launch {
+            println("📡 [VioSDK] fetchConfig starting...")
             val service = VioSDKConfigService()
             val remote = service.fetchConfig(apiKey = apiKey, baseUrl = baseUrl)
             if (remote != null) {
@@ -58,6 +60,8 @@ object VioSDK {
                     VioLogger.error("Error discovering campaigns after remote config: ${it.message}", "VioSDK")
                 }
             }
+            // Marcamos como listo incluso si falló, para que los managers no se queden esperando para siempre
+            VioConfiguration.markRemoteConfigReady()
         }
     }
 

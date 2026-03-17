@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -52,6 +53,10 @@ class CartManager(
 
     internal suspend fun <T> mainCall(block: suspend () -> T): T =
         withContext(mainDispatcher) { block() }
+
+    internal suspend fun waitForRemoteConfig() {
+        CoreVioConfiguration.waitForRemoteConfig("CartManager")
+    }
 
     var items: List<CartItem> by mutableStateOf(emptyList())
     var isCheckoutPresented: Boolean by mutableStateOf(false)
@@ -142,6 +147,33 @@ class CartManager(
                 createCart(currency = currency, country = country)
                 // Load markets in background without blocking initialization
                 scope.launch { loadMarketsIfNeeded() }
+            }
+        }
+
+        // Listen for remote SDK configuration updates
+        scope.launch {
+            live.vio.VioCore.managers.CampaignManager.shared.events.collect { event ->
+                if (event is live.vio.VioCore.managers.CampaignNotification.CommerceConfigChanged) {
+                    println("➡️ [CartManager] Detected commerce config change, invalidating SDK client")
+                    cachedSdk = null
+                    cachedSdkSignature = null
+                    
+                    // If we haven't successfully created a cart yet, retry automatically
+                    if (cartId == null && autoBootstrap) {
+                        try {
+                            createCart(currency = currency, country = country)
+                        } catch (t: Throwable) {
+                            logError("retryCreateCart", t)
+                        }
+                    }
+                    
+                    // Reload products with the new API key
+                    try {
+                        reloadProducts()
+                    } catch (t: Throwable) {
+                        logError("reloadProducts", t)
+                    }
+                }
             }
         }
     }

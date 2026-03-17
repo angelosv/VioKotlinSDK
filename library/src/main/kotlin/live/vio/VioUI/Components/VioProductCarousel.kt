@@ -91,6 +91,7 @@ class VioProductCarousel(
 
     private fun handleConfig(component: Component, config: ProductCarouselConfig) {
         val ids = config.productIds.mapNotNull { it.toIntOrNull() }
+        println("🎡 [VioProductCarousel] handleConfig: IDs=$ids, name=${component.name}")
         latestProductIds = ids
         currentComponent = component
         val layout = layoutOverride ?: ProductCarouselLayout.fromConfig(config.layout)
@@ -107,6 +108,7 @@ class VioProductCarousel(
         )
         val idsOrNull = ids.takeIf { it.isNotEmpty() }
         latestProductIds = ids
+        println("🎡 [VioProductCarousel] triggering load with ${idsOrNull?.size ?: "ALL"} IDs")
         triggerLoad(idsOrNull)
     }
 
@@ -117,6 +119,7 @@ class VioProductCarousel(
             val market = VioConfiguration.shared.state.value.market
             try {
                 val products = productService.loadProducts(productIds, market.currencyCode, market.countryCode)
+                println("🎡 [VioProductCarousel] load success: got ${products.size} products. IDs=${products.map { it.id }}")
                 _state.value = _state.value.copy(
                     products = products,
                     isLoading = false,
@@ -125,6 +128,7 @@ class VioProductCarousel(
                 )
                 trackComponentView(products.size)
             } catch (error: ProductServiceError) {
+                println("🎡 [VioProductCarousel] load error: ${error.message}")
                 _state.value = _state.value.copy(
                     products = emptyList(),
                     isLoading = false,

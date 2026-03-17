@@ -8,6 +8,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * Kotlin port of the Swift `VioConfiguration`.
@@ -42,6 +45,7 @@ class VioConfiguration private constructor() {
         val sponsor: live.vio.VioCore.models.SponsorConfig? = null,
         val commerce: live.vio.VioCore.models.CommerceConfig? = null,
         val checkout: live.vio.VioCore.models.CheckoutConfig? = null,
+        val isRemoteConfigReady: Boolean = false,
     )
 
     companion object {
@@ -87,6 +91,8 @@ class VioConfiguration private constructor() {
 
             try {
                 val instance = shared
+                val prevState = instance._state.value
+                println("📝 [VioConfiguration] configure starting... isRemoteConfigReady was ${prevState.isRemoteConfigReady}")
                 instance._state.value = instance._state.value.copy(
                     apiKey = apiKey,
                     environment = environment,
@@ -102,6 +108,7 @@ class VioConfiguration private constructor() {
                     analytics = analyticsConfig ?: AnalyticsConfiguration.default(),
                     demoData = demoDataConfig ?: DemoDataConfiguration.default(),
                     isConfigured = true,
+                    isRemoteConfigReady = false,
                 )
                 live.vio.VioCore.utils.VioContextManager.init(context)
                 VioLocalization.configure(instance._state.value.localization)
@@ -160,6 +167,30 @@ class VioConfiguration private constructor() {
 
             updatedCommerce?.let { updateCommerce(it) }
             CampaignManager.shared.reinitialize()
+        }
+
+        fun markRemoteConfigReady() {
+            println("✅ [VioConfiguration] markRemoteConfigReady called")
+            val current = shared._state.value
+            if (!current.isRemoteConfigReady) {
+                shared._state.value = current.copy(isRemoteConfigReady = true)
+            }
+        }
+
+        suspend fun waitForRemoteConfig(tag: String = "Global", timeoutMillis: Long = 5000) {
+            if (shared.state.value.isRemoteConfigReady) return
+
+            println("⏳ [$tag] waitForRemoteConfig: waiting for remote configuration...")
+            val start = System.currentTimeMillis()
+            while (!shared.state.value.isRemoteConfigReady && (System.currentTimeMillis() - start) < timeoutMillis) {
+                delay(10)
+            }
+            val duration = System.currentTimeMillis() - start
+            if (duration >= timeoutMillis) {
+                println("⚠️ [$tag] waitForRemoteConfig timed out after ${timeoutMillis}ms")
+            } else {
+                println("✅ [$tag] waitForRemoteConfig: ready after ${duration}ms")
+            }
         }
 
         fun configure(context: android.content.Context, apiKey: String) {

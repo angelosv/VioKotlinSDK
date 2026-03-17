@@ -37,8 +37,9 @@ data class CommerceConfig(
 data class DynamicConfig(
     @JsonProperty("sponsor") val sponsor: SponsorConfig? = null,
     @JsonProperty("integrations") val integrations: Map<String, CommerceConfig>? = null,
-    @JsonProperty("checkout") val checkout: CheckoutConfig? = null
+    @JsonProperty("checkout") val checkout: CheckoutConfig? = null,
+    @JsonProperty("commerce") val directCommerce: CommerceConfig? = null
 ) {
     val commerce: CommerceConfig?
-        get() = integrations?.get("commerce")
+        get() = directCommerce ?: integrations?.get("commerce")
 }
