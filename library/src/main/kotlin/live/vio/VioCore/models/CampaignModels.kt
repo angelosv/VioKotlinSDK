@@ -286,6 +286,7 @@ data class ComponentStatusChangedEvent(
         val componentType: String,
         val status: String,
         val config: Map<String, AnyCodable> = emptyMap(),
+        @JsonProperty("matchContext") val matchContext: MatchContext? = null,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -294,6 +295,7 @@ data class ComponentStatusChangedEvent(
         val type: String,
         val name: String,
         val config: Map<String, AnyCodable> = emptyMap(),
+        @JsonProperty("matchContext") val matchContext: MatchContext? = null,
     )
 
     fun toComponent(): Component {
@@ -304,6 +306,7 @@ data class ComponentStatusChangedEvent(
                 name = "",
                 config = payload.config.toPrimitiveMap(),
                 status = payload.status,
+                matchContext = payload.matchContext,
             )
         }
 
@@ -314,6 +317,7 @@ data class ComponentStatusChangedEvent(
                 name = component.name,
                 config = component.config.toPrimitiveMap(),
                 status = status,
+                matchContext = component.matchContext,
             )
         }
 

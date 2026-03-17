@@ -1,16 +1,26 @@
-Sponsor Moments — campo type en sponsor slots
+WebSocket engagement — verificar paridad completa con Swift
 
-Los sponsor slots (antes Shoppable Ads, ahora Sponsor Moments) tienen un nuevo campo type en la API.
-Tipos: product | lead | poll_cta | contest_cta | link
-Cada tipo tiene su propio config JSON.
-LO QUE SE ESPERA EN KOTLIN:
-Añadir type: String y config: Map<String, Any?> al modelo SponsorSlot (o equivalente)
-La card de UI debe renderizar diferente según type:
-product → producto + precio + CTA compra (comportamiento actual)
-lead → form de captura (email/phone)
-poll_cta → botón que abre poll
-contest_cta → botón que abre contest
-link → botón que abre URL
-Por ahora alcanza manejar 'product' bien. Los otros tipos pueden ser fallback genérico.
-El nombre en la API sigue siendo sponsor_slots — solo cambia el label en la UI.
-No es blocker para el deal — es para cuando estén los tipos extra en el dashboard.
+Contexto
+En Swift resolvimos varios bugs críticos del sistema WS. Verificar que todos están portados a Kotlin.
+Bugs Swift resueltos (verificar en Kotlin):
+contentId no se pasaba al conectar WS → contests nunca conectaban WS
+Race condition: snapshot llegaba antes de currentBroadcastContext → fix con reconexión
+shouldShowComponent filtraba components sin broadcastContext → carousel desaparecía
+activeComponents.removeAll() en setBroadcastContext → loading infinito
+Test E2E
+Broadcast: newcastle-united-vs-fc-barcelona-ucl-2026-03-10
+API Key: viaplay_api_key_0c611e983b314ff8
+Backend WS: wss://api-dev.vio.live/ws/35
+Poll 28 debe mostrar resultados con votos seeded
+
+Verificación E2E
+WS conecta a /ws/:campaignId al abrir stream
+Snapshot inicial recibido al conectar con polls/contests activos
+Handler case poll filtra por broadcastId
+Handler case contest filtra por broadcastId
+EngagementManager.addOrUpdatePoll actualiza UI reactivamente
+Porcentajes de votos visibles en TimelinePollCard
+contentId se pasa correctamente al configurar broadcast
+WS desconecta limpiamente al cerrar stream
+Race condition resuelta — no crash si snapshot llega antes de broadcastContext
+Test poll 28: Barça 54% PSG 40% Ingen 6% total 14800 votos

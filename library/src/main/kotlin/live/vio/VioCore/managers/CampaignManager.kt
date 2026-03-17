@@ -89,6 +89,8 @@ class CampaignManager private constructor(
     private val _activeComponents = MutableStateFlow<List<Component>>(emptyList())
     val activeComponents: StateFlow<List<Component>> = _activeComponents.asStateFlow()
 
+    private var allComponents: List<Component> = emptyList()
+
     private val _isConnected = MutableStateFlow(false)
     val isConnected: StateFlow<Boolean> = _isConnected.asStateFlow()
 
@@ -217,8 +219,8 @@ class CampaignManager private constructor(
      * Limpia componentes del contexto anterior y recarga campañas/componentes para el nuevo contexto.
      */
     fun setMatchContext(matchContext: MatchContext?) {
-        // Limpiar componentes del contexto anterior
-        _activeComponents.value = emptyList()
+        // En Kotlin removimos _activeComponents.value = emptyList() para evitar parpadeos/loading infinito
+        // La lista se actualizará reactivamente tras el filtrado o llegada de nuevos eventos.
 
         if (matchContext == null) {
             currentMatchContext = null
@@ -271,7 +273,6 @@ class CampaignManager private constructor(
      * - Si no hay matchContext activo → Solo mostrar componentes sin matchContext
      */
     private fun filterComponentsByContext(context: MatchContext?) {
-        val allComponents = _activeComponents.value
         val filtered = allComponents.filter { component ->
             val componentMatchId = component.matchContext?.matchId
             
@@ -289,7 +290,7 @@ class CampaignManager private constructor(
             componentMatchId == context.matchId
         }
         
-        if (filtered.size != allComponents.size) {
+        if (filtered.size != _activeComponents.value.size || allComponents.isEmpty()) {
             VioLogger.debug("Filtered components: ${allComponents.size} -> ${filtered.size} for match: ${context?.matchId ?: "none"}", COMPONENT)
             _activeComponents.value = filtered
             scope.launch {
@@ -349,6 +350,7 @@ class CampaignManager private constructor(
 
         val cachedComponents = CacheManager.shared.loadComponents()
         if (cachedComponents.isNotEmpty()) {
+            allComponents = cachedComponents
             _activeComponents.value = cachedComponents
         }
 
@@ -382,6 +384,7 @@ class CampaignManager private constructor(
             _isCampaignActive.value = false
             _campaignState.value = CampaignState.ENDED
             _currentCampaign.value = null
+            allComponents = emptyList()
             _activeComponents.value = emptyList()
             
             // Clear cache since campaign doesn't exist
@@ -428,6 +431,8 @@ class CampaignManager private constructor(
             _activeComponents.value = emptyList()
             CacheManager.shared.saveCampaign(campaign)
             CacheManager.shared.saveCampaignState(_campaignState.value, _isCampaignActive.value)
+            allComponents = emptyList()
+            _activeComponents.value = emptyList()
             CacheManager.shared.saveComponents(emptyList())
             SponsorAssets.update(campaign.sponsor)
             return
@@ -439,6 +444,7 @@ class CampaignManager private constructor(
             }
             CampaignState.ENDED -> {
                 _isCampaignActive.value = false
+                allComponents = emptyList()
                 _activeComponents.value = emptyList()
                 VioLogger.warning("Campaign $campaignId has ended - hiding all components", COMPONENT)
             }
@@ -550,12 +556,13 @@ class CampaignManager private constructor(
                         components
                     }
                     
-                    allComponents.addAll(filtered.filter { activeComp: Component -> activeComp.isActive })
+                        allComponents.addAll(filtered.filter { activeComp: Component -> activeComp.isActive })
+                    }
                 }
-            }
 
             // Deduplicate components
             val uniqueComponents = allComponents.distinctBy { it.id }
+            this.allComponents = uniqueComponents
             _activeComponents.value = uniqueComponents
             scope.launch {
                 CacheManager.shared.saveComponents(uniqueComponents)
@@ -641,6 +648,7 @@ class CampaignManager private constructor(
 
         val components = responses.map { Component.fromResponse(it) }
         val active = components.filter { it.isActive }
+        allComponents = active
         _activeComponents.value = active
         VioLogger.debug("[CampaignManager] Found ${active.size} active components out of ${components.size} total for campaign $campaignId")
         active.forEach { 
@@ -709,6 +717,7 @@ class CampaignManager private constructor(
 
         // Remove duplicates based on component ID, keeping the first occurrence
         val uniqueComponents = allComponents.distinctBy { it.id }
+        this.allComponents = uniqueComponents
         _activeComponents.value = uniqueComponents
         VioLogger.success("Aggregated ${uniqueComponents.size} unique components from ${campaigns.size} campaigns", COMPONENT)
 
@@ -718,10 +727,12 @@ class CampaignManager private constructor(
 
 
     private suspend fun connectWebSocket(campaignId: Int) {
+        webSocketManager?.disconnect()
         val manager = CampaignWebSocketManager(
             campaignId = campaignId,
             baseUrl = webSocketBaseUrl,
             apiKey = apiKey,
+            contentId = currentMatchId, // Pass current matchId (contentId)
             scope = scope,
         )
         manager.onCampaignStarted = { event -> scope.launch { handleCampaignStarted(event) } }
@@ -769,6 +780,7 @@ class CampaignManager private constructor(
         _isCampaignActive.value = false
         _campaignState.value = CampaignState.ENDED
         val oldLogoUrl = _currentCampaign.value?.campaignLogo
+        allComponents = emptyList()
         _activeComponents.value = emptyList()
 
         _currentCampaign.value = _currentCampaign.value?.copy(endDate = event.endDate)
@@ -786,6 +798,7 @@ class CampaignManager private constructor(
     private suspend fun handleCampaignPaused(event: CampaignPausedEvent) {
         VioLogger.debug("🔌 [WebSocket] Campaign Paused Event received: campaignId=${event.campaignId}", COMPONENT)
         _isCampaignActive.value = false
+        allComponents = emptyList()
         _activeComponents.value = emptyList()
 
         _currentCampaign.value = _currentCampaign.value?.copy(isPaused = true)
@@ -822,6 +835,20 @@ class CampaignManager private constructor(
             return
         }
 
+        // --- Race Condition Fix matching Swift ---
+        // If a message arrives and the currentMatchId in the message doesn't match the SDK state
+        val incomingMatchId = event.data?.matchContext?.matchId ?: event.component?.matchContext?.matchId
+        if (incomingMatchId != null && incomingMatchId != currentMatchId) {
+            VioLogger.warning("Race condition detected: Incoming matchId '$incomingMatchId' does not match current state '$currentMatchId'. Reconnecting WebSocket.", COMPONENT)
+            // Trigger brief reconnection to resync state 
+            scope.launch {
+                webSocketManager?.disconnect()
+                campaignId?.let { connectWebSocket(it) }
+            }
+            return
+        }
+        // ----------------------------------------
+
         if (status == "active" && _campaignState.value == CampaignState.UPCOMING) {
             VioLogger.warning("Ignoring component activation - campaign is upcoming", COMPONENT)
             return
@@ -842,23 +869,22 @@ class CampaignManager private constructor(
         }.getOrNull() ?: return
 
         if (status == "active") {
-            _activeComponents.update { current ->
-                val filtered = current.filterNot { it.type == component.type && it.id != componentId }.toMutableList()
-                val index = filtered.indexOfFirst { it.id == componentId }
-                if (index >= 0) {
-                    filtered[index] = component
-                } else {
-                    filtered.add(component)
-                }
-                filtered.toList()
+            val currentAll = allComponents.toMutableList()
+            val index = currentAll.indexOfFirst { it.id == componentId }
+            if (index >= 0) {
+                currentAll[index] = component
+            } else {
+                currentAll.add(component)
             }
+            allComponents = currentAll
         } else {
-            _activeComponents.update { current ->
-                current.filterNot { it.id == componentId }
-            }
+            allComponents = allComponents.filterNot { it.id == componentId }
         }
 
-        CacheManager.shared.saveComponents(_activeComponents.value)
+        // Re-filter for UI based on current context
+        filterComponentsByContext(currentMatchContext)
+
+        CacheManager.shared.saveComponents(allComponents)
         _events.emit(CampaignNotification.ComponentStatusChanged(event))
     }
 
@@ -870,23 +896,23 @@ class CampaignManager private constructor(
 
         val componentId = component.id
         var updated = false
-        _activeComponents.update { current ->
-            val list = current.toMutableList()
-            val index = list.indexOfFirst { it.id == componentId }
-            if (index >= 0) {
-                list[index] = component
-                updated = true
-            } else if (_isCampaignActive.value && _currentCampaign.value?.isPaused != true) {
-                list.add(component)
-                updated = true
-            } else {
-                VioLogger.warning("Cannot add component - campaign not active or paused", COMPONENT)
-            }
-            list.toList()
+        
+        val currentAll = allComponents.toMutableList()
+        val index = currentAll.indexOfFirst { it.id == componentId }
+        if (index >= 0) {
+            currentAll[index] = component
+            updated = true
+        } else if (_isCampaignActive.value && _currentCampaign.value?.isPaused != true) {
+            currentAll.add(component)
+            updated = true
+        } else {
+            VioLogger.warning("Cannot add component - campaign not active or paused", COMPONENT)
         }
-
+        
         if (updated) {
-            CacheManager.shared.saveComponents(_activeComponents.value)
+            allComponents = currentAll
+            filterComponentsByContext(currentMatchContext)
+            CacheManager.shared.saveComponents(allComponents)
             VioLogger.success("Updated component config: $componentId", COMPONENT)
             _events.emit(CampaignNotification.ComponentConfigUpdated(event))
         }

@@ -32,6 +32,7 @@ class CampaignWebSocketManager(
     private val campaignId: Int,
     private val baseUrl: String,
     private val apiKey: String,
+    private val contentId: String? = null,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
 ) : WebSocketListener() {
 
@@ -91,7 +92,12 @@ class CampaignWebSocketManager(
         val wsBase = normalized
             .replace("https://", "wss://")
             .replace("http://", "ws://")
-        return "$wsBase/ws/$campaignId"
+        val url = "$wsBase/ws/$campaignId"
+        return if (!contentId.isNullOrBlank()) {
+            "$url?contentId=$contentId"
+        } else {
+            url
+        }
     }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
