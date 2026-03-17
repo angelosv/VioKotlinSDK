@@ -35,6 +35,8 @@ import com.vio.viaplaydemo.ui.model.TabItem
 import live.vio.VioUI.Components.compose.product.VioProductSlider
 import live.vio.VioUI.Components.compose.product.VioProductCarousel
 import live.vio.VioUI.Components.compose.product.VioProductBanner
+import live.vio.VioUI.Components.compose.product.VioProductStore
+import live.vio.VioUI.Components.compose.product.VioProductSpotlight
 import live.vio.VioUI.Components.VioProductSliderLayout
 import live.vio.VioUI.Managers.CartManager
 import live.vio.VioUI.Managers.Product
@@ -159,8 +161,18 @@ fun ViaplayHomeView(
                 sponsorPosition = "top_right",                
             )
 
+            Text(
+                "Banner",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
             VioProductBanner(
-                modifier = Modifier.fillMaxWidth(),
+                // modifier = Modifier.fillMaxWidth(),
+                // modifier = Modifier.padding(horizontal = 16.dp),
                 locationId = "sport-detail-banner",
                 // imageLoader = VioCoilImageLoader,
                 //onBannerClick = { state -> openProductDetailById(state.productId) },
@@ -168,6 +180,45 @@ fun ViaplayHomeView(
                 showSponsor = true,
                 sponsorPosition = "top_right",
             )
+
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                "Store",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            VioProductStore(
+                cartManager = cartManager,
+                modifier = Modifier.fillMaxWidth(),
+                showSponsor = true,
+                sponsorPosition = "top_right", 
+                isCampaignGated = true,
+                isScrollEnabled = false,
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                "Spotlight",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            VioProductSpotlight(
+                cartManager = cartManager,
+                modifier = Modifier.fillMaxWidth(),
+                onProductTap = { product -> onOpenProductDetail(product) },
+                isCampaignGated = false,
+                showSponsor = true,
+                sponsorPosition = "top_right",                
+            )
+            
             // VioProductSlider(
                 // cartManager = cartManager,
                 // title = "",
