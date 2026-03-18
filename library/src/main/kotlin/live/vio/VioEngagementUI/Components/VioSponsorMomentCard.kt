@@ -13,6 +13,9 @@ import live.vio.VioCore.models.SponsorSlot
 import live.vio.VioDesignSystem.Tokens.VioColors
 import live.vio.VioDesignSystem.Tokens.VioSpacing
 import live.vio.VioUI.Components.compose.utils.toVioColor
+import live.vio.VioEngagementSystem.models.Contest
+import live.vio.VioUI.Components.compose.product.VioImageLoader
+import live.vio.VioUI.Components.compose.product.VioImageLoaderDefaults
 
 /**
  * A generic UI component for "Sponsor Moments" (Sponsor Slots).
@@ -33,6 +36,29 @@ fun VioSponsorMomentCard(
         onDismiss = { onDismiss?.invoke() }
     ) {
         when (sponsorSlot.type) {
+            "tweet" -> {
+                val author = sponsorSlot.config["author"] as? String ?: "@unknown"
+                val text = sponsorSlot.config["text"] as? String ?: ""
+                val title = sponsorSlot.config["title"] as? String
+                val sponsor = live.vio.VioCore.models.SponsorAssets.current
+                
+                if (sponsor != null) {
+                    VioEngagementTweetCard(
+                        author = author,
+                        text = text,
+                        title = title,
+                        sponsor = sponsor,
+                        modifier = modifier,
+                        onDismiss = { onDismiss?.invoke() }
+                    )
+                } else {
+                    SponsorMomentGenericContent(
+                        type = sponsorSlot.type,
+                        config = sponsorSlot.config,
+                        onClick = { onCtaClick?.invoke(sponsorSlot.type) }
+                    )
+                }
+            }
             "product" -> {
                 SponsorMomentProductContent(
                     config = sponsorSlot.config,

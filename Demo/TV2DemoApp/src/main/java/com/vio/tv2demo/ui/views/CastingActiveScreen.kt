@@ -180,7 +180,6 @@ private fun InteractionCards(
             VioEngagementPollCard(
                 poll = engagementPoll,
                 pollResults = null,
-                sponsorLogoUrl = poll.campaignLogo,
                 onVote = { /* La demo solo muestra la UI; el envío real del voto se puede conectar más adelante. */ },
                 onDismiss = onDismissPoll,
             )
@@ -210,7 +209,6 @@ private fun InteractionCards(
 
             VioEngagementContestCard(
                 contest = engagementContest,
-                sponsorLogoUrl = contest.campaignLogo,
                 onJoin = { /* Integración real con EngagementManager pendiente en la demo. */ },
                 onDismiss = onDismissContest,
             )
@@ -271,7 +269,6 @@ private fun EngagementProductFromEvent(
         if (currentProduct != null) {
             VioEngagementProductCard(
                 product = currentProduct,
-                sponsorLogoUrl = productEvent.campaignLogo,
                 onAddToCart = { onAddToCart(currentProduct) },
                 onDismiss = onDismiss,
             )

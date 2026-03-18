@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.cancel
 
 /**
  * Kotlin counterpart of `ProductFetchViewModel.swift`.
@@ -84,4 +85,8 @@ class ProductFetchViewModel(
                 shippingCountryCode = country,
             )
         }
+
+    fun clear() {
+        scope.cancel()
+    }
 }

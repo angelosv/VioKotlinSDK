@@ -15,6 +15,7 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -53,14 +54,17 @@ class CampaignWebSocketManager(
 
     private val client = OkHttpClient()
     private val connected = AtomicBoolean(false)
+    private val isManualDisconnect = AtomicBoolean(false)
     private var webSocket: WebSocket? = null
     private var reconnectAttempts = 0
+    private var reconnectJob: Job? = null
     private val maxReconnectAttempts = 5
 
     suspend fun connect() {
         val wsUrl = buildSocketUrl()
         println("[$COMPONENT] Connecting to $wsUrl (campaignId=$campaignId)")
         VioLogger.debug("Connecting to $wsUrl (campaignId=$campaignId)", COMPONENT)
+        isManualDisconnect.set(false) // Reset manual disconnect flag on new connection attempt
         withContext(Dispatchers.IO) {
             val requestBuilder = Request.Builder()
                 .url(wsUrl)
@@ -80,6 +84,9 @@ class CampaignWebSocketManager(
     fun disconnect() {
         println("[$COMPONENT] Disconnecting campaign socket ($campaignId)")
         VioLogger.debug("Disconnecting campaign socket ($campaignId)", COMPONENT)
+        isManualDisconnect.set(true)
+        reconnectJob?.cancel()
+        reconnectJob = null
         connected.set(false)
         webSocket?.close(1000, "Client closing")
         webSocket = null

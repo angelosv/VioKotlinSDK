@@ -1,26 +1,36 @@
-WebSocket engagement — verificar paridad completa con Swift
-
+1. SponsorAssets centralizado — sistema de identidad visual
 Contexto
-En Swift resolvimos varios bugs críticos del sistema WS. Verificar que todos están portados a Kotlin.
-Bugs Swift resueltos (verificar en Kotlin):
-contentId no se pasaba al conectar WS → contests nunca conectaban WS
-Race condition: snapshot llegaba antes de currentBroadcastContext → fix con reconexión
-shouldShowComponent filtraba components sin broadcastContext → carousel desaparecía
-activeComponents.removeAll() en setBroadcastContext → loading infinito
-Test E2E
-Broadcast: newcastle-united-vs-fc-barcelona-ucl-2026-03-10
-API Key: viaplay_api_key_0c611e983b314ff8
-Backend WS: wss://api-dev.vio.live/ws/35
-Poll 28 debe mostrar resultados con votos seeded
+En Swift implementamos SponsorAssets.swift como fuente única de verdad para la identidad visual del sponsor activo. Esta tarjeta es el port a Kotlin.
+Swift reference: Sources/VioDesignSystem/Components/SponsorAssets.swift
+Lo que hace el sistema Swift (a replicar en Kotlin)
+Lee sponsor.logoUrl, avatarUrl, primaryColor, secondaryColor, name, badgeText del backend
+Calcula textOnPrimary por luminosidad WCAG (0.2126R + 0.7152G + 0.0722B) — no depende del backend
+SponsorAvatarComposable — avatar circular 32dp, Coil AsyncImage + fallback iniciales
+Usado en: TimelinePollCard, ContestCard, ProductCarousel
+Tarea — Port a Kotlin
+Crear SponsorAssets.kt en VioDesignSystem con las mismas propiedades.
 
-Verificación E2E
-WS conecta a /ws/:campaignId al abrir stream
-Snapshot inicial recibido al conectar con polls/contests activos
-Handler case poll filtra por broadcastId
-Handler case contest filtra por broadcastId
-EngagementManager.addOrUpdatePoll actualiza UI reactivamente
-Porcentajes de votos visibles en TimelinePollCard
-contentId se pasa correctamente al configurar broadcast
-WS desconecta limpiamente al cerrar stream
-Race condition resuelta — no crash si snapshot llega antes de broadcastContext
-Test poll 28: Barça 54% PSG 40% Ingen 6% total 14800 votos
+data class SponsorAssets(
+    val sponsorId: Int,
+    val name: String,
+    val logoUrl: String?,
+    val avatarUrl: String?,
+    val primaryColor: String,
+    val secondaryColor: String?,
+    val badgeText: String?,
+    val textOnPrimary: Color  // calculado por luminosidad WCAG
+)
+
+Referencias
+Backend: /v1/sdk/campaigns → sponsor.avatarUrl, sponsor.logoUrl, sponsor.primaryColor, sponsor.badgeText
+Sponsor Elkjøp: color #f7b23b, campaña 35
+Sponsor TV2: color #9870C8, campaña 36
+
+Implementación
+SponsorAssets.kt creado en VioDesignSystem
+textOnPrimary calculado por luminosidad WCAG (0.2126R + 0.7152G + 0.0722B)
+SponsorAvatarComposable — Coil AsyncImage circular 32dp + fallback iniciales
+TimelinePollCard usa SponsorAssets
+ContestCard usa SponsorAssets
+TweetCard usa SponsorAssets
+badgeText visible en badge del sponsor

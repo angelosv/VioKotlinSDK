@@ -102,11 +102,14 @@ fun CastingActiveView(
     val matchHeaderViewModel = remember { MatchHeaderViewModel() }
     val headerState by matchHeaderViewModel.state.collectAsState()
 
-    LaunchedEffect(match.contentId, match.countryCode) {
+    DisposableEffect(match.contentId, match.countryCode) {
         matchHeaderViewModel.start(
             contentId = match.contentId,
             country = match.countryCode,
         )
+        onDispose {
+            matchHeaderViewModel.clear()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize().background(BrandDarkBg)) {
@@ -549,7 +552,6 @@ private fun InteractionCards(
                     type = sponsorSlot.type,
                     config = sponsorSlot.config
                 ),
-                sponsorLogoUrl = sponsorSlot.campaignLogo,
                 onDismiss = onDismissSponsorSlot,
                 onCtaClick = { type ->
                     // Handle CTA clicks if needed
@@ -575,7 +577,6 @@ private fun InteractionCards(
             VioEngagementPollCard(
                 poll = engagementPoll,
                 pollResults = null,
-                sponsorLogoUrl = poll.campaignLogo,
                 onVote = { },
                 onDismiss = onDismissPoll,
             )
@@ -605,7 +606,6 @@ private fun InteractionCards(
 
             VioEngagementContestCard(
                 contest = engagementContest,
-                sponsorLogoUrl = contest.campaignLogo,
                 onJoin = { },
                 onDismiss = onDismissContest,
             )
@@ -652,7 +652,6 @@ private fun EngagementProductFromEvent(
         if (currentProduct != null) {
             VioEngagementProductCard(
                 product = currentProduct,
-                sponsorLogoUrl = productEvent.campaignLogo,
                 onAddToCart = { onAddToCart(currentProduct) },
                 onDismiss = onDismiss,
             )

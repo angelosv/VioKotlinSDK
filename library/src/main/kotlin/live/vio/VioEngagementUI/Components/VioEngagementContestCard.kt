@@ -27,7 +27,7 @@ import live.vio.VioUI.Components.compose.product.VioImageLoaderDefaults
 @Composable
 fun VioEngagementContestCard(
     contest: Contest,
-    sponsorLogoUrl: String? = null,
+    sponsor: live.vio.VioDesignSystem.SponsorAssets? = live.vio.VioCore.models.SponsorAssets.current,
     modifier: Modifier = Modifier,
     imageLoader: VioImageLoader = VioImageLoaderDefaults.current,
     onJoin: (() -> Unit)? = null,
@@ -35,9 +35,13 @@ fun VioEngagementContestCard(
 ) {
     VioEngagementCardBase(
         modifier = modifier,
-        sponsorLogoUrl = sponsorLogoUrl,
         onDismiss = { onDismiss?.invoke() }
     ) {
+        // Branding Header
+        sponsor?.let {
+            live.vio.VioDesignSystem.Components.SponsorAvatar(sponsor = it)
+            androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(8.dp))
+        }
         if (!contest.imageUrl.isNullOrBlank()) {
             VioImage(
                 url = contest.imageUrl,

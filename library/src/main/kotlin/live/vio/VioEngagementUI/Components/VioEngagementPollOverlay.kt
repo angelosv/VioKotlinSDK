@@ -49,7 +49,6 @@ fun VioEngagementPollOverlay(
             VioEngagementPollCard(
                 poll = poll,
                 pollResults = results,
-                sponsorLogoUrl = sponsorLogoUrl,
                 onVote = { optionId ->
                     // Disparar callback externo
                     onVote?.invoke(optionId)

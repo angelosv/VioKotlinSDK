@@ -104,6 +104,8 @@ class CampaignManager private constructor(
     private val _discoveredCampaigns = MutableStateFlow<List<Campaign>>(emptyList())
     val discoveredCampaigns: StateFlow<List<Campaign>> = _discoveredCampaigns.asStateFlow()
 
+    private val isSettingUpBroadcast = java.util.concurrent.atomic.AtomicBoolean(false)
+
     private val _events = MutableSharedFlow<CampaignNotification>(extraBufferCapacity = 32)
     val events: SharedFlow<CampaignNotification> = _events.asSharedFlow()
 
@@ -219,6 +221,11 @@ class CampaignManager private constructor(
      * Limpia componentes del contexto anterior y recarga campañas/componentes para el nuevo contexto.
      */
     fun setMatchContext(matchContext: MatchContext?) {
+        if (!isSettingUpBroadcast.compareAndSet(false, true)) {
+            VioLogger.debug("Broadcast context setup already in progress", COMPONENT)
+            return
+        }
+
         // En Kotlin removimos _activeComponents.value = emptyList() para evitar parpadeos/loading infinito
         // La lista se actualizará reactivamente tras el filtrado o llegada de nuevos eventos.
 
@@ -226,6 +233,7 @@ class CampaignManager private constructor(
             currentMatchContext = null
             currentMatchId = null
             VioLogger.debug("Match Context cleared", COMPONENT)
+            isSettingUpBroadcast.set(false)
             return
         }
 
@@ -237,7 +245,11 @@ class CampaignManager private constructor(
 
         // Recargar campañas y componentes para este contexto
         scope.launch {
-            refreshCampaignsForContext(matchContext)
+            try {
+                refreshCampaignsForContext(matchContext)
+            } finally {
+                isSettingUpBroadcast.set(false)
+            }
         }
     }
 
@@ -465,6 +477,11 @@ class CampaignManager private constructor(
      * @param matchId Optional match ID to filter campaigns.
      */
     suspend fun discoverCampaigns(matchId: String? = null) {
+        if (_discoveredCampaigns.value.isNotEmpty()) {
+            VioLogger.debug("Campaigns already discovered, skipping", COMPONENT)
+            return
+        }
+        VioLogger.debug("Discovering campaigns...", COMPONENT)
         val oldLogoUrl = _currentCampaign.value?.campaignLogo
         currentMatchId = matchId
         val baseUrl = restApiBaseUrl.trimEnd('/')
@@ -644,7 +661,7 @@ class CampaignManager private constructor(
             mapper.readValue(response.body, type)
         }.onFailure {
             VioLogger.error("Failed to decode components: ${it.message}", COMPONENT)
-        }.getOrElse { return }
+        }.getOrNull() ?: return
 
         val components = responses.map { Component.fromResponse(it) }
         val active = components.filter { it.isActive }

@@ -46,14 +46,21 @@ fun SponsorBadgeContainer(
     val config by VioConfiguration.shared.state.collectAsState()
     
     val effectiveSponsorLogoUrl = remember(sponsorLogoUrl, currentCampaign, config.sponsor, showSponsor) {
-        val rawUrl = sponsorLogoUrl ?: if (showSponsor) {
-            currentCampaign?.campaignLogo 
-                ?: currentCampaign?.sponsor?.logoUrl 
-                ?: config.sponsor?.logoUrl
-        } else {
-            null
-        }
+        val rawUrl = sponsorLogoUrl 
+            ?: live.vio.VioCore.models.SponsorAssets.current?.logoUrl
+            ?: if (showSponsor) {
+                currentCampaign?.campaignLogo 
+                    ?: currentCampaign?.sponsor?.logoUrl 
+                    ?: config.sponsor?.logoUrl
+            } else {
+                null
+            }
         live.vio.VioCore.utils.UrlUtils.resolveAssetUrl(rawUrl)
+    }
+    
+    val effectiveSponsorText = remember(sponsorText, showSponsor) {
+        if (sponsorText != "Sponset av") sponsorText
+        else live.vio.VioCore.models.SponsorAssets.current?.badgeText ?: sponsorText
     }
     
     // Debug log to verify logo resolution
@@ -73,7 +80,7 @@ fun SponsorBadgeContainer(
     val badge: @Composable () -> Unit = badgeContent ?: {
         SponsorBadge(
             logoUrl = effectiveSponsorLogoUrl,
-            text = sponsorText,
+            text = effectiveSponsorText,
             textColor = sponsorTextColor,
             imageLoader = imageLoader,
         )

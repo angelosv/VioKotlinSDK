@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun SponsorBadge(
     logoUrl: String?,
-    text: String = "Sponset av",
+    text: String = live.vio.VioCore.models.SponsorAssets.current?.badgeText ?: "Sponset av",
     textColor: Color = Color.Unspecified,
     modifier: Modifier = Modifier,
     imageLoader: VioImageLoader = VioImageLoaderDefaults.current,
@@ -47,7 +47,7 @@ fun SponsorBadge(
             text = text,
             fontSize = 8.sp,
             fontWeight = FontWeight.Light,
-            color = textColor,
+            color = if (textColor == Color.Unspecified) live.vio.VioCore.models.SponsorAssets.current?.textOnPrimary ?: Color.White else textColor,
         )
         
         Spacer(modifier = Modifier.height(2.dp))
