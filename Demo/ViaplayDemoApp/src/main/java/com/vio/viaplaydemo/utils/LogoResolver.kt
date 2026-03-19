@@ -9,7 +9,7 @@ object LogoResolver {
         name == "athletic_logo" -> "https://city-png.b-cdn.net/preview/preview_public/uploads/preview/hd-official-athletic-bilbao-logo-transparent-png-701751712235012tyctv8zkm8.png"
         name == "city_logo" -> "https://download.logo.wine/logo/Manchester_City_F.C./Manchester_City_F.C.-Logo.wine.png"
         name == "madrid_logo" -> "https://crystalpng.com/wp-content/uploads/2025/02/logo-real-madrid-02.png"
-        else -> "https://upload.wikimedia.org/wikipedia/commons/6/65/TV2_Norge_logo.svg"
+        else -> "https://upload.wikimedia.org/wikipedia/commons/b/ba/Viaplay_logo.svg"
     }
 
     fun resolveImage(name: String): String = when {

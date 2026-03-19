@@ -33,7 +33,7 @@ import com.vio.viaplaydemo.services.chat.ChatMessage
 import com.vio.viaplaydemo.ui.theme.ViaplayTheme
 
 @Composable
-fun TV2ChatOverlay(
+fun ViaplayChatOverlay(
     showControls: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -153,7 +153,7 @@ private fun ChatHeader(isExpanded: Boolean, onToggle: (Boolean) -> Unit) {
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        TV2SponsorBadge(
+        ViaplaySponsorBadge(
             logoUrl = currentCampaign?.campaignLogo,
             showText = true,
         )

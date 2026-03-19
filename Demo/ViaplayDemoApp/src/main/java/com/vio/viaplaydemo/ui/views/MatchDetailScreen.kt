@@ -42,7 +42,7 @@ import coil.compose.AsyncImage
 import com.vio.viaplaydemo.casting.CastingManager
 import com.vio.viaplaydemo.ui.components.BottomTabBar
 import com.vio.viaplaydemo.ui.components.OfferBannerView
-import com.vio.viaplaydemo.ui.components.TV2VideoPlayer
+import com.vio.viaplaydemo.ui.components.ViaplayVideoPlayer
 import com.vio.viaplaydemo.ui.model.Match
 import com.vio.viaplaydemo.ui.model.MatchMocks
 import com.vio.viaplaydemo.ui.model.TabItem
@@ -167,7 +167,7 @@ fun MatchDetailScreen(
             onDismissRequest = { showVideo = false },
             properties = DialogProperties(usePlatformDefaultWidth = false),
         ) {
-            TV2VideoPlayer(
+            ViaplayVideoPlayer(
                 match = match,
                 cartManager = cartManager,
                 sdkClient = sdkClient,

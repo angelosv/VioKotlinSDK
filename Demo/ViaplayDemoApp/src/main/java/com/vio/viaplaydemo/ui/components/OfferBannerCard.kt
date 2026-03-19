@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.vio.viaplaydemo.ui.theme.ViaplayTheme
 
 @Composable
-fun TV2OfferBanner(onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun ViaplayOfferBanner(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val gradient = Brush.horizontalGradient(
         colors = listOf(ViaplayTheme.Colors.primary, ViaplayTheme.Colors.secondary),
     )
@@ -34,7 +34,7 @@ fun TV2OfferBanner(onClick: () -> Unit, modifier: Modifier = Modifier) {
             .padding(ViaplayTheme.Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text("Ukens TV2+ Sports", style = ViaplayTheme.Typography.caption, color = ViaplayTheme.Colors.textPrimary)
+        Text("Ukens Viaplay Sports", style = ViaplayTheme.Typography.caption, color = ViaplayTheme.Colors.textPrimary)
         Text("Live casting + shopping", style = ViaplayTheme.Typography.title, color = ViaplayTheme.Colors.textPrimary)
         Text(
             "Direkte kjøp av produkter mens du ser Barça vs PSG",

@@ -43,7 +43,7 @@ import com.vio.viaplaydemo.ui.model.Match
 import com.vio.viaplaydemo.ui.model.toMatchContext
 
 @Composable
-fun TV2VideoPlayer(
+fun ViaplayVideoPlayer(
     match: Match,
     cartManager: CartManager,
     sdkClient: VioSdkClient,
@@ -149,7 +149,7 @@ fun TV2VideoPlayer(
             )
         }
 
-        TV2ChatOverlay(
+        ViaplayChatOverlay(
             showControls = showControls,
             onExpandedChange = { expanded ->
                 showChat = expanded

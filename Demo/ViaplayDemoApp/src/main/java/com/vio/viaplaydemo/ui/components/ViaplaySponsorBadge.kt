@@ -13,11 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.vio.viaplaydemo.ui.theme.ViaplayTheme
 
 @Composable
-fun TV2SponsorBadge(
+fun ViaplaySponsorBadge(
     logoUrl: String?,
     modifier: Modifier = Modifier,
     contentDescription: String = "Sponsor logo",

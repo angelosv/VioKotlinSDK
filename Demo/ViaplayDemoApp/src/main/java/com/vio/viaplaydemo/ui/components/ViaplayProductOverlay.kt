@@ -44,7 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun TV2ProductOverlay(
+fun ViaplayProductOverlay(
     productEvent: ProductEventData,
     sdk: VioSdkClient,
     currency: String,
@@ -97,7 +97,7 @@ fun TV2ProductOverlay(
                 }
             }
 
-            TV2SponsorBadge(
+            ViaplaySponsorBadge(
                 logoUrl = productEvent.campaignLogo,
                 modifier = Modifier.align(Alignment.Start),
             )

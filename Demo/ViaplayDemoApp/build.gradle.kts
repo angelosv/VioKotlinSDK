@@ -64,7 +64,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     
-    // Media3 for TV2VideoPlayer
+    // Media3 for ViaplayVideoPlayer
     implementation("androidx.media3:media3-exoplayer:1.4.1")
     implementation("androidx.media3:media3-ui:1.4.1")
     implementation("androidx.media3:media3-common:1.4.1")

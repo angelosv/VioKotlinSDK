@@ -1,12 +1,12 @@
-# TV2 Demo – Reachu Configuration
+# Viaplay Demo – Reachu Configuration
 
-Esta carpeta recopila los mismos recursos de configuración que existen en `ReachuSwiftSDK-Demos/tv2demo/tv2demo/Configuration`, pero adaptados al flujo Android/Compose.
+Esta carpeta recopila los mismos recursos de configuración que existen en `ReachuSwiftSDK-Demos/viaplaydemo/viaplaydemo/Configuration`, pero adaptados al flujo Android/Compose.
 
 ## Ubicación
 
 ```
 ReachuKotlinSDK/
-└── Demo/TV2DemoApp/
+└── Demo/ViaplayDemoApp/
     ├── Configuration/            ← Documentación y ejemplos
     └── src/main/assets/          ← Archivos JSON que carga la app
         └── vio-config.json
@@ -50,5 +50,5 @@ ConfigurationLoader.loadFromJSONString(jsonString)
 ## Consejos
 
 1. Guarda los distintos presets en `src/main/assets`. Con eso puedes alternar entre configuraciones sin tocar código Kotlin.
-2. Los mismos archivos JSON funcionan para Swift y Kotlin: basta con copiar `vio-config.json` de `ReachuSwiftSDK-Demos/tv2demo`.
+2. Los mismos archivos JSON funcionan para Swift y Kotlin: basta con copiar `vio-config.json` de `ReachuSwiftSDK-Demos/viaplaydemo`.
 3. Para monitorear cambios de red/tema, habilita `network.enableLogging` y usa `VioLogger` (ya está integrado en la build Kotlin).
