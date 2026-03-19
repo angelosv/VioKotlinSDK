@@ -27,19 +27,22 @@ class VioFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        VioLogger.info("New FCM token received: ${token.take(10)}...", TAG)
+        android.util.Log.i(TAG, "***** FCM Token Refreshed: ${token.take(15)}...")
         
         val userId = VioConfiguration.shared.state.value.userId
         if (!userId.isNullOrBlank()) {
+            android.util.Log.i(TAG, "***** Registering refreshed token for userId: $userId")
             DeviceTokenManager.register(userId, token)
         } else {
-            VioLogger.debug("User ID not set, skipping device registration for now", TAG)
+            android.util.Log.i(TAG, "***** User ID not set, deferred token registration until setUserId is called")
         }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        VioLogger.info("FCM message received: ${message.data}", TAG)
+        android.util.Log.i(TAG, "***** FCM message received from: ${message.from}")
+        android.util.Log.i(TAG, "***** Message data: ${message.data}")
+        android.util.Log.i(TAG, "***** Message notification: ${message.notification?.title} / ${message.notification?.body}")
         
         val productId = message.data["productId"]
         val title = message.notification?.title ?: message.data["title"] ?: "Vio"
@@ -49,6 +52,8 @@ class VioFirebaseMessagingService : FirebaseMessagingService() {
             VioSDK.openProduct(productId)
             showNotification(productId, title, body)
         }
+
+        showNotification(productId ?: "default", title, body)
     }
 
     private fun showNotification(productId: String, title: String, body: String) {
@@ -75,6 +80,7 @@ class VioFirebaseMessagingService : FirebaseMessagingService() {
 
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_info) // Generic icon
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)

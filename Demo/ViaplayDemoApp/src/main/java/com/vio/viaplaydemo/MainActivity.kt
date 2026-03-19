@@ -73,12 +73,19 @@ import live.vio.sdk.domain.models.ProductDto
 import live.vio.sdk.core.VioSdkClient
 import java.net.URL
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var cartManager: CartManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestNotificationPermission()
 
         // Configuración simplificada: solo apiKey y entorno.
         // El resto de la configuración (endpoints, commerce, campañas, etc.)
@@ -148,6 +155,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun copyConfigToFilesDir(fileName: String) {
         // Ya no se usa vio-config.json local para este demo.
+    }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) !=
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    101
+                )
+            }
+        }
     }
 }
 

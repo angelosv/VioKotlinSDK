@@ -106,9 +106,7 @@ class CartManager(
             constructorProvidedSdk?.let { return it }
             val cfg = CoreVioConfiguration.shared.state.value
             val endpoint = cfg.commerce?.endpoint?.takeIf { it.isNotBlank() } ?: cfg.environment.graphQLUrl
-            println("****** endpoint ${endpoint}")
             val apiKeyForCommerce = (cfg.commerce?.apiKey?.takeIf { it.isNotBlank() } ?: cfg.apiKey).ifBlank { "DEMO_KEY" }
-            println("****** apiKeyForCommerce ${apiKeyForCommerce}")
             val overrideBase = System.getenv("REACHU_BASE_URL")?.trim()?.takeIf { it.isNotBlank() }
             val overrideToken = System.getenv("REACHU_API_TOKEN")?.trim()?.takeIf { it.isNotBlank() }
             val signature = "${overrideBase ?: endpoint}|${overrideToken ?: apiKeyForCommerce}"

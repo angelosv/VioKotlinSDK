@@ -56,6 +56,9 @@ object VioSDK {
             environment = environment,
         )
 
+        // Initialize Firebase programmatically
+        live.vio.sdk.utils.VioFirebaseInitializer.initialize(context)
+
         userId?.let { setUserId(it) }
 
         // Refrescar configuración remota de forma asíncrona
@@ -97,13 +100,14 @@ object VioSDK {
         
         // If a userId is set, try to register the device token immediately if available.
         if (!userId.isNullOrBlank()) {
+            android.util.Log.i("VioSDK", "***** Attempting to retrieve FCM Token for userId: $userId")
             FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val token = task.result
-                    VioLogger.info("FCM Token retrieved: $token", "VioSDK")
+                    android.util.Log.i("VioSDK", "***** Success! FCM Token retrieved: ${token}")
                     DeviceTokenManager.register(userId, token)
                 } else {
-                    VioLogger.error("Failed to retrieve FCM token: ${task.exception?.message}", "VioSDK")
+                    android.util.Log.e("VioSDK", "***** CRITICAL: Failed to retrieve FCM token: ${task.exception?.message}", task.exception)
                 }
             }
         }
