@@ -64,6 +64,10 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("com.google.android.gms:play-services-wallet:19.4.0")
 
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
+
     // JUnit 5 (unit tests)
     testImplementation(platform("org.junit:junit-bom:5.10.1"))
     testImplementation(kotlin("test-junit5"))

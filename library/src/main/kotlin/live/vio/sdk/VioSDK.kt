@@ -10,6 +10,10 @@ import live.vio.VioCore.configuration.VioEnvironment
 import live.vio.VioCore.configuration.VioSDKConfigService
 import live.vio.VioCore.managers.CampaignManager
 import live.vio.VioCore.utils.VioLogger
+import live.vio.VioCore.managers.DeviceTokenManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import com.google.firebase.messaging.FirebaseMessaging
 
 /**
  * Entry point público del SDK para apps cliente.
@@ -19,6 +23,10 @@ import live.vio.VioCore.utils.VioLogger
 object VioSDK {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    // State for opening a product via FCM or other external triggers.
+    private val _openedProductState = MutableStateFlow<String?>(null)
+    val openedProductState = _openedProductState.asStateFlow()
 
     /**
      * Indica si el SDK ha sido configurado correctamente con una apiKey.
@@ -38,6 +46,7 @@ object VioSDK {
         apiKey: String,
         environment: VioEnvironment = VioEnvironment.PRODUCTION,
         baseUrl: String = "https://api-dev.vio.live",
+        userId: String? = null,
     ) {
         println("🚀 [VioSDK] configure called with apiKey=${apiKey.take(8)}...")
         // Aplicar configuración base inmediatamente (sin esperar a la red)
@@ -46,6 +55,8 @@ object VioSDK {
             apiKey = apiKey,
             environment = environment,
         )
+
+        userId?.let { setUserId(it) }
 
         // Refrescar configuración remota de forma asíncrona
         scope.launch {
@@ -82,7 +93,36 @@ object VioSDK {
      * manteniendo compatibilidad con el API público.
      */
     fun setUserId(userId: String?) {
-        // TODO: Integrar con capa de notificaciones push / analíticas cuando esté disponible.
+        VioConfiguration.setUserId(userId)
+        
+        // If a userId is set, try to register the device token immediately if available.
+        if (!userId.isNullOrBlank()) {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val token = task.result
+                    VioLogger.info("FCM Token retrieved: $token", "VioSDK")
+                    DeviceTokenManager.register(userId, token)
+                } else {
+                    VioLogger.error("Failed to retrieve FCM token: ${task.exception?.message}", "VioSDK")
+                }
+            }
+        }
+    }
+
+    /**
+     * Abre un producto específico en el overlay de engagement.
+     * Útil para manejar notificaciones push o deep links.
+     */
+    fun openProduct(productId: String) {
+        VioLogger.info("Opening product overlay for ID: $productId", "VioSDK")
+        _openedProductState.value = productId
+    }
+
+    /**
+     * Limpia el estado de producto abierto una vez que el UI lo ha procesado.
+     */
+    fun clearOpenedProduct() {
+        _openedProductState.value = null
     }
 
     /**

@@ -1,31 +1,12 @@
-1. VioEngagementProductOverlay — completar Composable
-Contexto
-VioEngagementProductOverlay en Kotlin existe pero está incompleto. En Swift el overlay muestra imagen del producto, precio NOK, logo del sponsor y CTA de compra.
-Kotlin file: library/.../VioUI/Components/compose/product/VioProductDetailOverlay.kt
-Swift reference: Sources/VioUI/Components/VProductDetailOverlay.swift
-UI a implementar
-Imagen del producto (AsyncImage con Coil)
-Nombre del producto
-Precio formateado en NOK (ej: 759 kr)
-SponsorAvatarComposable (32dp) + badge texto sponsor
-Botón CTA: "Legg til i handlekurv"
-Si hasGooglePay == true → ocultar CTA y mostrar VPaymentSheet en su lugar
-Animación slide-up al aparecer, dismiss tras 15s o tap fuera del overlay
-Dependencias
-Requiere SponsorAssets implementado
-Requiere VioCommerceService para fetch de producto por GraphQL
-VPaymentSheet ya implementado — integrarlo aquí
-Checklist
-[ ] UI básica: imagen + nombre + precio NOK
-[ ] SponsorAvatarComposable integrado
-[ ] Badge texto sponsor visible
-[ ] CTA "Legg til i handlekurv"
-[ ] CTA oculto si hasGooglePay == true (observar VioConfiguration con StateFlow)
-[ ] VPaymentSheet visible cuando Google Pay activo
-[ ] Animación slide-up con AnimatedVisibility
-[ ] Auto-dismiss 15s con LaunchedEffect
-[ ] Dismiss al tap fuera (clickable modifier en Box root)
-[ ] Testar con producto 408895 (Samsung TV 17,990 NOK, campaña 35)
-Referencias
-Commerce endpoint: graph-ql-dev.vio.live, apiKey viene de VioConfiguration (zero-config)
-Productos demo: 408841 (Barça Jersey 759kr), 408895 (Samsung TV 17990kr)
+1 Errores
+:Demo:ViaplayDemoApp:processDebugGoogleServices
+    File google-services.json is missing. 
+VioFirebaseMessagingService.kt
+    Const 'val' is only allowed on top level, in named objects, or in companion objects.
+VioSDK.kt
+    Conflicting import: imported name 'DeviceTokenManager' is ambiguous.
+    Conflicting import: imported name 'MutableStateFlow' is ambiguous.
+    Conflicting import: imported name 'FirebaseMessaging' is ambiguous.
+    Conflicting import: imported name 'MutableStateFlow' is ambiguous.
+    Conflicting import: imported name 'FirebaseMessaging' is ambiguous.
+    Conflicting import: imported name 'DeviceTokenManager' is ambiguous.

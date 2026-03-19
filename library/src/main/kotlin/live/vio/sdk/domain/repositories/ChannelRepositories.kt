@@ -10,12 +10,12 @@ interface ProductRepository {
     suspend fun get(
         currency: String?,
         imageSize: String? = "large",
-        barcodeList: List<String>?,
-        categoryIds: List<Int>?,
-        productIds: List<Int>?,
-        skuList: List<String>?,
+        barcodeList: List<String>? = null,
+        categoryIds: List<Int>? = null,
+        productIds: List<Int>? = null,
+        skuList: List<String>? = null,
         useCache: Boolean = true,
-        shippingCountryCode: String?,
+        shippingCountryCode: String? = null,
     ): List<ProductDto>
 
     suspend fun getByCategoryId(

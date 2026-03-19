@@ -67,6 +67,11 @@ import com.google.android.gms.wallet.AutoResolveHelper
 
 import live.vio.sdk.VioSDK
 import live.vio.VioCore.configuration.VioEnvironment
+import live.vio.VioEngagementUI.Components.VioEngagementProductOverlay
+import androidx.compose.runtime.LaunchedEffect
+import live.vio.sdk.domain.models.ProductDto
+import live.vio.sdk.core.VioSdkClient
+import java.net.URL
 
 class MainActivity : AppCompatActivity() {
 
@@ -84,6 +89,7 @@ class MainActivity : AppCompatActivity() {
             apiKey = apiKey,
             environment = VioEnvironment.SANDBOX,
         )
+        VioSDK.setUserId("user123")
 
         cartManager = CartManager()
         VioImageLoaderDefaults.install(VioCoilImageLoader)
@@ -104,10 +110,24 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        // Handle initial intent if app was opened via notification
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        val productId = intent?.getStringExtra("productId")
+        if (!productId.isNullOrBlank()) {
+            println("🎁 [ViaplayDemo] App opened with productId: $productId")
+            VioSDK.openProduct(productId)
+        }
     }
 
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
+        setIntent(intent) // Update current intent
+        handleIntent(intent)
+        
         val uri: Uri = intent.data ?: return
         if (uri.scheme == "vio-demo" && uri.host == "checkout") {
             val status = when (uri.pathSegments.getOrNull(0)) {
@@ -142,6 +162,34 @@ private fun ViaplayDemoApp(cartManager: CartManager) {
     var overlayInitialStep by remember { mutableStateOf(VioCheckoutController.CheckoutStep.OrderSummary) }
     var showCastingOverlay by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf<TabItem>(TabItem.HOME) }
+    
+    val openedProductId by VioSDK.openedProductState.collectAsState()
+    var openedProducts by remember { mutableStateOf<List<ProductDto>>(emptyList()) }
+
+    LaunchedEffect(openedProductId) {
+        openedProductId?.let { id ->
+            // Fetch product DTO for the overlay
+            launch {
+                try {
+                    val state = live.vio.VioCore.configuration.VioConfiguration.shared.state.value
+                    val client = VioSdkClient(
+                        baseUrl = URL(state.commerce?.endpoint ?: state.environment.graphQLUrl),
+                        apiKey = state.commerce?.apiKey ?: state.apiKey
+                    )
+                    val dtos = client.channel.product.get(
+                        currency = cartManager.currencySymbol, // simplified
+                        productIds = listOf(id.toInt()),
+                        imageSize = "medium",
+                        shippingCountryCode = "US"
+                    )
+                    openedProducts = dtos
+                } catch (e: Exception) {
+                    println("Error fetching product for FCM: ${e.message}")
+                    VioSDK.clearOpenedProduct()
+                }
+            }
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (selectedTab) {
@@ -231,6 +279,20 @@ private fun ViaplayDemoApp(cartManager: CartManager) {
             onClose = { showCastingOverlay = false },
         )
     }
+
+    VioEngagementProductOverlay(
+        products = openedProducts,
+        isVisible = openedProducts.isNotEmpty(),
+        onDismiss = {
+            openedProducts = emptyList()
+            VioSDK.clearOpenedProduct()
+        },
+        onAddToCart = { product ->
+            // In a real app, convert DTO to domain Product and add to cart
+            openedProducts = emptyList()
+            VioSDK.clearOpenedProduct()
+        }
+    )
 }
 
 @Composable

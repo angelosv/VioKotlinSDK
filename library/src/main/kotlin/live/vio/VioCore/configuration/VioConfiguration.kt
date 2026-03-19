@@ -46,6 +46,7 @@ class VioConfiguration private constructor() {
         val commerce: live.vio.VioCore.models.CommerceConfig? = null,
         val checkout: live.vio.VioCore.models.CheckoutConfig? = null,
         val isRemoteConfigReady: Boolean = false,
+        val userId: String? = null,
     )
 
     companion object {
@@ -199,6 +200,11 @@ class VioConfiguration private constructor() {
                 apiKey = apiKey,
                 environment = VioEnvironment.PRODUCTION,
             )
+        }
+
+        fun setUserId(userId: String?) {
+            shared._state.value = shared._state.value.copy(userId = userId)
+            VioLogger.info("User ID set to: $userId", "VioConfiguration")
         }
 
         fun updateTheme(theme: VioTheme) {

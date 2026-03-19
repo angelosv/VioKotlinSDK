@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android") apply false
     id("org.jetbrains.kotlin.plugin.compose") apply false
     id("com.vanniktech.maven.publish") apply false
+    id("com.google.gms.google-services") version "4.4.2" apply false
 }
 
 // Convenience alias to run the console demos from the repo root
