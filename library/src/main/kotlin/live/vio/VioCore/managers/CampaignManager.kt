@@ -337,6 +337,13 @@ class CampaignManager private constructor(
             _isCampaignActive.value = true
             _campaignState.value = CampaignState.ACTIVE
             _activeComponents.value = emptyList()
+
+            // Si ya había contexto de match previo (setMatchContext pudo llamarse antes de obtener config remota), refrescamos
+            currentMatchContext?.let { existingContext ->
+                scope.launch {
+                    refreshCampaignsForContext(existingContext)
+                }
+            }
         } else if (configuredId > 0) {
             // Modo legacy: inicializar campaña específica
             scope.launch { initializeCampaign() }
@@ -478,12 +485,21 @@ class CampaignManager private constructor(
      */
     suspend fun discoverCampaigns(matchId: String? = null) {
         if (_discoveredCampaigns.value.isNotEmpty()) {
-            VioLogger.debug("Campaigns already discovered, skipping", COMPONENT)
+            VioLogger.debug("Campaigns already discovered, reusing cached discovery and confirming WebSocket", COMPONENT)
+            val selected = selectCurrentCampaign(_activeCampaigns.value)
+            if (selected != null) {
+                VioLogger.debug("Connecting WebSocket for cached active campaign ${selected.id}", COMPONENT)
+                connectWebSocket(selected.id)
+            } else {
+                VioLogger.warning("No active campaign found in cached discovered campaigns", COMPONENT)
+            }
             return
         }
         VioLogger.debug("Discovering campaigns...", COMPONENT)
         val oldLogoUrl = _currentCampaign.value?.campaignLogo
-        currentMatchId = matchId
+        if (matchId != null) {
+            currentMatchId = matchId
+        }
         val baseUrl = restApiBaseUrl.trimEnd('/')
         
         // Selección de API key (campaign > admin > general)
@@ -592,6 +608,9 @@ class CampaignManager private constructor(
 
             // Pre-cache logo if available
             emitLogoChanged(oldLogoUrl, selected.campaignLogo)
+            
+            // Connect WebSocket for the selected campaign (auto-discovery mode)
+            connectWebSocket(selected.id)
         } else {
             VioLogger.warning("No active campaigns found", COMPONENT)
             _isCampaignActive.value = false

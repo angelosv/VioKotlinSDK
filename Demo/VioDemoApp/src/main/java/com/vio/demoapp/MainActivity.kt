@@ -175,6 +175,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleIntent(intent: android.content.Intent?) {
+        val action = intent?.getStringExtra("action")
+        val productId = intent?.getStringExtra("productId")
+        val campaignId = intent?.getStringExtra("campaignId")
+
+        if (action == "open_product" && !productId.isNullOrBlank()) {
+            android.util.Log.i("MainActivity", "***** Handling notification action: open_product for productId: $productId")
+            
+            // If we have a campaignId, set it first to ensure correct context
+            if (!campaignId.isNullOrBlank()) {
+                live.vio.sdk.VioSDK.setContent(campaignId)
+            }
+            
+            // Open the product overlay
+            live.vio.sdk.VioSDK.openProduct(productId)
+        }
+
         val uri: Uri = intent?.data ?: return
         if (uri.scheme == "vio-demo" && uri.host == "checkout") {
             // Update global Vipps handler state from deep link

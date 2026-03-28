@@ -14,7 +14,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "VIO_API_KEY", "\"viaplay_api_key_0c611e983b314ff8\"")
+        buildConfigField("String", "VIO_API_KEY", "\"tv2_api_key_91b4fbf634af4bc5\"")
     }
 
     buildTypes {
@@ -71,6 +71,11 @@ dependencies {
 
     // Google Pay
     implementation("com.google.android.gms:play-services-wallet:19.4.0")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx")
+    implementation("com.google.firebase:firebase-common-ktx")
 
     // Consume the SDK modules locally while developing inside this repo
     implementation(project(":library"))

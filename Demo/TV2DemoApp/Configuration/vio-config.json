@@ -120,8 +120,8 @@
     }
   },
   "campaigns": {
-    "webSocketBaseURL": "https://api-dev.vio.live",
-    "restAPIBaseURL": "https://api-dev.vio.live",
+    "webSocketBaseURL": "https://socket-qa.reachu.io",
+    "restAPIBaseURL": "https://socket-qa.reachu.io",
     "campaignApiKey": "tv2_api_key_placeholder"
   },
   "_cartOptions": {

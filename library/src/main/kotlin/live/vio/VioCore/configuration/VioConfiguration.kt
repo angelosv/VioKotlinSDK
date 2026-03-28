@@ -149,7 +149,7 @@ class VioConfiguration private constructor() {
                 restAPIBaseURL = normalizeBase(remote.endpoints?.restBase) ?: current.campaign.restAPIBaseURL,
                 webSocketBaseURL = normalizeBase(remote.endpoints?.webSocketBase) ?: current.campaign.webSocketBaseURL,
                 channelId = remote.clientApp?.id ?: current.campaign.channelId,
-                autoDiscover = true,
+                autoDiscover = current.campaign.autoDiscover,
             )
 
             val updatedCommerce = remote.commerce?.let {

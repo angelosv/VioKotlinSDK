@@ -19,7 +19,7 @@ class WebSocketParityTest {
     fun testWebSocketUrlWithContentId() {
         val manager = CampaignWebSocketManager(
             campaignId = 35,
-            baseUrl = "https://api-dev.vio.live",
+            baseUrl = "https://socket-qa.reachu.io",
             apiKey = "test_key",
             contentId = "newcastle-united-vs-fc-barcelona-ucl-2026-03-10"
         )

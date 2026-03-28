@@ -2,6 +2,7 @@ package live.vio.liveshow
 
 import live.vio.VioCore.configuration.VioConfiguration
 import live.vio.VioCore.models.LiveShowCartManaging
+import live.vio.sdk.VioSDK
 import live.vio.sdk.core.helpers.JsonUtils
 import java.net.HttpURLConnection
 import java.net.URL
@@ -102,6 +103,7 @@ class LiveShowManager private constructor(
 
     fun updateCurrentStream(stream: LiveStream) {
         _currentStream.value = stream
+        VioSDK.setContent(stream.id)
         LiveChatManager.shared.configure(channel = stream.id, role = "USER")
         scope.launch {
             LiveChatManager.shared.loadChatMessages(channel = stream.id, migrated = !stream.isLive)
@@ -110,6 +112,7 @@ class LiveShowManager private constructor(
 
     fun showLiveStream(stream: LiveStream, layout: LiveStreamLayout = LiveStreamLayout.FULL_SCREEN_OVERLAY) {
         _currentStream.value = stream
+        VioSDK.setContent(stream.id)
         _layout.value = layout
         _isLiveShowVisible.value = true
         _isMiniPlayerVisible.value = false

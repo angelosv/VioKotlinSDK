@@ -1,5 +1,9 @@
 package live.vio.VioCore.managers
 
+import android.content.Context
+import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import live.vio.VioCore.models.CampaignEndedEvent
 import live.vio.VioCore.models.CampaignPausedEvent
 import live.vio.VioCore.models.CampaignResumedEvent
@@ -9,7 +13,11 @@ import live.vio.VioCore.models.ComponentStatusChangedEvent
 import live.vio.VioEngagementSystem.models.Contest
 import live.vio.VioEngagementSystem.models.Poll
 import live.vio.VioCore.utils.VioLogger
+import live.vio.VioCore.configuration.VioConfiguration
+import live.vio.VioCore.utils.VioContextManager
 import live.vio.sdk.core.helpers.JsonUtils
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.min
 import kotlin.math.pow
@@ -39,7 +47,15 @@ class CampaignWebSocketManager(
 
     companion object {
         private const val COMPONENT = "CampaignWebSocket"
+        private const val NOTIFICATION_CHANNEL_ID = "vio_notifications"
     }
+
+    data class CartIntentEvent(
+        val type: String,
+        val productName: String?,
+        val productId: String?,
+        val campaignId: Int?,
+    )
 
     // Event callbacks
     var onCampaignStarted: ((CampaignStartedEvent) -> Unit)? = null
@@ -51,6 +67,7 @@ class CampaignWebSocketManager(
     var onPollReceived: ((Poll) -> Unit)? = null
     var onContestReceived: ((Contest) -> Unit)? = null
     var onConnectionStatusChanged: ((Boolean) -> Unit)? = null
+    var onCartIntent: ((CartIntentEvent) -> Unit)? = null
 
     private val client = OkHttpClient()
     private val connected = AtomicBoolean(false)
@@ -62,8 +79,8 @@ class CampaignWebSocketManager(
 
     suspend fun connect() {
         val wsUrl = buildSocketUrl()
-        println("[$COMPONENT] Connecting to $wsUrl (campaignId=$campaignId)")
-        VioLogger.debug("Connecting to $wsUrl (campaignId=$campaignId)", COMPONENT)
+        Log.i(COMPONENT, "🔌 Connecting to $wsUrl (campaignId=$campaignId)")
+        VioLogger.info("Connecting to $wsUrl (campaignId=$campaignId)", COMPONENT)
         isManualDisconnect.set(false) // Reset manual disconnect flag on new connection attempt
         withContext(Dispatchers.IO) {
             val requestBuilder = Request.Builder()
@@ -82,8 +99,8 @@ class CampaignWebSocketManager(
     }
 
     fun disconnect() {
-        println("[$COMPONENT] Disconnecting campaign socket ($campaignId)")
-        VioLogger.debug("Disconnecting campaign socket ($campaignId)", COMPONENT)
+        Log.i(COMPONENT, "🔌 Disconnecting campaign socket ($campaignId)")
+        VioLogger.info("Disconnecting campaign socket ($campaignId)", COMPONENT)
         isManualDisconnect.set(true)
         reconnectJob?.cancel()
         reconnectJob = null
@@ -96,36 +113,57 @@ class CampaignWebSocketManager(
 
     private fun buildSocketUrl(): String {
         val normalized = baseUrl.trimEnd('/')
+        Log.d(COMPONENT, "buildSocketUrl - baseUrl='$baseUrl', normalized='$normalized'")
+        // Always use wss:// (secure) to comply with Android network security policy
         val wsBase = normalized
             .replace("https://", "wss://")
-            .replace("http://", "ws://")
+            .replace("http://", "wss://")
+        Log.d(COMPONENT, "buildSocketUrl - wsBase='$wsBase'")
         val url = "$wsBase/ws/$campaignId"
-        return if (!contentId.isNullOrBlank()) {
-            "$url?contentId=$contentId"
-        } else {
-            url
+
+        val queryParams = buildList {
+            val userId = VioConfiguration.shared.state.value.userId
+            if (!userId.isNullOrBlank()) {
+                add("userId=" + URLEncoder.encode(userId, StandardCharsets.UTF_8.name()))
+            }
+            if (!contentId.isNullOrBlank()) {
+                add("contentId=" + URLEncoder.encode(contentId, StandardCharsets.UTF_8.name()))
+            }
         }
+
+        val finalUrl = if (queryParams.isNotEmpty()) {
+            url + "?" + queryParams.joinToString("&")
+        } else url
+        Log.d(COMPONENT, "buildSocketUrl - finalUrl='$finalUrl'")
+        return finalUrl
     }
 
     override fun onOpen(webSocket: WebSocket, response: Response) {
-        println("[$COMPONENT] WebSocket opened successfully for campaign $campaignId")
-        VioLogger.debug("WebSocket opened for campaign $campaignId", COMPONENT)
+        Log.i(COMPONENT, "✅ WebSocket opened successfully for campaign $campaignId")
+        VioLogger.success("WebSocket opened for campaign $campaignId", COMPONENT)
+
+        val userId = VioConfiguration.shared.state.value.userId
+        if (!userId.isNullOrBlank()) {
+            val identify = JsonUtils.stringify(mapOf("type" to "identify", "userId" to userId))
+            webSocket.send(identify)
+            VioLogger.debug("Sent identify to WS for userId=$userId", COMPONENT)
+        }
     }
 
     override fun onMessage(webSocket: WebSocket, text: String) {
-        println("[$COMPONENT] Raw message received: $text")
+        Log.d(COMPONENT, "📥 Raw message received: $text")
         scope.launch { handleMessage(text) }
     }
 
     override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-        println("[$COMPONENT] WebSocket closed: Code $code, Reason: $reason")
-        VioLogger.debug("WebSocket closed ($code) reason=$reason", COMPONENT)
+        Log.i(COMPONENT, "🔌 WebSocket closed: Code $code, Reason: $reason")
+        VioLogger.info("WebSocket closed ($code) reason=$reason", COMPONENT)
         connected.set(false)
         onConnectionStatusChanged?.invoke(false)
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-        println("[$COMPONENT] WebSocket FAILURE: ${t.message}")
+        Log.e(COMPONENT, "❌ WebSocket FAILURE: ${t.message}", t)
         VioLogger.error("WebSocket error: ${t.message}", COMPONENT)
         if (connected.getAndSet(false)) {
             onConnectionStatusChanged?.invoke(false)
@@ -143,7 +181,7 @@ class CampaignWebSocketManager(
         }
         val eventType = node.get("type")?.asText()
         VioLogger.debug("🔌 [WebSocket] Event type detected: '$eventType'", COMPONENT)
-        println("[$COMPONENT] Processing event type: $eventType")
+        Log.d(COMPONENT, "Processing event type: $eventType")
 
         if (eventType.isNullOrBlank()) {
             VioLogger.warning("Missing event type in payload", COMPONENT)
@@ -168,6 +206,27 @@ class CampaignWebSocketManager(
                     onPollReceived?.invoke(mapper.treeToValue(node, Poll::class.java))
                 "contest" ->
                     onContestReceived?.invoke(mapper.treeToValue(node, Contest::class.java))
+                "cart_intent" -> {
+                    val targetUserId = node.get("userId")?.asText()
+                    val currentUserId = VioConfiguration.shared.state.value.userId
+                    if (!targetUserId.isNullOrBlank() && targetUserId != currentUserId) return
+
+                    val event = CartIntentEvent(
+                        type = eventType,
+                        productName = node.get("productName")?.asText(),
+                        productId = node.get("productId")?.asText(),
+                        campaignId = node.get("campaignId")?.asInt(),
+                    )
+
+                    onCartIntent?.invoke(event)
+
+                    if (VioContextManager.isInitialized) {
+                        scheduleCartIntentNotification(
+                            context = VioContextManager.context,
+                            productName = event.productName,
+                        )
+                    }
+                }
                 else -> {
                     println("[$COMPONENT] Unknown event type received: $eventType")
                     VioLogger.warning("Unknown event type: $eventType (full message: $text)", COMPONENT)
@@ -188,12 +247,24 @@ class CampaignWebSocketManager(
         }
         reconnectAttempts += 1
         val delaySeconds = min(30.0, 2.0.pow(reconnectAttempts.toDouble()))
-        println("[$COMPONENT] Reconnection attempt $reconnectAttempts/$maxReconnectAttempts in ${delaySeconds}s")
-        VioLogger.debug("Reconnecting in ${delaySeconds}s (attempt $reconnectAttempts/$maxReconnectAttempts)", COMPONENT)
+        Log.i(COMPONENT, "🔄 Reconnection attempt $reconnectAttempts/$maxReconnectAttempts in ${delaySeconds}s")
+        VioLogger.info("Reconnecting in ${delaySeconds}s (attempt $reconnectAttempts/$maxReconnectAttempts)", COMPONENT)
         delay((delaySeconds * 1_000).toLong())
         runCatching { connect() }.onFailure {
             println("[$COMPONENT] Reconnect attempt failed: ${it.message}")
             VioLogger.error("Reconnect attempt failed: ${it.message}", COMPONENT)
         }
+    }
+
+    private fun scheduleCartIntentNotification(context: Context, productName: String?) {
+        val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
+            .setContentTitle("Tienes un artículo esperando")
+            .setContentText(productName ?: "Un producto está listo")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .build()
+
+        NotificationManagerCompat.from(context).notify((System.currentTimeMillis() % Int.MAX_VALUE).toInt(), notification)
     }
 }

@@ -1,10 +1,13 @@
 package live.vio.VioCore.utils
 
+import android.util.Log
 import live.vio.VioCore.configuration.LogLevel
 import live.vio.VioCore.configuration.VioConfiguration
 
 object VioLogger {
     enum class Level { DEBUG, INFO, WARNING, ERROR }
+
+    private const val DEFAULT_TAG = "VioSDK"
 
     private val networkConfig
         get() = VioConfiguration.shared.state.value.network
@@ -22,14 +25,13 @@ object VioLogger {
 
     private fun log(level: Level, message: String, component: String? = null) {
         if (!isEnabled || level.ordinal < minLevel.ordinal) return
-        val prefix = component?.let { "[$it]" } ?: "[Vio]"
-        val emoji = when (level) {
-            Level.DEBUG -> "🔍"
-            Level.INFO -> "ℹ️"
-            Level.WARNING -> "⚠️"
-            Level.ERROR -> "❌"
+        val tag = component ?: DEFAULT_TAG
+        when (level) {
+            Level.DEBUG -> Log.d(tag, "🔍 $message")
+            Level.INFO -> Log.i(tag, "ℹ️ $message")
+            Level.WARNING -> Log.w(tag, "⚠️ $message")
+            Level.ERROR -> Log.e(tag, "❌ $message")
         }
-        println("$emoji $prefix $message")
     }
 
     fun debug(message: String, component: String? = null) = log(Level.DEBUG, message, component)
@@ -39,7 +41,7 @@ object VioLogger {
 
     fun success(message: String, component: String? = null) {
         if (!isEnabled) return
-        val prefix = component?.let { "[$it]" } ?: "[Vio]"
-        println("✅ $prefix $message")
+        val tag = component ?: DEFAULT_TAG
+        Log.i(tag, "✅ $message")
     }
 }

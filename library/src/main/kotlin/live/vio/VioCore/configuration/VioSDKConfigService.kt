@@ -19,7 +19,7 @@ class VioSDKConfigService(
 
     companion object {
         private const val COMPONENT = "VioSDKConfigService"
-        private const val DEFAULT_BASE_URL = "https://api-dev.vio.live"
+        private const val DEFAULT_BASE_URL = "https://socket-qa.reachu.io"
         private const val CONFIG_PATH = "/v1/sdk/config"
         private const val CACHE_TTL_MILLIS: Long = 5 * 60 * 1000 // 5 minutos
 

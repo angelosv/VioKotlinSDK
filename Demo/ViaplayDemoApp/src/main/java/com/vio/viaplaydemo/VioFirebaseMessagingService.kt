@@ -1,4 +1,4 @@
-package live.vio.sdk
+package com.vio.viaplaydemo
 
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -8,14 +8,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import live.vio.VioCore.configuration.VioConfiguration
 import live.vio.VioCore.managers.DeviceTokenManager
-import live.vio.VioCore.utils.VioLogger
-import live.vio.sdk.VioSDK
 import kotlin.random.Random
 
 /**
- * Service to handle Firebase Cloud Messaging tokens and messages.
+ * Service to handle Firebase Cloud Messaging tokens and messages for Viaplay Demo.
  */
 class VioFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -28,13 +25,12 @@ class VioFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         android.util.Log.i(TAG, "***** FCM Token Refreshed: ${token.take(15)}...")
-        
-        val userId = VioConfiguration.shared.state.value.userId
+
+        // Assume userId is set in the app
+        val userId = "android_demo_001" // Or get from preferences
         if (!userId.isNullOrBlank()) {
             android.util.Log.i(TAG, "***** Registering refreshed token for userId: $userId")
             DeviceTokenManager.register(userId, token)
-        } else {
-            android.util.Log.i(TAG, "***** User ID not set, deferred token registration until setUserId is called")
         }
     }
 
@@ -43,22 +39,17 @@ class VioFirebaseMessagingService : FirebaseMessagingService() {
         android.util.Log.i(TAG, "***** FCM message received from: ${message.from}")
         android.util.Log.i(TAG, "***** Message data: ${message.data}")
         android.util.Log.i(TAG, "***** Message notification: ${message.notification?.title} / ${message.notification?.body}")
-        
+
         val productId = message.data["productId"]
         val title = message.notification?.title ?: message.data["title"] ?: "Vio"
         val body = message.notification?.body ?: message.data["body"] ?: "Check out this product!"
-
-        if (!productId.isNullOrBlank()) {
-            VioSDK.openProduct(productId)
-            showNotification(productId, title, body)
-        }
 
         showNotification(productId ?: "default", title, body)
     }
 
     private fun showNotification(productId: String, title: String, body: String) {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        
+
         // Create channel for Android 8.0+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT)

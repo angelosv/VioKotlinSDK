@@ -1,4 +1,4 @@
-package live.vio.sdk.utils
+package com.vio.viaplaydemo
 
 import android.content.Context
 import android.util.Log
@@ -6,19 +6,18 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 
 /**
- * Helper to initialize Firebase programmatically using Vio's project credentials.
- * This avoids the need for a google-services.json file in the client app.
+ * Helper to initialize Firebase programmatically using app's credentials.
  */
 object VioFirebaseInitializer {
 
     private const val TAG = "VioFirebase"
 
-    // Credentials from google-services.json
-    private const val API_KEY = "AIzaSyBtKCzQKH_bjQypu5HcaB10RquICa-9nx8"
-    private const val APPLICATION_ID = "1:248353106087:android:5a055024b2d7d214231382"
-    private const val PROJECT_ID = "vio-live-79c23"
-    private const val STORAGE_BUCKET = "vio-live-79c23.firebasestorage.app"
-    private const val GCM_SENDER_ID = "248353106087"
+    // App's Firebase credentials - replace with actual values
+    private const val API_KEY = "YOUR_API_KEY"
+    private const val APPLICATION_ID = "YOUR_APPLICATION_ID"
+    private const val PROJECT_ID = "YOUR_PROJECT_ID"
+    private const val STORAGE_BUCKET = "YOUR_STORAGE_BUCKET"
+    private const val GCM_SENDER_ID = "YOUR_GCM_SENDER_ID"
 
     fun initialize(context: Context) {
         try {

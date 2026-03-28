@@ -1,12 +1,52 @@
 1 Errores
-:Demo:ViaplayDemoApp:processDebugGoogleServices
-    File google-services.json is missing. 
+MainActivity.kt
+    Unresolved reference 'FirebaseMessaging'.
+    Unresolved reference 'FirebaseMessaging'.
+    Cannot infer type for this parameter. Please specify it explicitly.
+    Unresolved reference 'isSuccessful'.
+    Unresolved reference 'result'.
+    Unresolved reference 'exception'.
+    Unresolved reference 'exception'.
+    Unresolved reference 'clearOpenedProduct'.
+    Unresolved reference 'clearOpenedProduct'.
+VioFirebaseInitializer.kt
+    Unresolved reference 'FirebaseApp'.
+    Unresolved reference 'FirebaseOptions'.
+    Unresolved reference 'FirebaseOptions'.
+    Unresolved reference 'FirebaseApp'.
+    Unresolved reference 'FirebaseApp'.
+    Unresolved reference 'name'.    
 VioFirebaseMessagingService.kt
-    Const 'val' is only allowed on top level, in named objects, or in companion objects.
-VioSDK.kt
-    Conflicting import: imported name 'DeviceTokenManager' is ambiguous.
-    Conflicting import: imported name 'MutableStateFlow' is ambiguous.
-    Conflicting import: imported name 'FirebaseMessaging' is ambiguous.
-    Conflicting import: imported name 'MutableStateFlow' is ambiguous.
-    Conflicting import: imported name 'FirebaseMessaging' is ambiguous.
-    Conflicting import: imported name 'DeviceTokenManager' is ambiguous.
+    Unresolved reference 'FirebaseMessagingService'.
+    Unresolved reference 'RemoteMessage'.
+    Unresolved reference 'FirebaseMessagingService'.
+    'onNewToken' overrides nothing.
+    Unresolved reference 'FirebaseMessagingService'.
+    Unresolved reference 'onNewToken'.
+    'onMessageReceived' overrides nothing.
+    Unresolved reference 'RemoteMessage'.
+    Unresolved reference 'FirebaseMessagingService'.
+    Unresolved reference 'onMessageReceived'.
+    Unresolved reference 'from'.
+    Unresolved reference 'data'.
+    Unresolved reference 'notification'.
+    Unresolved reference 'notification'.
+    Unresolved reference 'data'.
+    Unresolved reference 'notification'.
+    Unresolved reference 'data'.
+    Unresolved reference 'notification'.
+    Unresolved reference 'data'.
+    Argument type mismatch: actual type is 'kotlin.Any', but 'kotlin.String' was expected.
+    Argument type mismatch: actual type is 'kotlin.Any', but 'kotlin.String' was expected.
+    Argument type mismatch: actual type is 'kotlin.Any', but 'kotlin.String' was expected.
+    Unresolved reference 'getSystemService'.
+    Unresolved reference 'packageManager'.
+    Unresolved reference 'packageName'.
+    Cannot infer type for this parameter. Please specify it explicitly.
+    Unresolved reference 'putExtra'.
+    Unresolved reference 'addFlags'.
+    Argument type mismatch: actual type is 'com.vio.viaplaydemo.VioFirebaseMessagingService', but 'android.content.Context!' was expected.
+    None of the following candidates is applicable:
+    constructor(@NonNull() p0: Context, @NonNull() p1: Notification): NotificationCompat.Builder
+    constructor(@NonNull() p0: Context, @NonNull() p1: String): NotificationCompat.Builder
+    Unresolved reference 'setSmallIcon'.    

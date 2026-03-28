@@ -107,8 +107,8 @@ Used by the SDK GraphQL/REST clients (`VioLogger`, `TipioApiClient`, `CampaignMa
   "enableShoppingDuringStream": true
 },
 "campaigns": {
-  "webSocketBaseURL": "https://api-dev.vio.live",
-  "restAPIBaseURL": "https://api-dev.vio.live"
+  "webSocketBaseURL": "https://socket-qa.reachu.io",
+  "restAPIBaseURL": "https://socket-qa.reachu.io"
 }
 ```
 

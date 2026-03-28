@@ -48,6 +48,8 @@ import live.vio.liveshow.models.LiveStream
 import live.vio.liveshow.models.LiveStreamLayout
 import live.vio.liveui.components.VioLiveMiniPlayer
 import live.vio.liveui.components.VioLiveShowFullScreenOverlay
+import com.google.firebase.messaging.FirebaseMessaging
+import live.vio.VioCore.managers.DeviceTokenManager
 import live.vio.liveui.components.VioLiveShowOverlayController
 import kotlinx.coroutines.launch
 import com.vio.viaplaydemo.casting.CastingManager
@@ -82,10 +84,14 @@ import androidx.core.content.ContextCompat
 class MainActivity : AppCompatActivity() {
 
     private lateinit var cartManager: CartManager
+    private var openedProductId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestNotificationPermission()
+
+        // Initialize Firebase
+        VioFirebaseInitializer.initialize(this)
 
         // Configuración simplificada: solo apiKey y entorno.
         // El resto de la configuración (endpoints, commerce, campañas, etc.)
@@ -96,7 +102,10 @@ class MainActivity : AppCompatActivity() {
             apiKey = apiKey,
             environment = VioEnvironment.SANDBOX,
         )
-        VioSDK.setUserId("user123")
+        VioSDK.setUserId("android_demo_001")
+
+        // Register FCM token
+        registerFCMToken("android_demo_001")
 
         cartManager = CartManager()
         VioImageLoaderDefaults.install(VioCoilImageLoader)
@@ -112,7 +121,7 @@ class MainActivity : AppCompatActivity() {
             VioTheme {
                 ProvideAdaptiveVioColors {
                     Surface(Modifier.fillMaxSize()) {
-                        ViaplayDemoApp(cartManager = cartManager)
+                        ViaplayDemoApp(cartManager = cartManager, openedProductId = openedProductId)
                     }
                 }
             }
@@ -126,7 +135,7 @@ class MainActivity : AppCompatActivity() {
         val productId = intent?.getStringExtra("productId")
         if (!productId.isNullOrBlank()) {
             println("🎁 [ViaplayDemo] App opened with productId: $productId")
-            VioSDK.openProduct(productId)
+            openedProductId = productId
         }
     }
 
@@ -170,10 +179,28 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun registerFCMToken(userId: String) {
+        try {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val token = task.result
+                    if (token != null) {
+                        android.util.Log.i("ViaplayDemo", "***** Success! FCM Token retrieved: ${token.take(15)}...")
+                        DeviceTokenManager.register(userId, token)
+                    }
+                } else {
+                    android.util.Log.e("ViaplayDemo", "***** CRITICAL: Failed to retrieve FCM token: ${task.exception?.message}", task.exception)
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("ViaplayDemo", "***** Error starting FCM token retrieval: ${e.message}")
+        }
+    }
 }
 
 @Composable
-private fun ViaplayDemoApp(cartManager: CartManager) {
+private fun ViaplayDemoApp(cartManager: CartManager, openedProductId: String? = null) {
     val castingManager = remember { CastingManager.shared }
     val castingState by castingManager.state.collectAsState()
     val colors = adaptiveVioColors()
@@ -184,7 +211,6 @@ private fun ViaplayDemoApp(cartManager: CartManager) {
     var showCastingOverlay by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf<TabItem>(TabItem.HOME) }
     
-    val openedProductId by VioSDK.openedProductState.collectAsState()
     var openedProducts by remember { mutableStateOf<List<ProductDto>>(emptyList()) }
 
     LaunchedEffect(openedProductId) {
@@ -206,7 +232,6 @@ private fun ViaplayDemoApp(cartManager: CartManager) {
                     openedProducts = dtos
                 } catch (e: Exception) {
                     println("Error fetching product for FCM: ${e.message}")
-                    VioSDK.clearOpenedProduct()
                 }
             }
         }
