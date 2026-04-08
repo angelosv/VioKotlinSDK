@@ -66,6 +66,7 @@ import live.vio.VioUI.Managers.toInputDto
 import android.content.Intent
 import android.app.Activity
 import com.google.android.gms.wallet.AutoResolveHelper
+import org.json.JSONObject
 
 import live.vio.sdk.VioSDK
 import live.vio.VioCore.configuration.VioEnvironment
@@ -82,6 +83,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        private const val TAG = "ViaplayMainActivity"
+    }
 
     private lateinit var cartManager: CartManager
     private var openedProductId: String? = null
@@ -132,10 +136,59 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleIntent(intent: Intent?) {
-        val productId = intent?.getStringExtra("productId")
+        if (intent == null) {
+            android.util.Log.w(TAG, "handleIntent called with null intent")
+            return
+        }
+
+        val extras = intent.extras
+        val extraKeys = extras?.keySet()?.joinToString(", ") ?: "(none)"
+        android.util.Log.i(TAG, "handleIntent extras keys: $extraKeys")
+        android.util.Log.i(TAG, "handleIntent raw extras: ${extras?.toString() ?: "(none)"}")
+        val payload = parsePayloadJson(intent.getStringExtra("vio_payload"))
+        android.util.Log.i(TAG, "handleIntent parsed vio_payload: $payload")
+
+        val productId = firstNonBlank(
+            intent.getStringExtra("productId"),
+            intent.getStringExtra("vio_cartIntent_productId"),
+            payload?.optString("product_id"),
+        )
+        val campaignId = firstNonBlank(
+            intent.getStringExtra("campaignId"),
+            intent.getStringExtra("vio_cartIntent_campaignId"),
+            payload?.optString("campaign_id"),
+        )
+        val action = firstNonBlank(
+            intent.getStringExtra("action"),
+            intent.getStringExtra("vio_event_type"),
+            intent.getStringExtra("vio_cartIntent_kind"),
+        )
+        val deepLink = firstNonBlank(
+            intent.getStringExtra("deeplink"),
+            payload?.optString("deeplink"),
+        )
+
+        android.util.Log.i(
+            TAG,
+            "handleIntent parsed values -> action=$action, productId=$productId, campaignId=$campaignId, deepLink=$deepLink, data=${intent.data}",
+        )
+
         if (!productId.isNullOrBlank()) {
             println("🎁 [ViaplayDemo] App opened with productId: $productId")
             openedProductId = productId
+        }
+    }
+
+    private fun firstNonBlank(vararg values: String?): String? =
+        values.firstOrNull { !it.isNullOrBlank() }
+
+    private fun parsePayloadJson(raw: String?): JSONObject? {
+        if (raw.isNullOrBlank()) return null
+        return try {
+            JSONObject(raw)
+        } catch (error: Exception) {
+            android.util.Log.e(TAG, "Failed to parse vio_payload JSON: ${error.message}")
+            null
         }
     }
 
@@ -223,8 +276,10 @@ private fun ViaplayDemoApp(cartManager: CartManager, openedProductId: String? = 
                         baseUrl = URL(state.commerce?.endpoint ?: state.environment.graphQLUrl),
                         apiKey = state.commerce?.apiKey ?: state.apiKey
                     )
+                    println("Fetching product for FCM: $id")
+                    println("Fetching product for FCM: ${cartManager.currency}")
                     val dtos = client.channel.product.get(
-                        currency = cartManager.currencySymbol, // simplified
+                        currency = cartManager.currency, // simplified
                         productIds = listOf(id.toInt()),
                         imageSize = "medium",
                         shippingCountryCode = "US"

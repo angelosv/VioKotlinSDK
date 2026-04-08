@@ -132,7 +132,7 @@ fun VioEngagementCardBase(
                         .background(
                             color = VioColors.backgroundMuted.toVioColor().copy(alpha = 0.4f),
                         )
-                        .blur(12.dp)
+                        //.blur(12.dp)
                         .clip(RoundedCornerShape(VioBorderRadius.large.dp)),
                 ) {
                     Column(

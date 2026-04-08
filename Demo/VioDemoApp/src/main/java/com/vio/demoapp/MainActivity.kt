@@ -179,8 +179,8 @@ class MainActivity : AppCompatActivity() {
         val productId = intent?.getStringExtra("productId")
         val campaignId = intent?.getStringExtra("campaignId")
 
-        if (action == "open_product" && !productId.isNullOrBlank()) {
-            android.util.Log.i("MainActivity", "***** Handling notification action: open_product for productId: $productId")
+        if (action == "cart_intent" && !productId.isNullOrBlank()) {
+            android.util.Log.i("MainActivity", "***** Handling notification action: cart_intent for productId: $productId")
             
             // If we have a campaignId, set it first to ensure correct context
             if (!campaignId.isNullOrBlank()) {
