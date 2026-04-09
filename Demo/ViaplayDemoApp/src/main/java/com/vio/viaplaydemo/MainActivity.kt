@@ -74,6 +74,7 @@ import live.vio.VioEngagementUI.Components.VioEngagementProductOverlay
 import androidx.compose.runtime.LaunchedEffect
 import live.vio.sdk.domain.models.ProductDto
 import live.vio.sdk.core.VioSdkClient
+import live.vio.VioUI.Managers.toDomainProduct
 import java.net.URL
 
 import android.Manifest
@@ -88,7 +89,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var cartManager: CartManager
-    private var openedProductId: String? = null
+    private var openedProductId by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,7 +126,11 @@ class MainActivity : AppCompatActivity() {
             VioTheme {
                 ProvideAdaptiveVioColors {
                     Surface(Modifier.fillMaxSize()) {
-                        ViaplayDemoApp(cartManager = cartManager, openedProductId = openedProductId)
+                        ViaplayDemoApp(
+                            cartManager = cartManager,
+                            openedProductId = openedProductId,
+                            onClearOpenedProduct = { openedProductId = null }
+                        )
                     }
                 }
             }
@@ -253,7 +258,11 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-private fun ViaplayDemoApp(cartManager: CartManager, openedProductId: String? = null) {
+private fun ViaplayDemoApp(
+    cartManager: CartManager,
+    openedProductId: String? = null,
+    onClearOpenedProduct: () -> Unit = {}
+) {
     val castingManager = remember { CastingManager.shared }
     val castingState by castingManager.state.collectAsState()
     val colors = adaptiveVioColors()
@@ -263,32 +272,34 @@ private fun ViaplayDemoApp(cartManager: CartManager, openedProductId: String? = 
     var overlayInitialStep by remember { mutableStateOf(VioCheckoutController.CheckoutStep.OrderSummary) }
     var showCastingOverlay by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf<TabItem>(TabItem.HOME) }
-    
-    var openedProducts by remember { mutableStateOf<List<ProductDto>>(emptyList()) }
 
     LaunchedEffect(openedProductId) {
-        openedProductId?.let { id ->
-            // Fetch product DTO for the overlay
-            launch {
-                try {
-                    val state = live.vio.VioCore.configuration.VioConfiguration.shared.state.value
-                    val client = VioSdkClient(
-                        baseUrl = URL(state.commerce?.endpoint ?: state.environment.graphQLUrl),
-                        apiKey = state.commerce?.apiKey ?: state.apiKey
-                    )
-                    println("Fetching product for FCM: $id")
-                    println("Fetching product for FCM: ${cartManager.currency}")
-                    val dtos = client.channel.product.get(
-                        currency = cartManager.currency, // simplified
-                        productIds = listOf(id.toInt()),
-                        imageSize = "medium",
-                        shippingCountryCode = "US"
-                    )
-                    openedProducts = dtos
-                } catch (e: Exception) {
-                    println("Error fetching product for FCM: ${e.message}")
-                }
+        val id = openedProductId ?: return@LaunchedEffect
+        // Fetch product DTO for the overlay
+        try {
+            val state = live.vio.VioCore.configuration.VioConfiguration.shared.state.value
+            println("*****baseUrl: ${state.commerce?.endpoint ?: state.environment.graphQLUrl}")
+            println("*****apiKey: ${state.commerce?.apiKey ?: state.apiKey}")
+            val client = VioSdkClient(
+                baseUrl = URL(state.commerce?.endpoint ?: state.environment.graphQLUrl),
+                apiKey = state.commerce?.apiKey ?: state.apiKey
+            )
+            println("Fetching product for FCM: $id")
+            val dtos = client.channel.product.get(
+                currency = cartManager.currency, // simplified
+                productIds = listOf(id.toInt()),
+                imageSize = "medium",
+                shippingCountryCode = "US"
+            )
+            
+            dtos.firstOrNull()?.let { dto ->
+                detailProduct = dto.toDomainProduct()
             }
+        } catch (e: Exception) {
+            println("Error fetching product for FCM: ${e.message}")
+        } finally {
+            // Reset openedProductId via callback so it doesn't re-trigger
+            onClearOpenedProduct()
         }
     }
 
@@ -381,19 +392,6 @@ private fun ViaplayDemoApp(cartManager: CartManager, openedProductId: String? = 
         )
     }
 
-    VioEngagementProductOverlay(
-        products = openedProducts,
-        isVisible = openedProducts.isNotEmpty(),
-        onDismiss = {
-            openedProducts = emptyList()
-            VioSDK.clearOpenedProduct()
-        },
-        onAddToCart = { product ->
-            // In a real app, convert DTO to domain Product and add to cart
-            openedProducts = emptyList()
-            VioSDK.clearOpenedProduct()
-        }
-    )
 }
 
 @Composable

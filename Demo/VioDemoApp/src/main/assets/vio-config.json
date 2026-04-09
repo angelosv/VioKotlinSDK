@@ -187,8 +187,8 @@
     }
   },
   "campaigns": {
-    "webSocketBaseURL": "https://socket-qa.reachu.io",
-    "restAPIBaseURL": "https://socket-qa.reachu.io",
+    "webSocketBaseURL": "https://api-dev.vio.live",
+    "restAPIBaseURL": "https://api-dev.vio.live",
     "campaignAdminApiKey": "tv2_api_key_91b4fbf634af4bc5",
     "hasGooglePay": false
   }
