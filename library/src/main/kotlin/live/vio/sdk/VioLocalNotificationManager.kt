@@ -45,6 +45,18 @@ object VioLocalNotificationManager {
         title: String,
         body: String,
     ) {
+        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+            putExtra("productId", productId)
+            putExtra("campaignId", campaignId)
+            putExtra("action", action)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        } ?: return
+
+        if (isAppInForeground(context)) {
+            context.startActivity(launchIntent)
+            return
+        }
+
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -53,13 +65,6 @@ object VioLocalNotificationManager {
                 NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(channel)
         }
-
-        val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-            putExtra("productId", productId)
-            putExtra("campaignId", campaignId)
-            putExtra("action", action)
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        } ?: return
 
         val pendingIntent = PendingIntent.getActivity(
             context,

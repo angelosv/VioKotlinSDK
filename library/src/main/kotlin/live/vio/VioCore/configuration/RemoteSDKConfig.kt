@@ -16,6 +16,7 @@ data class VioRemoteConfig(
     @SerialName("commerce") val commerce: RemoteCommerceConfig? = null,
     @SerialName("theme") val theme: RemoteThemeConfig? = null,
     @SerialName("markets") val markets: List<String>? = null,
+    @SerialName("campaign") val campaign: RemoteCampaignConfig? = null,
 )
 
 @Serializable
@@ -51,5 +52,16 @@ data class RemoteCommerceConfig(
 data class RemoteThemeConfig(
     @SerialName("primaryColor") val primaryColor: String? = null,
     @SerialName("accentColor") val accentColor: String? = null,
+)
+
+@Serializable
+data class RemoteCampaignConfig(
+    @SerialName("id") val id: Int? = null,
+    @SerialName("campaignId") val campaignId: Int? = null,
+    @SerialName("campaignName") val campaignName: String? = null,
+    @SerialName("isActive") val isActive: Boolean? = null,
+    @SerialName("isPaused") val isPaused: String? = null,
+    @SerialName("startDate") val startDate: String? = null,
+    @SerialName("endDate") val endDate: String? = null,
 )
 

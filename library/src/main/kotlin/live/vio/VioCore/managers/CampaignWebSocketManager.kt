@@ -114,10 +114,18 @@ class CampaignWebSocketManager(
     private fun buildSocketUrl(): String {
         val normalized = baseUrl.trimEnd('/')
         Log.d(COMPONENT, "buildSocketUrl - baseUrl='$baseUrl', normalized='$normalized'")
-        // Always use wss:// (secure) to comply with Android network security policy
-        val wsBase = normalized
-            .replace("https://", "wss://")
-            .replace("http://", "wss://")
+        val environment = VioConfiguration.shared.state.value.environment
+        val wsBase = when (environment) {
+            live.vio.VioCore.configuration.VioEnvironment.PRODUCTION ->
+                normalized
+                    .replace("https://", "wss://")
+                    .replace("http://", "wss://")
+            else ->
+                normalized
+                    .replace("https://", "wss://")
+                    .replace("http://", "ws://")
+                    .replace("wss://", "ws://")
+        }
         Log.d(COMPONENT, "buildSocketUrl - wsBase='$wsBase'")
         val url = "$wsBase/ws/$campaignId"
 
@@ -207,23 +215,37 @@ class CampaignWebSocketManager(
                 "contest" ->
                     onContestReceived?.invoke(mapper.treeToValue(node, Contest::class.java))
                 "cart_intent" -> {
-                    val targetUserId = node.get("userId")?.asText()
+                    println("*** cart_intent ***")
+                    val targetUserId = node.get("vio_user_id")?.asText() ?: node.get("userId")?.asText()
                     val currentUserId = VioConfiguration.shared.state.value.userId
                     if (!targetUserId.isNullOrBlank() && targetUserId != currentUserId) return
 
+                    val payloadNode = node.get("vio_payload")
+                    
+                    val productName = payloadNode?.get("product_name")?.asText() ?: node.get("productName")?.asText()
+                    val productId = payloadNode?.get("product_id")?.asText() ?: node.get("productId")?.asText()
+                    val campaignId = payloadNode?.get("campaign_id")?.asInt() ?: node.get("campaignId")?.asInt()
+                    val title = payloadNode?.get("notification_title")?.asText() ?: "Tienes un artículo esperando"
+                    val body = payloadNode?.get("notification_body")?.asText() ?: (productName ?: "Un producto está listo")
+                    println("*** go to CartIntentEvent ***")
                     val event = CartIntentEvent(
                         type = eventType,
-                        productName = node.get("productName")?.asText(),
-                        productId = node.get("productId")?.asText(),
-                        campaignId = node.get("campaignId")?.asInt(),
+                        productName = productName,
+                        productId = productId,
+                        campaignId = campaignId,
                     )
 
                     onCartIntent?.invoke(event)
-
+                    println("*** go to VioLocalNotificationManager ${VioContextManager.isInitialized} ***")
                     if (VioContextManager.isInitialized) {
-                        scheduleCartIntentNotification(
+                        live.vio.sdk.VioLocalNotificationManager.handleCartIntent(
                             context = VioContextManager.context,
-                            productName = event.productName,
+                            targetUserId = targetUserId,
+                            currentUserId = currentUserId,
+                            productId = productId,
+                            campaignId = campaignId?.toString(),
+                            title = title,
+                            body = body,
                         )
                     }
                 }
@@ -254,17 +276,5 @@ class CampaignWebSocketManager(
             println("[$COMPONENT] Reconnect attempt failed: ${it.message}")
             VioLogger.error("Reconnect attempt failed: ${it.message}", COMPONENT)
         }
-    }
-
-    private fun scheduleCartIntentNotification(context: Context, productName: String?) {
-        val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentTitle("Tienes un artículo esperando")
-            .setContentText(productName ?: "Un producto está listo")
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true)
-            .build()
-
-        NotificationManagerCompat.from(context).notify((System.currentTimeMillis() % Int.MAX_VALUE).toInt(), notification)
     }
 }

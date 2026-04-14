@@ -138,11 +138,9 @@ class VioConfiguration private constructor() {
 
             fun normalizeBase(url: String?): String? {
                 if (url == null) return null
-                return if (url.startsWith("http://")) {
+                return if (current.environment == VioEnvironment.PRODUCTION && url.startsWith("http://")) {
                     url.replaceFirst("http://", "https://")
-                } else {
-                    url
-                }
+                } else url
             }
 
             val updatedCampaign = current.campaign.copy(
@@ -150,6 +148,11 @@ class VioConfiguration private constructor() {
                 webSocketBaseURL = normalizeBase(remote.endpoints?.webSocketBase) ?: current.campaign.webSocketBaseURL,
                 channelId = remote.clientApp?.id ?: current.campaign.channelId,
                 autoDiscover = current.campaign.autoDiscover,
+            )
+
+            val remoteCampaignId = remote.campaign?.campaignId ?: remote.campaign?.id
+            val updatedLiveShow = current.liveShow.copy(
+                campaignId = remoteCampaignId ?: current.liveShow.campaignId,
             )
 
             val updatedCommerce = remote.commerce?.let {
@@ -164,6 +167,7 @@ class VioConfiguration private constructor() {
             shared._state.value = current.copy(
                 campaign = updatedCampaign,
                 commerce = updatedCommerce,
+                liveShow = updatedLiveShow,
             )
 
             updatedCommerce?.let { updateCommerce(it) }
