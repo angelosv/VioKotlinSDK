@@ -36,17 +36,14 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import live.vio.sdk.core.VioSdkClient
+import live.vio.VioUI.Services.ProductService
 import live.vio.sdk.domain.models.ProductDto
 import com.vio.viaplaydemo.services.events.ProductEventData
 import com.vio.viaplaydemo.ui.theme.ViaplayTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @Composable
 fun ViaplayProductOverlay(
     productEvent: ProductEventData,
-    sdk: VioSdkClient,
     currency: String,
     country: String,
     onAddToCart: (ProductDto?) -> Unit,
@@ -60,7 +57,7 @@ fun ViaplayProductOverlay(
 
     LaunchedEffect(productEvent.id) {
         isLoading = true
-        product = fetchProduct(productEvent, sdk, currency, country)
+        product = fetchProduct(productEvent, currency, country)
         isLoading = false
     }
 
@@ -198,18 +195,12 @@ private fun displayPrice(product: ProductDto?, event: ProductEventData): String 
 
 private suspend fun fetchProduct(
     productEvent: ProductEventData,
-    sdk: VioSdkClient,
     currency: String,
     country: String,
-): ProductDto? = withContext(Dispatchers.IO) {
-    val productId = productEvent.productId.toIntOrNull() ?: return@withContext null
-    runCatching {
-        sdk.channel.product.getByIds(
-            productIds = listOf(productId),
-            currency = currency,
-            imageSize = "large",
-            useCache = false,
-            shippingCountryCode = country,
-        )
-    }.getOrNull()?.firstOrNull()
-}
+): ProductDto? = runCatching {
+    ProductService.loadProductDto(
+        productId = productEvent.productId,
+        currency = currency,
+        country = country,
+    )
+}.getOrNull()

@@ -42,21 +42,17 @@ import com.vio.viaplaydemo.ui.theme.ViaplayTheme
 import live.vio.VioUI.Components.compose.cart.VioFloatingCartIndicator
 import live.vio.VioUI.Managers.CartManager
 import live.vio.VioUI.Managers.toDomainProduct
-import live.vio.sdk.core.VioSdkClient
 import live.vio.VioEngagementUI.Components.VioEngagementContestCard
+import live.vio.VioEngagementUI.Components.VioEngagementProductEventCard
 import live.vio.VioEngagementUI.Components.VioEngagementPollCard
-import live.vio.VioEngagementUI.Components.VioEngagementProductCard
 import live.vio.VioEngagementSystem.models.Contest as EngagementContest
 import live.vio.VioEngagementSystem.models.ContestType
 import live.vio.VioEngagementSystem.models.Poll as EngagementPoll
 import live.vio.VioEngagementSystem.models.PollOption as EngagementPollOption
-import live.vio.sdk.domain.models.ProductDto
 import live.vio.VioCore.models.SponsorSlot // NEW
 import live.vio.VioEngagementUI.Components.VioSponsorMomentCard // NEW
 import com.vio.viaplaydemo.services.events.SponsorSlotEventData // NEW
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import java.util.UUID
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.TabRowDefaults
@@ -71,7 +67,6 @@ val BrandDarkerBg = Color(0xFF12121A)
 fun CastingActiveView(
     match: Match,
     cartManager: CartManager,
-    sdkClient: VioSdkClient,
     onClose: () -> Unit,
 ) {
     val castingManager = remember { CastingManager.shared }
@@ -177,7 +172,6 @@ fun CastingActiveView(
                             product = product,
                             contest = contest,
                             sponsorSlot = sponsorSlot,
-                            sdkClient = sdkClient,
                             cartManager = cartManager,
                             onDismissPoll = { webSocketManager.dismissPoll() },
                             onDismissProduct = { webSocketManager.dismissProduct() },
@@ -538,7 +532,6 @@ private fun InteractionCards(
     product: ProductEventData?,
     contest: ContestEventData?,
     sponsorSlot: SponsorSlotEventData?,
-    sdkClient: VioSdkClient,
     cartManager: CartManager,
     onDismissPoll: () -> Unit,
     onDismissProduct: () -> Unit,
@@ -581,13 +574,12 @@ private fun InteractionCards(
                 onDismiss = onDismissPoll,
             )
         }
-        product != null -> EngagementProductFromEvent(
-            productEvent = product,
-            sdkClient = sdkClient,
+        product != null -> VioEngagementProductEventCard(
+            productId = product.productId,
             currency = cartManager.currency,
             country = cartManager.country,
             onAddToCart = { productDto ->
-                productDto?.let { cartManager.addProductAsync(it.toDomainProduct(), 1, null) }
+                cartManager.addProductAsync(productDto.toDomainProduct(), 1, null)
             },
             onDismiss = onDismissProduct,
         )
@@ -611,68 +603,4 @@ private fun InteractionCards(
             )
         }
     }
-}
-
-@Composable
-private fun EngagementProductFromEvent(
-    productEvent: ProductEventData,
-    sdkClient: VioSdkClient,
-    currency: String,
-    country: String,
-    onAddToCart: (ProductDto?) -> Unit,
-    onDismiss: () -> Unit,
-) {
-    var product by remember(productEvent.id) { mutableStateOf<ProductDto?>(null) }
-    var isLoading by remember(productEvent.id) { mutableStateOf(true) }
-
-    LaunchedEffect(productEvent.id) {
-        isLoading = true
-        product = fetchProductForEngagement(productEvent, sdkClient, currency, country)
-        isLoading = false
-        if (product == null) {
-            onDismiss()
-        }
-    }
-
-    if (isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White.copy(alpha = 0.05f), RoundedCornerShape(ViaplayTheme.CornerRadius.medium))
-                .padding(24.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            CircularProgressIndicator(
-                color = Color.White,
-                strokeWidth = 2.dp,
-            )
-        }
-    } else {
-        val currentProduct = product
-        if (currentProduct != null) {
-            VioEngagementProductCard(
-                product = currentProduct,
-                onAddToCart = { onAddToCart(currentProduct) },
-                onDismiss = onDismiss,
-            )
-        }
-    }
-}
-
-private suspend fun fetchProductForEngagement(
-    event: ProductEventData,
-    sdk: VioSdkClient,
-    currency: String,
-    country: String,
-): ProductDto? = withContext(Dispatchers.IO) {
-    val id = event.productId.toIntOrNull() ?: return@withContext null
-    runCatching {
-        sdk.channel.product.getByIds(
-            productIds = listOf(id),
-            currency = currency,
-            imageSize = "large",
-            useCache = false,
-            shippingCountryCode = country,
-        )
-    }.getOrNull()?.firstOrNull()
 }

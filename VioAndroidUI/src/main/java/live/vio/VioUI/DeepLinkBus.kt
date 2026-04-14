@@ -14,4 +14,6 @@ object CheckoutDeepLinkBus {
     suspend fun emit(event: Event) {
         _events.emit(event)
     }
+
+    fun emitNow(event: Event): Boolean = _events.tryEmit(event)
 }

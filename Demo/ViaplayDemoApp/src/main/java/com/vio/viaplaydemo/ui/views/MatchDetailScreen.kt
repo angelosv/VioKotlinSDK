@@ -194,7 +194,6 @@ fun MatchDetailScreen(
             CastingActiveView(
                 match = match,
                 cartManager = cartManager,
-                sdkClient = sdkClient,
                 onClose = { showCasting = false },
             )
         }

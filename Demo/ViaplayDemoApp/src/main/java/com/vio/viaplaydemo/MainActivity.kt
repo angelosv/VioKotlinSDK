@@ -1,6 +1,5 @@
 package com.vio.viaplaydemo
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -27,8 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
-import live.vio.VioUI.CheckoutDeepLinkBus
+import live.vio.VioUI.CheckoutDeepLinkHandler
 import live.vio.VioUI.Components.compose.feedback.VioToastOverlay
 import live.vio.VioUI.Components.compose.theme.ProvideAdaptiveVioColors
 import live.vio.VioUI.Components.compose.theme.VioTheme
@@ -41,6 +39,7 @@ import live.vio.VioUI.Components.VioCheckoutOverlayController as VioCheckoutCont
 import live.vio.VioUI.Managers.CartManager
 import live.vio.VioUI.Managers.Product
 import live.vio.VioUI.Managers.addProduct
+import live.vio.VioUI.Services.ProductService
 import live.vio.VioUI.PaymentSheetBridge
 import live.vio.VioUI.KlarnaBridge
 import live.vio.liveshow.LiveShowManager
@@ -51,7 +50,6 @@ import live.vio.liveui.components.VioLiveShowFullScreenOverlay
 import com.google.firebase.messaging.FirebaseMessaging
 import live.vio.VioCore.managers.DeviceTokenManager
 import live.vio.liveui.components.VioLiveShowOverlayController
-import kotlinx.coroutines.launch
 import com.vio.viaplaydemo.casting.CastingManager
 import com.vio.viaplaydemo.casting.CastingActiveOverlay
 import com.vio.viaplaydemo.casting.CastingMiniPlayer
@@ -72,10 +70,7 @@ import live.vio.sdk.VioSDK
 import live.vio.VioCore.configuration.VioEnvironment
 import live.vio.VioEngagementUI.Components.VioEngagementProductOverlay
 import androidx.compose.runtime.LaunchedEffect
-import live.vio.sdk.domain.models.ProductDto
-import live.vio.sdk.core.VioSdkClient
 import live.vio.VioUI.Managers.toDomainProduct
-import java.net.URL
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -202,17 +197,7 @@ class MainActivity : AppCompatActivity() {
         setIntent(intent) // Update current intent
         handleIntent(intent)
         
-        val uri: Uri = intent.data ?: return
-        if (uri.scheme == "vio-demo" && uri.host == "checkout") {
-            val status = when (uri.pathSegments.getOrNull(0)) {
-                "success" -> CheckoutDeepLinkBus.Status.Success
-                "cancel" -> CheckoutDeepLinkBus.Status.Cancel
-                else -> return
-            }
-            lifecycleScope.launch {
-                CheckoutDeepLinkBus.emit(CheckoutDeepLinkBus.Event(status))
-            }
-        }
+        CheckoutDeepLinkHandler.handleIntent(intent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -275,26 +260,14 @@ private fun ViaplayDemoApp(
 
     LaunchedEffect(openedProductId) {
         val id = openedProductId ?: return@LaunchedEffect
-        // Fetch product DTO for the overlay
+        // Fetch product for the overlay via shared SDK service
         try {
-            val state = live.vio.VioCore.configuration.VioConfiguration.shared.state.value
-            println("*****baseUrl: ${state.commerce?.endpoint ?: state.environment.graphQLUrl}")
-            println("*****apiKey: ${state.commerce?.apiKey ?: state.apiKey}")
-            val client = VioSdkClient(
-                baseUrl = URL(state.commerce?.endpoint ?: state.environment.graphQLUrl),
-                apiKey = state.commerce?.apiKey ?: state.apiKey
+            println("Fetching product for FCM via ProductService: $id")
+            detailProduct = ProductService.loadProduct(
+                productId = id,
+                currency = cartManager.currency,
+                country = cartManager.country,
             )
-            println("Fetching product for FCM: $id")
-            val dtos = client.channel.product.get(
-                currency = cartManager.currency, // simplified
-                productIds = listOf(id.toInt()),
-                imageSize = "medium",
-                shippingCountryCode = "US"
-            )
-            
-            dtos.firstOrNull()?.let { dto ->
-                detailProduct = dto.toDomainProduct()
-            }
         } catch (e: Exception) {
             println("Error fetching product for FCM: ${e.message}")
         } finally {

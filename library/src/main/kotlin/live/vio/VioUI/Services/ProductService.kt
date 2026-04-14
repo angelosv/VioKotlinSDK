@@ -74,14 +74,24 @@ object ProductService {
         return loadProduct(id, currency, country)
     }
 
-    suspend fun loadProduct(productId: Int, currency: String, country: String): Product {
-        VioLogger.debug("Loading product with ID: $productId", "ProductService")
-        VioLogger.debug("Currency: $currency, Country: $country", "ProductService")
-        val dto = fetchProducts(
+    suspend fun loadProductDto(productId: String, currency: String, country: String): ProductDto {
+        val id = productId.toIntOrNull() ?: throw ProductServiceError.InvalidProductId(productId)
+        return loadProductDto(id, currency, country)
+    }
+
+    suspend fun loadProductDto(productId: Int, currency: String, country: String): ProductDto {
+        VioLogger.debug("Loading product DTO with ID: $productId", "ProductService")
+        return fetchProducts(
             productIds = listOf(productId),
             currency = currency,
             country = country,
         ).firstOrNull() ?: throw ProductServiceError.ProductNotFound(productId)
+    }
+
+    suspend fun loadProduct(productId: Int, currency: String, country: String): Product {
+        VioLogger.debug("Loading product with ID: $productId", "ProductService")
+        VioLogger.debug("Currency: $currency, Country: $country", "ProductService")
+        val dto = loadProductDto(productId, currency, country)
         return dto.toDomainProduct()
     }
 

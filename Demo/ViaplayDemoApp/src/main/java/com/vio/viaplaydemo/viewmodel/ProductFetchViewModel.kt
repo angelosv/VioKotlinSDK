@@ -1,6 +1,7 @@
 package com.vio.viaplaydemo.viewmodel
 
 import live.vio.VioUI.Managers.Product
+import live.vio.VioUI.Services.ProductService
 import live.vio.sdk.core.VioSdkClient
 import live.vio.sdk.domain.models.ProductDto
 import kotlinx.coroutines.CoroutineScope
@@ -75,15 +76,13 @@ class ProductFetchViewModel(
 
     private suspend fun fetchProductsInternal(ids: List<String>): List<ProductDto> =
         withContext(Dispatchers.IO) {
-            val productIds = ids.mapNotNull { it.toIntOrNull() }
-            require(productIds.size == ids.size) { "Some product IDs are not numeric" }
-            sdk.channel.product.getByIds(
-                productIds = productIds,
-                currency = currency,
-                imageSize = "large",
-                useCache = false,
-                shippingCountryCode = country,
-            )
+            ids.map { id ->
+                ProductService.loadProductDto(
+                    productId = id,
+                    currency = currency,
+                    country = country,
+                )
+            }
         }
 
     fun clear() {
