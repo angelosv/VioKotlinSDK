@@ -499,7 +499,8 @@ private data class CampaignJSON(
     val hasGooglePay: Boolean? = null,
 ) {
     fun toDomain(): CampaignConfiguration {
-        val domainHasGooglePay = hasGooglePay ?: hasApplePay ?: CampaignConfiguration.default().hasGooglePay
+        val domainHasGooglePay = true // hasGooglePay ?: hasApplePay ?: CampaignConfiguration.default().hasGooglePay
+        println("Parsing Campaign Config: hasGooglePay=$hasGooglePay, hasApplePay=$hasApplePay -> Result=$domainHasGooglePay")
         VioLogger.info("Parsing Campaign Config: hasGooglePay=$hasGooglePay, hasApplePay=$hasApplePay -> Result=$domainHasGooglePay", "Config")
         
         return CampaignConfiguration(

@@ -1409,17 +1409,45 @@ fun VioCheckoutOverlay(
                                             }
                                         }
                                     }
-                                    // --- Google Pay button (solo si está habilitado) ---
+                                    // --- Google Pay button (FORZADO: mostrar siempre) ---
                                     val checkoutConfigState by VioConfiguration.shared.state.collectAsState()
-                                    val isGooglePayEnabled = checkoutConfigState.campaign.hasGooglePay
-                                    val googlePayCheckout = checkoutConfigState.checkout?.hasGooglePay ?: true
-                                    if (isGooglePayEnabled && googlePayCheckout && canProceed) {
+                                    // Forzamos los flags a true para que el botón se renderice siempre.
+                                    // Nota: el botón seguirá "enabled" sólo cuando canProceed sea true.
+                                    val isGooglePayEnabled = true
+                                    val googlePayCheckout = true
+                                    if (isGooglePayEnabled && googlePayCheckout) {
                                         Button(
                                             onClick = {
                                                 if (!proceedLoading && canProceed) {
                                                     proceedLoading = true
                                                     scope.launch {
                                                         try {
+                                                            // VITAL: asegurar que el shipping seleccionado esté aplicado
+                                                            // y sincronizado en el checkout ANTES de iniciar Google Pay.
+                                                            runCatching { cartManager.applyCheapestShippingPerSupplier() }
+
+                                                            // Persistimos los campos actuales igual que en "Continue to Payment"
+                                                            overlay.updateAddressDraft(
+                                                                firstName = firstName,
+                                                                lastName = lastName,
+                                                                email = email,
+                                                                phone = phone,
+                                                                address1 = address1,
+                                                                address2 = address2,
+                                                                city = city,
+                                                                province = province,
+                                                                zip = zip,
+                                                            )
+                                                            overlay.updatePhoneCodeFromCart()
+
+                                                            // Refresca y guarda el checkout con shipping antes del init
+                                                            runCatching { cartManager.refreshCheckoutTotals() }
+                                                            overlay.updateCheckout(
+                                                                paymentMethod = VioCheckoutOverlayController.PaymentMethod.GooglePay,
+                                                                advanceToSuccess = false,
+                                                                status = null,
+                                                            ) { /* best-effort: si falla igual intentamos init */ }
+
                                                             val initDto = cartManager.initGooglePay()
                                                             if (initDto != null) {
                                                                 val totalPrice = String.format("%.2f", cartManager.cartTotal)

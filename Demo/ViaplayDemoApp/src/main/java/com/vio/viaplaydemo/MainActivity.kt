@@ -68,6 +68,7 @@ import org.json.JSONObject
 
 import live.vio.sdk.VioSDK
 import live.vio.VioCore.configuration.VioEnvironment
+import live.vio.VioCore.configuration.VioConfiguration
 import live.vio.VioEngagementUI.Components.VioEngagementProductOverlay
 import androidx.compose.runtime.LaunchedEffect
 import live.vio.VioUI.Managers.toDomainProduct
@@ -103,6 +104,13 @@ class MainActivity : AppCompatActivity() {
             environment = VioEnvironment.SANDBOX,
         )
         VioSDK.setUserId("android_demo_001")
+
+        // Viaplay demo no carga vio-config.json local: fuerza google_pay en métodos soportados.
+        runCatching {
+            val currentCart = VioConfiguration.shared.state.value.cart
+            val methods = (currentCart.supportedPaymentMethods + "google_pay").distinct()
+            VioConfiguration.updateCartConfiguration(currentCart.copy(supportedPaymentMethods = methods))
+        }
 
         // Register FCM token
         registerFCMToken("android_demo_001")

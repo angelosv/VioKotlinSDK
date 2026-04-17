@@ -43,7 +43,8 @@
     "supportedPaymentMethods": [
       "stripe",
       "klarna",
-      "vipps"
+      "vipps",
+      "google_pay"
     ],
     "klarnaMode": "native"
   },
@@ -190,6 +191,6 @@
     "webSocketBaseURL": "https://api-dev.vio.live",
     "restAPIBaseURL": "https://api-dev.vio.live",
     "campaignAdminApiKey": "tv2_api_key_91b4fbf634af4bc5",
-    "hasGooglePay": false
+    "hasGooglePay": true
   }
 }
