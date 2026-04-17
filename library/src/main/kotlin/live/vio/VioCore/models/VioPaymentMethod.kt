@@ -15,7 +15,9 @@ enum class VioPaymentMethod(private val value: String) {
     GOOGLE_PAY("google_pay"),
     KLARNA("klarna"),
     VIPPS("vipps"),
-    STRIPE("stripe");
+    STRIPE("stripe"),
+    STRIPE_LINK("stripe_link"),
+    UNKNOWN("unknown");
 
     @JsonValue
     fun getValue(): String = value
@@ -23,8 +25,8 @@ enum class VioPaymentMethod(private val value: String) {
     companion object {
         @JsonCreator
         @JvmStatic
-        fun fromString(value: String): VioPaymentMethod? {
-            return entries.find { it.value.equals(value, ignoreCase = true) }
+        fun fromString(value: String): VioPaymentMethod {
+            return entries.find { it.value.equals(value, ignoreCase = true) } ?: UNKNOWN
         }
     }
 }

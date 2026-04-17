@@ -63,5 +63,10 @@ data class RemoteCampaignConfig(
     @SerialName("isPaused") val isPaused: String? = null,
     @SerialName("startDate") val startDate: String? = null,
     @SerialName("endDate") val endDate: String? = null,
+    /**
+     * Lista de métodos de pago activos para la campaña (source of truth del backend).
+     * Ej: ["klarna","stripe_link","vipps","google_pay","apple_pay"]
+     */
+    @SerialName("paymentMethods") val paymentMethods: List<String>? = null,
 )
 

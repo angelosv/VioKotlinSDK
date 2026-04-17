@@ -13,8 +13,10 @@ import kotlinx.serialization.Serializable
 data class CheckoutConfig(
     @JsonProperty("paymentMethods") val paymentMethods: List<VioPaymentMethod> = emptyList()
 ) {
-    val hasGooglePay: Boolean get() = true
+    val hasGooglePay: Boolean get() = paymentMethods.contains(VioPaymentMethod.GOOGLE_PAY)
+    val hasApplePay: Boolean get() = paymentMethods.contains(VioPaymentMethod.APPLE_PAY)
     val hasKlarna: Boolean get() = paymentMethods.contains(VioPaymentMethod.KLARNA)
     val hasVipps: Boolean get() = paymentMethods.contains(VioPaymentMethod.VIPPS)
-    val hasStripe: Boolean get() = paymentMethods.contains(VioPaymentMethod.STRIPE)
+    val hasStripe: Boolean get() =
+        paymentMethods.contains(VioPaymentMethod.STRIPE) || paymentMethods.contains(VioPaymentMethod.STRIPE_LINK)
 }

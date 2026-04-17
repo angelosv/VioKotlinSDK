@@ -360,6 +360,13 @@ class CampaignManager private constructor(
             _currentCampaign.value = cached
             _campaignState.value = cached.currentState
             VioLogger.debug("Loaded campaign from cache: ID ${cached.id}", COMPONENT)
+
+            val cachedMethods = cached.paymentMethods
+                .filter { it != VioPaymentMethod.UNKNOWN }
+                .distinct()
+            if (cachedMethods.isNotEmpty()) {
+                VioConfiguration.updateCheckoutConfig(CheckoutConfig(paymentMethods = cachedMethods))
+            }
         }
 
         CacheManager.shared.loadCampaignState()?.let { (state, active) ->
@@ -475,6 +482,38 @@ class CampaignManager private constructor(
         
         // Use DynamicConfigManager to update sponsor and commerce config
         DynamicConfigManager.shared.updateFromConfig(response.body)
+
+        // Normaliza métodos de pago activos para habilitar botones según campaña.
+        // Soporta:
+        // - `/v1/sdk/config?apiKey=...` y `/v1/sdk/campaigns?apiKey=...` -> `paymentMethods` a nivel campaign
+        // - `/v1/campaigns/:campaignId/config?apiKey=...` -> `checkout.paymentMethods`
+        val envelope = runCatching {
+            JsonUtils.mapper.readValue(response.body, PaymentMethodsEnvelope::class.java)
+        }.getOrNull()
+
+        // Si el backend envió el campo (aunque venga vacío), lo usamos para sobreescribir el estado previo
+        // y evitar botones stale (ej: Google Pay todavía visible).
+        val hasMethodsFromBackend = envelope?.hasPaymentMethodsField == true || campaign.paymentMethods.isNotEmpty()
+        if (hasMethodsFromBackend) {
+            val methods = (envelope?.resolvedPaymentMethods ?: campaign.paymentMethods)
+                .filter { it != VioPaymentMethod.UNKNOWN }
+                .distinct()
+            VioConfiguration.updateCheckoutConfig(CheckoutConfig(paymentMethods = methods))
+        }
+    }
+
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
+    private data class PaymentMethodsEnvelope(
+        @com.fasterxml.jackson.annotation.JsonProperty("paymentMethods")
+        val paymentMethods: List<VioPaymentMethod>? = null,
+        @com.fasterxml.jackson.annotation.JsonProperty("checkout")
+        val checkout: CheckoutConfig? = null,
+    ) {
+        val hasPaymentMethodsField: Boolean
+            get() = paymentMethods != null || checkout?.paymentMethods != null
+
+        val resolvedPaymentMethods: List<VioPaymentMethod>?
+            get() = checkout?.paymentMethods ?: paymentMethods
     }
 
     /**
@@ -488,6 +527,13 @@ class CampaignManager private constructor(
             VioLogger.debug("Campaigns already discovered, reusing cached discovery and confirming WebSocket", COMPONENT)
             val selected = selectCurrentCampaign(_activeCampaigns.value)
             if (selected != null) {
+                // Asegura que el estado de checkout se mantenga sincronizado incluso cuando usamos cache.
+                // Importante para togglear métodos (ej: Google Pay) sin depender de una llamada de red nueva.
+                val selectedMethods = selected.paymentMethods
+                    .filter { it != VioPaymentMethod.UNKNOWN }
+                    .distinct()
+                VioConfiguration.updateCheckoutConfig(CheckoutConfig(paymentMethods = selectedMethods))
+
                 VioLogger.debug("Connecting WebSocket for cached active campaign ${selected.id}", COMPONENT)
                 connectWebSocket(selected.id)
             } else {
@@ -565,6 +611,11 @@ class CampaignManager private constructor(
             _isCampaignActive.value = true
             VioLogger.success("Selected campaign: ${selected.id}", COMPONENT)
 
+            val selectedMethods = selected.paymentMethods
+                .filter { it != VioPaymentMethod.UNKNOWN }
+                .distinct()
+            VioConfiguration.updateCheckoutConfig(CheckoutConfig(paymentMethods = selectedMethods))
+
             // Save selected campaign to cache
             scope.launch {
                 CacheManager.shared.saveCampaign(selected)
@@ -616,6 +667,27 @@ class CampaignManager private constructor(
             _isCampaignActive.value = false
             SponsorAssets.update(null)
         }
+    }
+
+    /**
+     * Fuerza un refresh de campañas desde red.
+     *
+     * Útil para entornos de QA donde el backend puede habilitar/deshabilitar métodos de pago
+     * (paymentMethods) y se necesita que el SDK refleje el cambio sin reinstalar / esperar TTL.
+     */
+    suspend fun forceDiscoverCampaigns(
+        matchId: String? = null,
+        clearPersistentCache: Boolean = false,
+    ) {
+        println("forceDiscoverCampaigns ${clearPersistentCache}")
+        if (clearPersistentCache) {
+            CacheManager.shared.clearCache()
+        }
+        _discoveredCampaigns.value = emptyList()
+        _activeCampaigns.value = emptyList()
+        _activeComponents.value = emptyList()
+        allComponents = emptyList()
+        discoverCampaigns(matchId = matchId)
     }
 
 

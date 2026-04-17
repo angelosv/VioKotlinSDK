@@ -105,10 +105,10 @@ class MainActivity : AppCompatActivity() {
         )
         VioSDK.setUserId("android_demo_001")
 
-        // Viaplay demo no carga vio-config.json local: fuerza google_pay en métodos soportados.
+        // No forzamos google_pay aquí: la disponibilidad debe venir desde la campaña/config remoto.
         runCatching {
             val currentCart = VioConfiguration.shared.state.value.cart
-            val methods = (currentCart.supportedPaymentMethods + "google_pay").distinct()
+            val methods = currentCart.supportedPaymentMethods.distinct()
             VioConfiguration.updateCartConfiguration(currentCart.copy(supportedPaymentMethods = methods))
         }
 

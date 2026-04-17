@@ -1409,13 +1409,11 @@ fun VioCheckoutOverlay(
                                             }
                                         }
                                     }
-                                    // --- Google Pay button (FORZADO: mostrar siempre) ---
+                                    // --- Google Pay button (controlado por backend) ---
                                     val checkoutConfigState by VioConfiguration.shared.state.collectAsState()
-                                    // Forzamos los flags a true para que el botón se renderice siempre.
-                                    // Nota: el botón seguirá "enabled" sólo cuando canProceed sea true.
-                                    val isGooglePayEnabled = true
-                                    val googlePayCheckout = true
-                                    if (isGooglePayEnabled && googlePayCheckout) {
+                                    println("**** checkoutConfigState.checkout?.hasGooglePay ${checkoutConfigState.checkout?.hasGooglePay}");
+                                    val hasGooglePayFromBackend = checkoutConfigState.checkout?.hasGooglePay == true
+                                    if (hasGooglePayFromBackend) {
                                         Button(
                                             onClick = {
                                                 if (!proceedLoading && canProceed) {

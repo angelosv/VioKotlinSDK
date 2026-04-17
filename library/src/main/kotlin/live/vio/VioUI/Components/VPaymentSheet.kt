@@ -31,48 +31,39 @@ fun VPaymentSheet(
 ) {
     val configState by VioConfiguration.shared.state.collectAsState()
     val checkoutConfig = configState.checkout
-    val campaignConfig = configState.campaign
-
-    println("**** campaignConfig.hasGooglePay: ${campaignConfig.hasGooglePay}")
-    if (campaignConfig.hasGooglePay != true) {
-        // Master switch is OFF
-        return
-    }
+    
+    // Si no hay checkout config, no podemos inferir métodos disponibles para la campaña.
+    // En ese caso, no mostramos botones de pago para evitar habilitar métodos "quemados".
+    if (checkoutConfig == null) return
 
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(VioSpacing.sm.dp)
     ) {
-        if (checkoutConfig == null) {
-            // Check campaign config first if no dynamic checkout config is available
-            if (campaignConfig.hasGooglePay) {
-                GooglePayButton(onClick = { onPaymentMethodSelected(VioPaymentMethod.GOOGLE_PAY) })
-            }
-        } else {
-            // Google Pay (Mapping from Apple Pay config as per requirement)
-            if (checkoutConfig.hasGooglePay || campaignConfig.hasGooglePay) {
-                GooglePayButton(onClick = { onPaymentMethodSelected(VioPaymentMethod.GOOGLE_PAY) })
-            }
+        println("**** VPaymentSheet checkoutConfig.paymentMethods=${checkoutConfig.paymentMethods.map { it.name }}")
+        println("**** checkoutConfig.hasGooglePay ${checkoutConfig.hasGooglePay}")
+        if (checkoutConfig.hasGooglePay) {
+            GooglePayButton(onClick = { onPaymentMethodSelected(VioPaymentMethod.GOOGLE_PAY) })
+        }
 
-            // Klarna
-            if (checkoutConfig.hasKlarna) {
-                PaymentButton(
-                    text = "Klarna",
-                    backgroundColor = Color(0xFFFFB3C7), // Klarna Pink
-                    textColor = Color.Black,
-                    onClick = { onPaymentMethodSelected(VioPaymentMethod.KLARNA) }
-                )
-            }
+        // Klarna
+        if (checkoutConfig.hasKlarna) {
+            PaymentButton(
+                text = "Klarna",
+                backgroundColor = Color(0xFFFFB3C7), // Klarna Pink
+                textColor = Color.Black,
+                onClick = { onPaymentMethodSelected(VioPaymentMethod.KLARNA) }
+            )
+        }
 
-            // Vipps
-            if (checkoutConfig.hasVipps) {
-                PaymentButton(
-                    text = "Vipps",
-                    backgroundColor = Color(0xFFFF5B24), // Vipps Orange
-                    textColor = Color.White,
-                    onClick = { onPaymentMethodSelected(VioPaymentMethod.VIPPS) }
-                )
-            }
+        // Vipps
+        if (checkoutConfig.hasVipps) {
+            PaymentButton(
+                text = "Vipps",
+                backgroundColor = Color(0xFFFF5B24), // Vipps Orange
+                textColor = Color.White,
+                onClick = { onPaymentMethodSelected(VioPaymentMethod.VIPPS) }
+            )
         }
     }
 }

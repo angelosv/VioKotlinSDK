@@ -2,6 +2,7 @@ package live.vio.VioCore.configuration
 
 import live.vio.VioCore.analytics.AnalyticsManager
 import live.vio.VioCore.managers.CampaignManager
+import live.vio.VioCore.models.VioPaymentMethod
 import live.vio.VioCore.utils.VioLogger
 import live.vio.sdk.domain.models.GetAvailableMarketsDto
 import java.util.concurrent.atomic.AtomicBoolean
@@ -134,6 +135,7 @@ class VioConfiguration private constructor() {
          * - Re-inicializa `CampaignManager` para que recoja los nuevos endpoints.
          */
         fun applyRemoteConfig(remote: VioRemoteConfig) {
+            println("ENTRE applyRemoteConfig")
             val current = shared._state.value
 
             fun normalizeBase(url: String?): String? {
@@ -163,14 +165,28 @@ class VioConfiguration private constructor() {
                     channelId = it.channelId,
                 )
             } ?: current.commerce
+            println("**** remote.campaign?.paymentMethods ${remote.campaign?.paymentMethods}");
+            // Si el backend expone métodos de pago activos a nivel campaña, los normalizamos a CheckoutConfig
+            // para que la UI pueda habilitar/deshabilitar botones correctamente.
+            val updatedCheckout = remote.campaign?.paymentMethods
+                ?.map { VioPaymentMethod.fromString(it) }
+                ?.filter { it != VioPaymentMethod.UNKNOWN }
+                ?.distinct()
+                ?.takeIf { it.isNotEmpty() }
+                ?.let { live.vio.VioCore.models.CheckoutConfig(paymentMethods = it) }
+                ?: current.checkout
 
             shared._state.value = current.copy(
                 campaign = updatedCampaign,
                 commerce = updatedCommerce,
                 liveShow = updatedLiveShow,
+                checkout = updatedCheckout,
             )
 
             updatedCommerce?.let { updateCommerce(it) }
+            if (updatedCheckout != null && updatedCheckout != current.checkout) {
+                updateCheckoutConfig(updatedCheckout)
+            }
             CampaignManager.shared.reinitialize()
         }
 
@@ -233,7 +249,8 @@ class VioConfiguration private constructor() {
 
         fun updateCheckoutConfig(checkout: live.vio.VioCore.models.CheckoutConfig) {
             shared._state.value = shared._state.value.copy(checkout = checkout)
-            VioLogger.info("Checkout configuration updated with ${checkout.paymentMethods.size} methods", "VioConfiguration")
+            VioLogger.info("Checkout configuration updated with ${checkout.paymentMethods.size} methods: ${checkout.paymentMethods.map { it.name }}", "VioConfiguration")
+            println("**** [VioConfiguration] Checkout methods = ${checkout.paymentMethods.map { it.name }}")
         }
 
         /**

@@ -77,6 +77,11 @@ data class Campaign(
      * Sponsor config fetched from the API
      */
     val sponsor: SponsorConfig? = null,
+    /**
+     * Métodos de pago activos para la campaña.
+     * Puede venir en `/v1/sdk/campaigns` y `/v1/sdk/config` (campaña).
+     */
+    @JsonProperty("paymentMethods") val paymentMethods: List<VioPaymentMethod> = emptyList(),
 ) {
     val currentState: CampaignState
         get() {
@@ -402,6 +407,7 @@ data class CampaignDiscoveryItem(
     @JsonProperty("startDate") val startDate: String? = null,
     @JsonProperty("endDate") val endDate: String? = null,
     @JsonProperty("isPaused") val isPaused: Boolean = false,
+    @JsonProperty("paymentMethods") val paymentMethods: List<VioPaymentMethod> = emptyList(),
     @JsonProperty("components") val components: List<ComponentDiscoveryItem> = emptyList()
 ) {
     fun toCampaign(): Campaign = Campaign(
@@ -410,7 +416,8 @@ data class CampaignDiscoveryItem(
         endDate = endDate,
         isPaused = isPaused,
         campaignLogo = campaignLogo,
-        matchContext = matchContext
+        matchContext = matchContext,
+        paymentMethods = paymentMethods,
     )
 }
 
