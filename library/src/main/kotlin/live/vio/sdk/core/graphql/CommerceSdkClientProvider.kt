@@ -58,6 +58,11 @@ object CommerceSdkClientProvider {
         val sponsorCommerce = VioConfiguration.commerce(forSponsorId = forSponsorId)
         if (sponsor == null || sponsorCommerce == null) {
             VioLogger.warning("no commerce key for sponsor=$forSponsorId, using primary", TAG)
+            // Per-sponsor lookup not viable (nil id, unknown sponsor, or
+            // visual-only sponsor without commerce). The active sponsor for a
+            // purchase falls back to the primary because that's whose key the
+            // shared client uses.
+            activeSponsorId = configuration.state.value.primarySponsor?.id
             return client(configuration)
         }
 

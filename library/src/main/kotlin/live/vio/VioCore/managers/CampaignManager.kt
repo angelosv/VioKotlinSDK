@@ -611,6 +611,31 @@ class CampaignManager private constructor(
         )
     }
 
+    /**
+     * Handle FCM push notification data.
+     * Returns true if this was a Vio cart intent notification that was processed.
+     */
+    fun handlePushNotification(data: Map<String, Any>): Boolean {
+        if (!isVioCartIntentPayload(data)) return false
+        val event = CampaignWebSocketManager.CartIntentEvent.from(data) ?: return false
+        publishCartIntentIfChanged(event, channel = "push")
+        return true
+    }
+
+    /**
+     * Check if the push notification data represents a Vio cart intent.
+     */
+    private fun isVioCartIntentPayload(data: Map<String, Any>): Boolean {
+        // Accept canonical: vio_notification_version + vio_payload with product_id
+        val hasCanonical = data["vio_notification_version"] != null &&
+                          (data["vio_payload"] as? Map<*, *>)?.get("product_id") != null
+
+        // Accept legacy: vio_cartIntent_productId
+        val hasLegacy = data["vio_cartIntent_productId"] != null
+
+        return hasCanonical || hasLegacy
+    }
+
     private suspend fun handleCampaignStarted(event: CampaignStartedEvent) {
         VioLogger.debug("🔌 [WebSocket] Campaign Started Event received: campaignId=${event.campaignId}, startDate=${event.startDate}, endDate=${event.endDate}", COMPONENT)
         VioLogger.success("Campaign started: ${event.campaignId}", COMPONENT)

@@ -45,9 +45,9 @@ class WebSocketParityTest {
         val allComponentsField = CampaignManager::class.java.getDeclaredField("allComponents")
         allComponentsField.isAccessible = true
         
-        val comp1 = Component(id = "1", type = "carousel", isActive = true) // No match context
-        val comp2 = Component(id = "2", type = "poll", isActive = true, matchContext = MatchContext(matchId = "matchA"))
-        val comp3 = Component(id = "3", type = "contest", isActive = true, matchContext = MatchContext(matchId = "matchB"))
+        val comp1 = Component(id = "1", type = "carousel", name = "Carousel Component") // No match context
+        val comp2 = Component(id = "2", type = "poll", name = "Poll Component", matchContext = MatchContext(matchId = "matchA"))
+        val comp3 = Component(id = "3", type = "contest", name = "Contest Component", matchContext = MatchContext(matchId = "matchB"))
         
         allComponentsField.set(manager, listOf(comp1, comp2, comp3))
         

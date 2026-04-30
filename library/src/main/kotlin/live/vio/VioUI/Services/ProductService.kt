@@ -60,6 +60,12 @@ object ProductService {
     }
 
     suspend fun loadProduct(productId: Int, currency: String, country: String, sponsorId: Int? = null): Product {
+        val source = when {
+            sponsorId != null && VioConfiguration.commerce(forSponsorId = sponsorId) != null -> "per-sponsor (id=$sponsorId)"
+            VioConfiguration.shared.state.value.sdkBootstrapCommerceApiKey != null -> "bootstrap primary"
+            else -> "fallback"
+        }
+        VioLogger.info("loadProduct → id=$productId auth=$source cc=$country cur=$currency", "ProductService")
         VioLogger.debug("Loading product with ID: $productId", "ProductService")
         VioLogger.debug("Currency: $currency, Country: $country", "ProductService")
         val dto = loadProductDto(productId, currency, country, sponsorId = sponsorId)
@@ -72,6 +78,14 @@ object ProductService {
         country: String,
         sponsorId: Int? = null,
     ): List<Product> {
+        val source = when {
+            sponsorId != null && VioConfiguration.commerce(forSponsorId = sponsorId) != null -> "per-sponsor (id=$sponsorId)"
+            VioConfiguration.shared.state.value.sdkBootstrapCommerceApiKey != null -> "bootstrap primary"
+            else -> "fallback"
+        }
+        val idsText = productIds?.joinToString(",") ?: "ALL"
+        VioLogger.info("loadProducts → ids=$idsText auth=$source cc=$country cur=$currency", "ProductService")
+        
         val idsToUse = productIds?.takeIf { it.isNotEmpty() }
         if (idsToUse != null) {
             VioLogger.debug("Loading products with IDs: $idsToUse", "ProductService")

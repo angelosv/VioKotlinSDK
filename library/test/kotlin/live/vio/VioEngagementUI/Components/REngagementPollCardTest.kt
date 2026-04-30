@@ -39,7 +39,7 @@ class VioEngagementPollCardTest {
                 VioEngagementPollCard(
                     poll = poll,
                     pollResults = null,
-                    sponsorLogoUrl = null,
+                    sponsor = null,
                     onVote = { votedOptionId = it },
                     onDismiss = {},
                 )

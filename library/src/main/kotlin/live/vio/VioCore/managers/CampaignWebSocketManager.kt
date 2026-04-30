@@ -2,8 +2,6 @@ package live.vio.VioCore.managers
 
 import android.content.Context
 import android.util.Log
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import live.vio.VioCore.models.CampaignEndedEvent
 import live.vio.VioCore.models.CampaignPausedEvent
 import live.vio.VioCore.models.CampaignResumedEvent
@@ -14,7 +12,6 @@ import live.vio.VioEngagementSystem.models.Contest
 import live.vio.VioEngagementSystem.models.Poll
 import live.vio.VioCore.utils.VioLogger
 import live.vio.VioCore.configuration.VioConfiguration
-import live.vio.VioCore.utils.VioContextManager
 import live.vio.sdk.core.helpers.JsonUtils
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -47,7 +44,6 @@ class CampaignWebSocketManager(
 
     companion object {
         private const val COMPONENT = "CampaignWebSocket"
-        private const val NOTIFICATION_CHANNEL_ID = "vio_notifications"
     }
 
     data class CartIntentEvent(
@@ -62,7 +58,86 @@ class CampaignWebSocketManager(
         val deeplink: String?,
         val activationId: Int? = null,
         val sponsorId: Int? = null,
-    )
+    ) {
+        companion object {
+            fun parse(json: String): CartIntentEvent? {
+                return runCatching {
+                    val mapper = JsonUtils.mapper
+                    val node = mapper.readTree(json)
+                    
+                    val targetUserId = node.get("vio_user_id")?.asText() ?: node.get("userId")?.asText()
+                    val currentUserId = VioConfiguration.shared.state.value.userId
+                    if (!targetUserId.isNullOrBlank() && targetUserId != currentUserId) return null
+
+                    val payloadNode = node.get("vio_payload")
+                    
+                    val productName = payloadNode?.get("product_name")?.asText() ?: node.get("productName")?.asText()
+                    val productId = payloadNode?.get("product_id")?.asText() ?: node.get("productId")?.asText()
+                    val campaignId = payloadNode?.get("campaign_id")?.asInt() ?: node.get("campaignId")?.asInt()
+                    val title = payloadNode?.get("notification_title")?.asText() ?: node.get("notificationTitle")?.asText()
+                    val body = payloadNode?.get("notification_body")?.asText() ?: node.get("notificationBody")?.asText()
+                    val source = payloadNode?.get("source")?.asText() ?: node.get("source")?.asText()
+                    val deeplink = payloadNode?.get("deeplink")?.asText() ?: node.get("deeplink")?.asText()
+                    val activationId = payloadNode?.get("activation_id")?.asInt() ?: node.get("activationId")?.asInt()
+                    val sponsorId = payloadNode?.get("sponsor_id")?.asInt() ?: node.get("sponsorId")?.asInt()
+                    
+                    CartIntentEvent(
+                        type = node.get("type")?.asText() ?: "cart_intent",
+                        productName = productName,
+                        productId = productId,
+                        campaignId = campaignId,
+                        notificationTitle = title,
+                        notificationBody = body ?: productName,
+                        vioUserId = targetUserId,
+                        source = source,
+                        deeplink = deeplink,
+                        activationId = activationId,
+                        sponsorId = sponsorId,
+                    )
+                }.getOrNull()
+            }
+
+            /**
+             * Parse FCM push notification data into CartIntentEvent.
+             */
+            fun from(data: Map<String, Any>): CartIntentEvent? {
+                return runCatching {
+                    // Handle canonical format: vio_payload with nested data
+                    val vioPayload = data["vio_payload"] as? Map<String, Any>
+                    
+                    // Extract fields from canonical payload or fallback to top-level keys
+                    val productName = vioPayload?.get("product_name") as? String ?: data["productName"] as? String
+                    val productId = vioPayload?.get("product_id") as? String ?: data["productId"] as? String ?: data["vio_cartIntent_productId"] as? String
+                    val campaignId = vioPayload?.get("campaign_id") as? Int ?: (data["campaignId"] as? String)?.toIntOrNull() ?: (data["vio_cartIntent_campaignId"] as? String)?.toIntOrNull()
+                    val title = vioPayload?.get("notification_title") as? String ?: data["notificationTitle"] as? String ?: data["vio_cartIntent_title"] as? String
+                    val body = vioPayload?.get("notification_body") as? String ?: data["notificationBody"] as? String ?: data["vio_cartIntent_body"] as? String
+                    val source = vioPayload?.get("source") as? String ?: data["source"] as? String
+                    val deeplink = vioPayload?.get("deeplink") as? String ?: data["deeplink"] as? String ?: data["vio_cartIntent_deeplink"] as? String
+                    val activationId = vioPayload?.get("activation_id") as? Int ?: (data["activationId"] as? String)?.toIntOrNull() ?: (data["vio_cartIntent_activationId"] as? String)?.toIntOrNull()
+                    val sponsorId = vioPayload?.get("sponsor_id") as? Int ?: (data["sponsorId"] as? String)?.toIntOrNull() ?: (data["vio_cartIntent_sponsorId"] as? String)?.toIntOrNull()
+                    
+                    // Extract user ID for validation
+                    val targetUserId = vioPayload?.get("vio_user_id") as? String ?: data["userId"] as? String ?: data["vio_cartIntent_userId"] as? String
+                    val currentUserId = VioConfiguration.shared.state.value.userId
+                    if (!targetUserId.isNullOrBlank() && targetUserId != currentUserId) return null
+
+                    CartIntentEvent(
+                        type = "cart_intent",
+                        productName = productName,
+                        productId = productId,
+                        campaignId = campaignId,
+                        notificationTitle = title,
+                        notificationBody = body ?: productName,
+                        vioUserId = targetUserId,
+                        source = source,
+                        deeplink = deeplink,
+                        activationId = activationId,
+                        sponsorId = sponsorId,
+                    )
+                }.getOrNull()
+            }
+        }
+    }
 
     // Event callbacks
     var onCampaignStarted: ((CampaignStartedEvent) -> Unit)? = null
@@ -82,7 +157,7 @@ class CampaignWebSocketManager(
     private var webSocket: WebSocket? = null
     private var reconnectAttempts = 0
     private var reconnectJob: Job? = null
-    private val maxReconnectAttempts = 5
+    // No limit on reconnect attempts, just exponential backoff with 30s cap
 
     suspend fun connect() {
         val wsUrl = buildSocketUrl()
@@ -230,54 +305,20 @@ class CampaignWebSocketManager(
                 "contest" ->
                     onContestReceived?.invoke(mapper.treeToValue(node, Contest::class.java))
                 "cart_intent" -> {
-                    println("*** cart_intent ***")
-                    val targetUserId = node.get("vio_user_id")?.asText() ?: node.get("userId")?.asText()
-                    val currentUserId = VioConfiguration.shared.state.value.userId
-                    if (!targetUserId.isNullOrBlank() && targetUserId != currentUserId) return
-
-                    val payloadNode = node.get("vio_payload")
-                    
-                    val productName = payloadNode?.get("product_name")?.asText() ?: node.get("productName")?.asText()
-                    val productId = payloadNode?.get("product_id")?.asText() ?: node.get("productId")?.asText()
-                    val campaignId = payloadNode?.get("campaign_id")?.asInt() ?: node.get("campaignId")?.asInt()
-                    val title = payloadNode?.get("notification_title")?.asText() ?: node.get("notificationTitle")?.asText()
-                    val body = payloadNode?.get("notification_body")?.asText() ?: node.get("notificationBody")?.asText()
-                    val source = payloadNode?.get("source")?.asText() ?: node.get("source")?.asText()
-                    val deeplink = payloadNode?.get("deeplink")?.asText() ?: node.get("deeplink")?.asText()
-                    val activationId = payloadNode?.get("activation_id")?.asInt() ?: node.get("activationId")?.asInt()
-                    val sponsorId = payloadNode?.get("sponsor_id")?.asInt() ?: node.get("sponsorId")?.asInt()
-                    println("*** go to CartIntentEvent ***")
-                    val event = CartIntentEvent(
-                        type = eventType,
-                        productName = productName,
-                        productId = productId,
-                        campaignId = campaignId,
-                        notificationTitle = title,
-                        notificationBody = body ?: productName,
-                        vioUserId = targetUserId,
-                        source = source,
-                        deeplink = deeplink,
-                        activationId = activationId,
-                        sponsorId = sponsorId,
-                    )
-
-                    onCartIntent?.invoke(event)
-                    println("*** go to VioLocalNotificationManager ${VioContextManager.isInitialized} ***")
-                    if (VioContextManager.isInitialized) {
-                        live.vio.sdk.VioLocalNotificationManager.handleCartIntent(
-                            context = VioContextManager.context,
-                            targetUserId = targetUserId,
-                            currentUserId = currentUserId,
-                            productId = productId,
-                            campaignId = campaignId?.toString(),
-                            title = title ?: "Tienes un artículo esperando",
-                            body = body ?: (productName ?: "Un producto está listo"),
-                        )
+                    val event = CartIntentEvent.parse(text)
+                    if (event != null) {
+                        // Dispatch to CampaignManager
+                        // This will be handled by the CampaignManager that owns this WebSocketManager
+                        onCartIntent?.invoke(event)
                     }
                 }
-                else -> {
-                    println("[$COMPONENT] Unknown event type received: $eventType")
-                    VioLogger.warning("Unknown event type: $eventType (full message: $text)", COMPONENT)
+                "component_status_changed" -> {
+                    // Notify CampaignManager for activeComponents update
+                    onComponentStatusChanged?.invoke(mapper.treeToValue(node, ComponentStatusChangedEvent::class.java))
+                }
+                "shoppable_ad", "product" -> {
+                    Log.d(COMPONENT, "Received $eventType event (mobile doesn't consume)")
+                    VioLogger.debug("Received $eventType event (mobile doesn't consume)", COMPONENT)
                 }
             }
         } catch (error: Exception) {
@@ -287,16 +328,10 @@ class CampaignWebSocketManager(
     }
 
     private suspend fun attemptReconnect() {
-        if (reconnectAttempts >= maxReconnectAttempts) {
-            println("[$COMPONENT] STOPPING reconnection: Max attempts reached ($maxReconnectAttempts)")
-            VioLogger.error("Max reconnection attempts reached", COMPONENT)
-            onConnectionStatusChanged?.invoke(false)
-            return
-        }
         reconnectAttempts += 1
         val delaySeconds = min(30.0, 2.0.pow(reconnectAttempts.toDouble()))
-        Log.i(COMPONENT, "🔄 Reconnection attempt $reconnectAttempts/$maxReconnectAttempts in ${delaySeconds}s")
-        VioLogger.info("Reconnecting in ${delaySeconds}s (attempt $reconnectAttempts/$maxReconnectAttempts)", COMPONENT)
+        Log.i(COMPONENT, "🔄 Reconnection attempt $reconnectAttempts in ${delaySeconds}s")
+        VioLogger.info("Reconnecting in ${delaySeconds}s (attempt $reconnectAttempts)", COMPONENT)
         delay((delaySeconds * 1_000).toLong())
         runCatching { connect() }.onFailure {
             println("[$COMPONENT] Reconnect attempt failed: ${it.message}")
