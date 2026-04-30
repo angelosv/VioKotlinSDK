@@ -113,7 +113,7 @@ class CheckoutDraft {
     }
 
     fun resolveLocale(effectiveISO2: String): String {
-        return GeoMaps.localeByISO2[effectiveISO2] ?: "en-US"
+        return GeoMaps.localeByISO2[effectiveISO2] ?: "nb-NO"
     }
 
     fun resolveFullPhoneNumber(effectiveISO2: String): String {

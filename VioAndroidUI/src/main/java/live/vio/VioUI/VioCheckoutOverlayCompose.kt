@@ -418,15 +418,12 @@ fun VioCheckoutOverlay(
                 countryNameDefault = "Norway",
             )
 
-            cartManager.country.equals("US", true) || cartManager.currency.equals(
-                "USD",
-                true
-            ) -> applyDefaults(
+            else -> applyDefaults(
                 fn = "John", ln = "Doe", em = "john.doe@example.com",
-                phCode = "1", ph = "2125551212",
-                addr1 = "82 Melora Street", addr2 = "",
-                c = "Westbridge", st = "California", z = "92841",
-                countryNameDefault = "United States",
+                phCode = "47", ph = "2125551212",
+                addr1 = "Karl Johans gate 15", addr2 = "",
+                c = "Oslo", st = "Oslo", z = "0154",
+                countryNameDefault = "Norway",
             )
         }
     }
@@ -861,13 +858,7 @@ fun VioCheckoutOverlay(
                                         val dispZip = draft.zip.ifBlank { zip }
                                         val dispCountry = draft.countryName.ifBlank { country }
                                         val dispPhone = draft.phone.ifBlank { phone }
-                                        val isUSDisp = cartManager.country.equals(
-                                            "US",
-                                            true
-                                        ) || cartManager.currency.equals(
-                                            "USD",
-                                            true
-                                        ) || dispCountry.contains("United States", true)
+                                        val isUSDisp = false
                                         val locality = buildString {
                                             append(dispCity)
                                             if (isUSDisp && dispProv.isNotBlank()) append(", ").append(
@@ -951,13 +942,7 @@ fun VioCheckoutOverlay(
                                             label = { Text("Apt, suite, etc. (optional)") },
                                             modifier = Modifier.fillMaxWidth()
                                         )
-                                        val isUSEdit = cartManager.country.equals(
-                                            "US",
-                                            true
-                                        ) || cartManager.currency.equals(
-                                            "USD",
-                                            true
-                                        ) || country.contains("United States", true)
+                                        val isUSEdit = false
                                         Row(
                                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                                             modifier = Modifier.fillMaxWidth()
@@ -1454,7 +1439,7 @@ fun VioCheckoutOverlay(
                                                                     gateway = initDto.gateway,
                                                                     gatewayMerchantId = initDto.gatewayMerchantId,
                                                                     price = totalPrice,
-                                                                    currency = cartManager.currency.ifBlank { "USD" },
+                                                                    currency = cartManager.currency.ifBlank { "NOK" },
                                                                     shippingAddressRequired = true,
                                                                     phoneNumberRequired = checkoutConfigState.cart.requirePhoneNumber
                                                                 )
@@ -2389,7 +2374,7 @@ fun VioCheckoutOverlay(
                                                                             gateway = initDto.gateway,
                                                                             gatewayMerchantId = initDto.gatewayMerchantId,
                                                                             price = totalPrice,
-                                                                            currency = cartManager.currency.ifBlank { "USD" },
+                                                                            currency = cartManager.currency.ifBlank { "NOK" },
                                                                             shippingAddressRequired = true,
                                                                             phoneNumberRequired = VioConfiguration.shared.state.value.cart.requirePhoneNumber
                                                                         )

@@ -323,8 +323,8 @@ Example structure (supports containers and multiple profiles):
           "apiKey": "CHANGE_ME_PROD",
           "baseUrl": "https://graph-ql.vio.live/graphql",
           "marketFallback": {
-            "countryCode": "US",
-            "currencyCode": "USD"
+            "countryCode": "NO",
+            "currencyCode": "NOK"
           }
         }
       }

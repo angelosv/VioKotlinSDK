@@ -7,7 +7,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import live.vio.VioCore.configuration.VioConfiguration
 import live.vio.VioCore.configuration.VioEnvironment
-import live.vio.VioCore.configuration.VioSDKConfigService
 import live.vio.VioCore.managers.CampaignManager
 import live.vio.VioCore.utils.VioLogger
 
@@ -30,8 +29,8 @@ object VioSDK {
      * Configura el SDK usando solo la apiKey y un entorno opcional.
      *
      * - Aplica configuración local por defecto inmediatamente.
-     * - Lanza una coroutine para obtener `VioRemoteConfig` desde el backend.
-     * - Cuando llega la respuesta remota, se llama a `VioConfiguration.applyRemoteConfig`.
+     * - Lanza una coroutine para obtener `SdkBootstrapResponse` desde el backend (`/v2/mobile/config`).
+     * - Cuando llega la respuesta, aplica sponsors + commerce (multi-sponsor).
      */
     fun configure(
         context: Context,
@@ -53,15 +52,13 @@ object VioSDK {
         // Refrescar configuración remota de forma asíncrona
         scope.launch {
             println("📡 [VioSDK] fetchConfig starting...")
-            val service = VioSDKConfigService()
-            val remote = service.fetchConfig(apiKey = apiKey, baseUrl = baseUrl)
-            if (remote != null) {
-                VioConfiguration.applyRemoteConfig(remote)
-                runCatching {
-                    CampaignManager.shared.discoverCampaigns()
-                }.onFailure {
-                    VioLogger.error("Error discovering campaigns after remote config: ${it.message}", "VioSDK")
-                }
+            runCatching {
+                CampaignManager.shared.fetchAndApplySdkBootstrap(
+                    apiKeyOverride = apiKey,
+                    baseUrlOverride = baseUrl,
+                )
+            }.onFailure {
+                VioLogger.error("Error applying v2 mobile bootstrap: ${it.message}", "VioSDK")
             }
             // Marcamos como listo incluso si falló, para que los managers no se queden esperando para siempre
             VioConfiguration.markRemoteConfigReady()

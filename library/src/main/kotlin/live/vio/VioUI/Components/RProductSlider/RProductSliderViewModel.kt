@@ -25,8 +25,8 @@ class VioProductSliderViewModel(
 
     suspend fun loadProducts(
         categoryId: Int? = null,
-        currency: String = "USD",
-        country: String = "US",
+        currency: String = "NOK",
+        country: String = "NO",
         forceRefresh: Boolean = false,
     ) {
         if (!VioConfiguration.shared.shouldUseSDK) {
@@ -113,8 +113,8 @@ class VioProductSliderViewModel(
 
     suspend fun reload(
         categoryId: Int? = null,
-        currency: String = "USD",
-        country: String = "US",
+        currency: String = "NOK",
+        country: String = "NO",
     ) {
         hasLoaded = false
         loadProducts(categoryId, currency, country, forceRefresh = true)

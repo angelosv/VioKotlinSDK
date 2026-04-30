@@ -255,11 +255,15 @@ class ProductRepositoryGraphQL(
             put("useCache", useCache)
             put("shippingCountryCode", shippingCountryCode)
         }
+        println("📦 [ProductRepository] getByIds variables: ${variables}")
 
         val response = client.runQuerySafe(
             ChannelGraphQL.GET_PRODUCTS_BY_IDS_CHANNEL_QUERY,
             variables,
         )
+
+        println("📦 [ProductRepository] getByIds response: ${response}")
+
         val list: List<Any?> = GraphQLPick.pickPath(response.data, listOf("Channel", "GetProductsByIds"))
             ?: throw SdkException("Empty response in Product.getByIds", code = "EMPTY_RESPONSE")
         

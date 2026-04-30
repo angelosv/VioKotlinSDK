@@ -14,7 +14,6 @@ import java.net.URL
  */
 object VioCommerceService {
     private const val TAG = "VioCommerceService"
-    private const val GRAPHQL_URL = "https://graph-ql-dev.vio.live/graphql"
 
     /**
      * Fetches product details by ID.
@@ -22,10 +21,14 @@ object VioCommerceService {
     suspend fun fetchProduct(id: String): CommerceProduct? = withContext(Dispatchers.IO) {
         val commerceConfig = VioConfiguration.shared.state.value.commerce
         val apiKey = commerceConfig?.apiKey ?: ""
-        val endpoint = commerceConfig?.endpoint ?: GRAPHQL_URL
+        val endpoint = commerceConfig?.endpoint
+            ?: VioConfiguration.shared.state.value.sdkBootstrapCommerceGraphQLURL
         
-        if (apiKey.isBlank()) {
-            VioLogger.warning("Commerce API Key is missing. Cannot fetch product $id", TAG)
+        if (apiKey.isBlank() || endpoint.isNullOrBlank()) {
+            VioLogger.warning(
+                "Commerce bootstrap missing (apiKey or endpoint). Cannot fetch product $id",
+                TAG,
+            )
             return@withContext null
         }
 

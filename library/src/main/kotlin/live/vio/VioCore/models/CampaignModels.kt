@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.databind.JsonNode
 import live.vio.VioCore.models.Component.Companion.fromResponse
 import live.vio.sdk.core.helpers.JsonUtils
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 /**
  * Contexto de match para campañas y componentes context-aware.
@@ -100,7 +103,7 @@ data class Campaign(
         )
         for (format in formats) {
             val result = runCatching {
-                val sdf = java.text.SimpleDateFormat(format, java.util.Locale.US)
+                val sdf = java.text.SimpleDateFormat(format, Locale("nb", "NO"))
                 sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
                 sdf.parse(iso)?.time
             }.getOrNull()

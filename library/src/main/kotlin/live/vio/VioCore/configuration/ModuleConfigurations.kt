@@ -18,7 +18,7 @@ data class CartConfiguration(
     val showCartNotifications: Boolean = true,
     val enableGuestCheckout: Boolean = true,
     val requirePhoneNumber: Boolean = true,
-    val defaultShippingCountry: String = "US",
+    val defaultShippingCountry: String = "NO",
     val supportedPaymentMethods: List<String> = listOf("stripe", "klarna", "paypal"),
     val klarnaMode: KlarnaMode = KlarnaMode.WEB,
 ) {
@@ -35,12 +35,12 @@ enum class KlarnaMode { WEB, NATIVE }
 // Market Configuration
 
 data class MarketConfiguration(
-    val countryCode: String = "US",
-    val countryName: String = "United States",
-    val currencyCode: String = "USD",
-    val currencySymbol: String = "$",
-    val phoneCode: String = "+1",
-    val flagURL: String? = "https://flagcdn.com/w320/us.png",
+    val countryCode: String = "NO",
+    val countryName: String = "Norway",
+    val currencyCode: String = "NOK",
+    val currencySymbol: String = "kr",
+    val phoneCode: String = "+47",
+    val flagURL: String? = "https://flagcdn.com/w320/no.png",
 ) {
     companion object { fun default() = MarketConfiguration() }
 }

@@ -18,7 +18,7 @@ private data class ShippingSyncData(
     val options: List<CartItem.ShippingOption>,
 )
 
-suspend fun CartManager.createCart(currency: String = "USD", country: String = "US") {
+suspend fun CartManager.createCart(currency: String = "NOK", country: String = "NO") {
     waitForRemoteConfig()
     
     if (currentCartId != null) {
@@ -171,8 +171,9 @@ suspend fun CartManager.loadProducts(
 
 fun CartManager.sync(cart: CartDto) {
     currentCartId = cart.cartId
-    currency = cart.currency
-    country = cart.shippingCountry ?: country
+    // Keep market locked to NO/NOK across SDK flows.
+    currency = "NOK"
+    country = "NO"
 
     val normalizedItems = syncLineItems(cart)
     items = normalizedItems
@@ -727,7 +728,7 @@ internal fun CartManager.updateCartTotal() {
     currency = when {
         !firstCurrency.isNullOrBlank() -> firstCurrency
         currency.isNotBlank() -> currency
-        else -> "USD"
+        else -> "NOK"
     }
 
     if (items.isEmpty()) {

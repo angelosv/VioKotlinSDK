@@ -41,7 +41,7 @@ object DeviceTokenManager {
 
     /**
      * Registers the device token for a specific user.
-     * Hits POST /api/campaigns/:id/register-device
+     * Hits POST /v2/mobile/campaigns/:id/register-device
      */
     fun register(userId: String, deviceToken: String) {
         pendingUserId = userId
@@ -64,8 +64,8 @@ object DeviceTokenManager {
     private fun performRegistration(userId: String, deviceToken: String, campaignId: Int) {
         val config = VioConfiguration.shared.state.value
         val baseUrl = config.campaign.restAPIBaseURL.trimEnd('/')
-        val urlString = "$baseUrl/api/campaigns/$campaignId/register-device"
         val apiKey = config.apiKey
+        val urlString = "$baseUrl/v2/mobile/campaigns/$campaignId/register-device?apiKey=$apiKey"
 
         scope.launch {
             try {
@@ -74,7 +74,7 @@ object DeviceTokenManager {
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "POST"
                 connection.setRequestProperty("Content-Type", "application/json")
-                connection.setRequestProperty("x-api-key", apiKey)
+                connection.setRequestProperty("X-API-Key", apiKey)
                 connection.doOutput = true
 
                 val body = mapOf(

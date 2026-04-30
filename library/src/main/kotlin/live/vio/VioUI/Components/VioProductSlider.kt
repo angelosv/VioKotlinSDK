@@ -14,8 +14,8 @@ class VioProductSlider(
 
     fun loadProducts(
         categoryId: Int? = null,
-        currency: String = "USD",
-        country: String = "US",
+        currency: String = "NOK",
+        country: String = "NO",
         forceRefresh: Boolean = false,
     ) {
         coroutineScope.launch {

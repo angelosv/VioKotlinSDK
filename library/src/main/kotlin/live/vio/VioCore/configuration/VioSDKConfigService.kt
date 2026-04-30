@@ -5,7 +5,7 @@ import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import live.vio.VioCore.managers.CampaignManager
+import live.vio.VioCore.models.SdkBootstrapResponse
 import live.vio.VioCore.utils.VioLogger
 
 /**
@@ -20,12 +20,12 @@ class VioSDKConfigService(
     companion object {
         private const val COMPONENT = "VioSDKConfigService"
         private const val DEFAULT_BASE_URL = "https://api-dev.vio.live"
-        private const val CONFIG_PATH = "/v1/sdk/config"
+        private const val CONFIG_PATH = "/v2/mobile/config"
         private const val CACHE_TTL_MILLIS: Long = 5 * 60 * 1000 // 5 minutos
 
         // Cache simple en memoria compartida por todo el proceso.
         @Volatile
-        private var cachedConfig: VioRemoteConfig? = null
+        private var cachedConfig: SdkBootstrapResponse? = null
 
         @Volatile
         private var cachedAt: Long = 0
@@ -50,7 +50,7 @@ class VioSDKConfigService(
     suspend fun fetchConfig(
         apiKey: String,
         baseUrl: String = DEFAULT_BASE_URL,
-    ): VioRemoteConfig? = withContext(Dispatchers.IO) {
+    ): SdkBootstrapResponse? = withContext(Dispatchers.IO) {
         if (apiKey.isBlank()) {
             VioLogger.warning("API key vacía al pedir configuración remota", COMPONENT)
             return@withContext null
@@ -73,6 +73,7 @@ class VioSDKConfigService(
                 connectTimeout = 15_000
                 readTimeout = 15_000
                 setRequestProperty("Accept", "application/json")
+                setRequestProperty("X-API-Key", apiKey)
             }
 
             try {
@@ -90,7 +91,7 @@ class VioSDKConfigService(
                     return@runCatching null
                 }
 
-                val remote = json.decodeFromString(VioRemoteConfig.serializer(), body)
+                val remote = json.decodeFromString(SdkBootstrapResponse.serializer(), body)
                 cachedConfig = remote
                 cachedAt = System.currentTimeMillis()
                 VioLogger.success("Configuración remota del SDK cargada correctamente", COMPONENT)

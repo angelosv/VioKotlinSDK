@@ -135,7 +135,7 @@ object ConfigurationLoader {
             localizationConfig = LocalizationConfiguration.default(),
             campaignConfig = CampaignConfiguration.default(),
         )
-        setLanguageForCountry(VioConfiguration.shared.state.value.localization, userCountryCode ?: "US")
+        setLanguageForCountry(VioConfiguration.shared.state.value.localization, userCountryCode ?: "NO")
         VioConfiguration.setMarketAvailability(true, userCountryCode = userCountryCode, availableMarkets = emptyList())
         VioLogger.success("Applied default SDK configuration", COMPONENT)
         if (!userCountryCode.isNullOrBlank()) {
@@ -448,9 +448,9 @@ private data class MarketJSON(
     val flagURL: String? = null,
 ) {
     fun toDomain() = MarketConfiguration(
-        countryCode = countryCode ?: "US",
-        countryName = countryName ?: "United States",
-        currencyCode = currencyCode ?: "USD",
+        countryCode = countryCode ?: "NO",
+        countryName = countryName ?: "Norway",
+        currencyCode = currencyCode ?: "NOK",
         currencySymbol = currencySymbol ?: "$",
         phoneCode = phoneCode ?: "+1",
         flagURL = flagURL ?: MarketConfiguration.default().flagURL,
@@ -499,17 +499,18 @@ private data class CampaignJSON(
     val hasGooglePay: Boolean? = null,
 ) {
     fun toDomain(): CampaignConfiguration {
-        val domainHasGooglePay = true // hasGooglePay ?: hasApplePay ?: CampaignConfiguration.default().hasGooglePay
+        val defaults = CampaignConfiguration.default()
+        val domainHasGooglePay = hasGooglePay ?: hasApplePay ?: defaults.hasGooglePay
         println("Parsing Campaign Config: hasGooglePay=$hasGooglePay, hasApplePay=$hasApplePay -> Result=$domainHasGooglePay")
         VioLogger.info("Parsing Campaign Config: hasGooglePay=$hasGooglePay, hasApplePay=$hasApplePay -> Result=$domainHasGooglePay", "Config")
         
         return CampaignConfiguration(
-            webSocketBaseURL = webSocketBaseURL ?: CampaignConfiguration.default().webSocketBaseURL,
-            restAPIBaseURL = restAPIBaseURL ?: CampaignConfiguration.default().restAPIBaseURL,
-            campaignApiKey = campaignApiKey ?: CampaignConfiguration.default().campaignApiKey,
-            campaignAdminApiKey = campaignAdminApiKey ?: CampaignConfiguration.default().campaignAdminApiKey,
-            autoDiscover = autoDiscover ?: CampaignConfiguration.default().autoDiscover,
-            channelId = channelId ?: CampaignConfiguration.default().channelId,
+            webSocketBaseURL = webSocketBaseURL ?: defaults.webSocketBaseURL,
+            restAPIBaseURL = restAPIBaseURL ?: defaults.restAPIBaseURL,
+            campaignApiKey = campaignApiKey ?: defaults.campaignApiKey,
+            campaignAdminApiKey = campaignAdminApiKey ?: defaults.campaignAdminApiKey,
+            autoDiscover = autoDiscover ?: defaults.autoDiscover,
+            channelId = channelId ?: defaults.channelId,
             hasGooglePay = domainHasGooglePay,
         )
     }

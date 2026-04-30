@@ -55,6 +55,13 @@ class CampaignWebSocketManager(
         val productName: String?,
         val productId: String?,
         val campaignId: Int?,
+        val notificationTitle: String?,
+        val notificationBody: String?,
+        val vioUserId: String?,
+        val source: String?,
+        val deeplink: String?,
+        val activationId: Int? = null,
+        val sponsorId: Int? = null,
     )
 
     // Event callbacks
@@ -196,6 +203,14 @@ class CampaignWebSocketManager(
             return
         }
 
+        // Backend keepalive is app-level JSON ping/pong, not WS protocol ping frame.
+        if (eventType == "ping") {
+            val pong = JsonUtils.stringify(mapOf("type" to "pong"))
+            webSocket?.send(pong)
+            Log.d(COMPONENT, "[WebSocket] Received ping, sent JSON pong")
+            return
+        }
+
         try {
             when (eventType) {
                 "campaign_started" ->
@@ -225,14 +240,25 @@ class CampaignWebSocketManager(
                     val productName = payloadNode?.get("product_name")?.asText() ?: node.get("productName")?.asText()
                     val productId = payloadNode?.get("product_id")?.asText() ?: node.get("productId")?.asText()
                     val campaignId = payloadNode?.get("campaign_id")?.asInt() ?: node.get("campaignId")?.asInt()
-                    val title = payloadNode?.get("notification_title")?.asText() ?: "Tienes un artículo esperando"
-                    val body = payloadNode?.get("notification_body")?.asText() ?: (productName ?: "Un producto está listo")
+                    val title = payloadNode?.get("notification_title")?.asText() ?: node.get("notificationTitle")?.asText()
+                    val body = payloadNode?.get("notification_body")?.asText() ?: node.get("notificationBody")?.asText()
+                    val source = payloadNode?.get("source")?.asText() ?: node.get("source")?.asText()
+                    val deeplink = payloadNode?.get("deeplink")?.asText() ?: node.get("deeplink")?.asText()
+                    val activationId = payloadNode?.get("activation_id")?.asInt() ?: node.get("activationId")?.asInt()
+                    val sponsorId = payloadNode?.get("sponsor_id")?.asInt() ?: node.get("sponsorId")?.asInt()
                     println("*** go to CartIntentEvent ***")
                     val event = CartIntentEvent(
                         type = eventType,
                         productName = productName,
                         productId = productId,
                         campaignId = campaignId,
+                        notificationTitle = title,
+                        notificationBody = body ?: productName,
+                        vioUserId = targetUserId,
+                        source = source,
+                        deeplink = deeplink,
+                        activationId = activationId,
+                        sponsorId = sponsorId,
                     )
 
                     onCartIntent?.invoke(event)
@@ -244,8 +270,8 @@ class CampaignWebSocketManager(
                             currentUserId = currentUserId,
                             productId = productId,
                             campaignId = campaignId?.toString(),
-                            title = title,
-                            body = body,
+                            title = title ?: "Tienes un artículo esperando",
+                            body = body ?: (productName ?: "Un producto está listo"),
                         )
                     }
                 }

@@ -1,6 +1,7 @@
 package live.vio.VioCore.managers
 
 import live.vio.VioCore.configuration.VioConfiguration
+import live.vio.VioCore.configuration.VioSDKConfigService
 import live.vio.VioCore.models.Campaign
 import live.vio.VioCore.models.CampaignEndedEvent
 import live.vio.VioCore.models.CampaignPausedEvent
@@ -9,9 +10,7 @@ import live.vio.VioCore.models.CampaignStartedEvent
 import live.vio.VioCore.models.CampaignState
 import live.vio.VioCore.models.Component
 import live.vio.VioCore.models.ComponentConfigUpdatedEvent
-import live.vio.VioCore.models.ComponentResponse
 import live.vio.VioCore.models.ComponentStatusChangedEvent
-import live.vio.VioCore.models.ComponentsResponseWrapper
 import live.vio.VioCore.models.*
 import live.vio.VioEngagementSystem.models.Contest
 import live.vio.VioEngagementSystem.models.Poll
@@ -109,6 +108,9 @@ class CampaignManager private constructor(
     private val _events = MutableSharedFlow<CampaignNotification>(extraBufferCapacity = 32)
     val events: SharedFlow<CampaignNotification> = _events.asSharedFlow()
 
+    private val _activeCartIntentEvent = MutableStateFlow<CampaignWebSocketManager.CartIntentEvent?>(null)
+    val activeCartIntentEvent: StateFlow<CampaignWebSocketManager.CartIntentEvent?> = _activeCartIntentEvent.asStateFlow()
+
     private val isInitializing = AtomicBoolean(false)
 
     private var apiKey: String = ""
@@ -133,7 +135,6 @@ class CampaignManager private constructor(
 
     suspend fun initializeCampaign() {
         VioLogger.debug("[CampaignManager] Initializing campaign")
-        val id = campaignId?.takeIf { it > 0 } ?: return
         if (!isInitializing.compareAndSet(false, true)) {
             VioLogger.debug("[CampaignManager] Campaign initialization already in progress")
             return
@@ -141,17 +142,8 @@ class CampaignManager private constructor(
         try {
             VioLogger.debug("[CampaignManager] Loading campaign info from cache")
             loadFromCache()
-            VioLogger.debug("[CampaignManager] Fetching campaign info from API")
-            fetchCampaignInfo(id)
-            VioLogger.debug("[CampaignManager] Connecting to WebSocket")
-            connectWebSocket(id)
-            if (_campaignState.value == CampaignState.ACTIVE &&
-                _isCampaignActive.value &&
-                _currentCampaign.value?.isPaused != true
-            ) {
-                VioLogger.debug("[CampaignManager] Fetching active components")
-                fetchActiveComponents(id)
-            }
+            VioLogger.debug("[CampaignManager] Fetching v2 mobile bootstrap from API")
+            fetchAndApplySdkBootstrap()
         } finally {
             isInitializing.set(false)
         }
@@ -396,124 +388,70 @@ class CampaignManager private constructor(
         // cache age no longer logged
     }
 
-    private suspend fun fetchCampaignInfo(campaignId: Int) {
-        val effectiveApiKey = campaignAdminApiKey?.takeIf { it.isNotBlank() } ?: apiKey
-        val baseUrl = restApiBaseUrl.trimEnd('/')
-        // Using /v1/sdk/config endpoint as requested
-        val url = "$baseUrl/v1/sdk/config?apiKey=$effectiveApiKey&campaignId=$campaignId"
-        VioLogger.debug("[CampaignManager] Fetching campaign info from: $url")
-
-        val response = httpGet(url) ?: return
-
-        if (response.statusCode == 404) {
-            VioLogger.warning("Campaign $campaignId not found - deactivating campaign", COMPONENT)
-            _isCampaignActive.value = false
-            _campaignState.value = CampaignState.ENDED
-            _currentCampaign.value = null
-            allComponents = emptyList()
-            _activeComponents.value = emptyList()
-            
-            // Clear cache since campaign doesn't exist
-            CacheManager.shared.clearCache()
-            VioLogger.info("Cache cleared due to campaign not found", COMPONENT)
-            return
-        }
-
-        if (response.statusCode !in 200..299) {
-            VioLogger.error("Campaign info request failed with status ${response.statusCode}", COMPONENT)
-            _isCampaignActive.value = true
-            _campaignState.value = CampaignState.ACTIVE
-            return
-        }
-        
-        VioLogger.debug("[CampaignManager] Campaign info response for $campaignId: ${response.body}")
-
-        if (response.body.trimStart().startsWith("<")) {
-            VioLogger.error("Received HTML instead of JSON from campaign endpoint. URL: $url. Body: ${response.body}", COMPONENT)
-            _isCampaignActive.value = true
-            _campaignState.value = CampaignState.ACTIVE
-            return
-        }
-
-        val campaign = runCatching {
-            JsonUtils.mapper.readValue(response.body, Campaign::class.java)
-        }.onFailure {
-            VioLogger.error("[CampaignManager] Failed to decode campaign info for ID $campaignId: ${it.message}. Body: ${response.body}")
-        }.getOrNull() ?: return
-
-        VioLogger.debug("Parsed Campaign Logo: ${campaign.campaignLogo}", COMPONENT)
-
-        // Detect campaign logo changes
-        val existingCampaign = _currentCampaign.value
-        val oldLogoUrl = existingCampaign?.campaignLogo
-        val newLogoUrl = campaign.campaignLogo
-        emitLogoChanged(oldLogoUrl, newLogoUrl)
-
-        _currentCampaign.value = campaign
-        _campaignState.value = campaign.currentState
-
-        if (campaign.isPaused == true) {
-            _isCampaignActive.value = false
-            _activeComponents.value = emptyList()
-            CacheManager.shared.saveCampaign(campaign)
-            CacheManager.shared.saveCampaignState(_campaignState.value, _isCampaignActive.value)
-            allComponents = emptyList()
-            _activeComponents.value = emptyList()
-            CacheManager.shared.saveComponents(emptyList())
-            SponsorAssets.update(campaign.sponsor)
-            return
-        }
-
-        when (_campaignState.value) {
-            CampaignState.UPCOMING -> {
-                _isCampaignActive.value = false
-            }
-            CampaignState.ENDED -> {
-                _isCampaignActive.value = false
-                allComponents = emptyList()
-                _activeComponents.value = emptyList()
-                VioLogger.warning("Campaign $campaignId has ended - hiding all components", COMPONENT)
-            }
-            CampaignState.ACTIVE -> _isCampaignActive.value = true
-        }
-
-        CacheManager.shared.saveCampaign(campaign)
-        CacheManager.shared.saveCampaignState(_campaignState.value, _isCampaignActive.value)
-        
-        // Use DynamicConfigManager to update sponsor and commerce config
-        DynamicConfigManager.shared.updateFromConfig(response.body)
-
-        // Normaliza métodos de pago activos para habilitar botones según campaña.
-        // Soporta:
-        // - `/v1/sdk/config?apiKey=...` y `/v1/sdk/campaigns?apiKey=...` -> `paymentMethods` a nivel campaign
-        // - `/v1/campaigns/:campaignId/config?apiKey=...` -> `checkout.paymentMethods`
-        val envelope = runCatching {
-            JsonUtils.mapper.readValue(response.body, PaymentMethodsEnvelope::class.java)
-        }.getOrNull()
-
-        // Si el backend envió el campo (aunque venga vacío), lo usamos para sobreescribir el estado previo
-        // y evitar botones stale (ej: Google Pay todavía visible).
-        val hasMethodsFromBackend = envelope?.hasPaymentMethodsField == true || campaign.paymentMethods.isNotEmpty()
-        if (hasMethodsFromBackend) {
-            val methods = (envelope?.resolvedPaymentMethods ?: campaign.paymentMethods)
-                .filter { it != VioPaymentMethod.UNKNOWN }
-                .distinct()
-            VioConfiguration.updateCheckoutConfig(CheckoutConfig(paymentMethods = methods))
-        }
-    }
-
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
-    private data class PaymentMethodsEnvelope(
-        @com.fasterxml.jackson.annotation.JsonProperty("paymentMethods")
-        val paymentMethods: List<VioPaymentMethod>? = null,
-        @com.fasterxml.jackson.annotation.JsonProperty("checkout")
-        val checkout: CheckoutConfig? = null,
+    suspend fun fetchAndApplySdkBootstrap(
+        apiKeyOverride: String? = null,
+        baseUrlOverride: String? = null,
     ) {
-        val hasPaymentMethodsField: Boolean
-            get() = paymentMethods != null || checkout?.paymentMethods != null
+        val effectiveApiKey = (apiKeyOverride ?: campaignApiKey ?: campaignAdminApiKey ?: apiKey).orEmpty()
+        if (effectiveApiKey.isBlank()) {
+            VioLogger.warning("Skipping v2 bootstrap: missing API key", COMPONENT)
+            return
+        }
 
-        val resolvedPaymentMethods: List<VioPaymentMethod>?
-            get() = checkout?.paymentMethods ?: paymentMethods
+        val baseUrl = baseUrlOverride ?: restApiBaseUrl.ifBlank { "https://api-dev.vio.live" }
+        val service = VioSDKConfigService()
+        val bootstrap = service.fetchConfig(apiKey = effectiveApiKey, baseUrl = baseUrl) ?: run {
+            VioLogger.warning("v2 bootstrap unavailable; preserving current campaign state", COMPONENT)
+            return
+        }
+
+        val oldLogoUrl = _currentCampaign.value?.campaignLogo
+        val campaignBlock = bootstrap.campaign
+        val resolvedCampaignId = campaignBlock?.id?.takeIf { it > 0 } ?: campaignId
+
+        val mappedCampaign = resolvedCampaignId?.let { cid ->
+            Campaign(
+                id = cid,
+                isPaused = campaignBlock?.isPaused,
+                campaignLogo = campaignBlock?.logo,
+            )
+        }
+        _currentCampaign.value = mappedCampaign
+        campaignId = resolvedCampaignId
+
+        val active = (campaignBlock?.isActive != false) && (campaignBlock?.isPaused != true)
+        _isCampaignActive.value = active
+        _campaignState.value = if (active) CampaignState.ACTIVE else CampaignState.ENDED
+
+        // Components are WS-authoritative in v2.
+        allComponents = emptyList()
+        _activeComponents.value = emptyList()
+        CacheManager.shared.saveComponents(emptyList())
+
+        bootstrap.endpoints?.restBase?.takeIf { it.isNotBlank() }?.let { restApiBaseUrl = it }
+        bootstrap.endpoints?.webSocketBase?.takeIf { it.isNotBlank() }?.let { webSocketBaseUrl = it }
+
+        VioConfiguration.applySdkBootstrapSponsors(
+            primary = bootstrap.primarySponsor?.toVioSponsor(),
+            secondaries = bootstrap.secondarySponsors?.map { it.toVioSponsor() } ?: emptyList(),
+        )
+        VioConfiguration.applySdkBootstrapCommerce(
+            apiKey = bootstrap.primarySponsor?.commerce?.apiKey,
+            graphQLURL = bootstrap.endpoints?.commerceGraphQL,
+        )
+
+        mappedCampaign?.let {
+            CacheManager.shared.saveCampaign(it)
+            CacheManager.shared.saveCampaignState(_campaignState.value, _isCampaignActive.value)
+        }
+        SponsorAssets.update(mappedCampaign?.sponsor)
+        emitLogoChanged(oldLogoUrl, mappedCampaign?.campaignLogo)
+
+        if (resolvedCampaignId != null && resolvedCampaignId > 0) {
+            connectWebSocket(resolvedCampaignId)
+        } else {
+            disconnect()
+        }
     }
 
     /**
@@ -541,131 +479,18 @@ class CampaignManager private constructor(
             }
             return
         }
-        VioLogger.debug("Discovering campaigns...", COMPONENT)
-        val oldLogoUrl = _currentCampaign.value?.campaignLogo
+        VioLogger.debug("Discovering campaigns via v2 mobile bootstrap...", COMPONENT)
         if (matchId != null) {
             currentMatchId = matchId
         }
-        val baseUrl = restApiBaseUrl.trimEnd('/')
-        
-        // Selección de API key (campaign > admin > general)
-        val effectiveApiKey = when {
-            !campaignApiKey.isNullOrBlank() -> campaignApiKey!!
-            !campaignAdminApiKey.isNullOrBlank() -> campaignAdminApiKey!!
-            else -> apiKey
-        }
-
-        val url = buildString {
-            append("$baseUrl/v1/sdk/campaigns?apiKey=$effectiveApiKey")
-            if (matchId != null) {
-                append("&broadcastId=$matchId&matchId=$matchId")
-            }
-        }
-        VioLogger.debug("[CampaignManager] Discovering campaigns from: $url")
-
-        // Request with 10s timeout
-        val response = httpGet(url, timeout = 10_000) ?: return
-
-        if (response.statusCode !in 200..299) {
-            VioLogger.error("Campaign discovery failed with status ${response.statusCode}. URL: $url", COMPONENT)
-            return
-        }
-
-        VioLogger.debug("[CampaignManager] Discovery response body: ${response.body}")
-
-        if (response.body.trimStart().startsWith("<")) {
-            VioLogger.error("Received HTML instead of JSON from discovery endpoint. URL: $url. Body: ${response.body}", COMPONENT)
-            return
-        }
-
-        val discoveryResponse = runCatching {
-            JsonUtils.mapper.readValue(response.body, CampaignsDiscoveryResponse::class.java)
-        }.onFailure {
-            VioLogger.error("Failed to decode discovery response: ${it.message}. Body: ${response.body}", COMPONENT)
-        }.getOrNull() ?: return
-
-        val campaigns = discoveryResponse.campaigns.map { it.toCampaign() }
+        fetchAndApplySdkBootstrap()
+        val selected = _currentCampaign.value
+        val campaigns = selected?.let { listOf(it) } ?: emptyList()
         _discoveredCampaigns.value = campaigns
-        VioLogger.debug("[CampaignManager] Discovered ${campaigns.size} campaigns")
-
-        // Save to cache
+        _activeCampaigns.value = campaigns.filter { _isCampaignActive.value && it.isPaused != true }
         scope.launch {
             CacheManager.shared.saveDiscoveredCampaigns(campaigns)
-        }
-
-        // Filter active campaigns
-        val active: List<Campaign> = campaigns.filter { c: Campaign -> c.currentState == CampaignState.ACTIVE && c.isPaused != true }
-        _activeCampaigns.value = active
-        VioLogger.debug("Found ${active.size} active campaigns", COMPONENT)
-
-        // Save active campaigns to cache
-        scope.launch {
-            CacheManager.shared.saveActiveCampaigns(active)
-        }
-
-        // Select current campaign using selection strategy
-        val selected = selectCurrentCampaign(active)
-        if (selected != null) {
-            _currentCampaign.value = selected
-            _campaignState.value = selected.currentState
-            _isCampaignActive.value = true
-            VioLogger.success("Selected campaign: ${selected.id}", COMPONENT)
-
-            val selectedMethods = selected.paymentMethods
-                .filter { it != VioPaymentMethod.UNKNOWN }
-                .distinct()
-            VioConfiguration.updateCheckoutConfig(CheckoutConfig(paymentMethods = selectedMethods))
-
-            // Save selected campaign to cache
-            scope.launch {
-                CacheManager.shared.saveCampaign(selected)
-                CacheManager.shared.saveCampaignState(selected.currentState, true)
-            }
-            
-            SponsorAssets.update(selected.sponsor)
-
-            // Process components from the discovery items for all active campaigns
-            val allComponents = mutableListOf<Component>()
-            discoveryResponse.campaigns.forEach { item: CampaignDiscoveryItem ->
-                val campaignIsActive = active.any { activeCampaign: Campaign -> activeCampaign.id == item.campaignId }
-                if (campaignIsActive) {
-                    val components = item.components.map { compItem: ComponentDiscoveryItem -> compItem.toComponent() }
-                    
-                    // Filter components by match context if currentMatchId is set
-                    val filtered = if (currentMatchId != null) {
-                        components.filter { comp: Component ->
-                            comp.matchContext == null || comp.matchContext.matchId == currentMatchId
-                        }
-                    } else {
-                        components
-                    }
-                    
-                        allComponents.addAll(filtered.filter { activeComp: Component -> activeComp.isActive })
-                    }
-                }
-
-            // Deduplicate components
-            val uniqueComponents = allComponents.distinctBy { it.id }
-            this.allComponents = uniqueComponents
-            _activeComponents.value = uniqueComponents
-            scope.launch {
-                CacheManager.shared.saveComponents(uniqueComponents)
-            }
-
-            // Filtrar componentes por contexto si hay un matchContext actual
-            currentMatchContext?.let { context ->
-                filterComponentsByContext(context)
-            }
-
-            // Pre-cache logo if available
-            emitLogoChanged(oldLogoUrl, selected.campaignLogo)
-            
-            // Connect WebSocket for the selected campaign (auto-discovery mode)
-            connectWebSocket(selected.id)
-        } else {
-            VioLogger.warning("No active campaigns found", COMPONENT)
-            _isCampaignActive.value = false
-            SponsorAssets.update(null)
+            CacheManager.shared.saveActiveCampaigns(_activeCampaigns.value)
         }
     }
 
@@ -725,111 +550,8 @@ class CampaignManager private constructor(
     }
 
 
-    private suspend fun fetchActiveComponents(campaignId: Int) {
-        val url = restApiBaseUrl.trimEnd('/') + "/api/campaigns/$campaignId/components"
-        val response = httpGet(url) ?: return
-
-        if (response.statusCode == 404) {
-            _activeComponents.value = emptyList()
-            return
-        }
-
-        if (response.statusCode !in 200..299) {
-            VioLogger.error("Components request failed with status ${response.statusCode}", COMPONENT)
-            return
-        }
-
-        if (response.body.trimStart().startsWith("<")) {
-            VioLogger.error("Received HTML instead of JSON from components endpoint", COMPONENT)
-            return
-        }
-
-        val mapper = JsonUtils.mapper
-        val responses: List<ComponentResponse> = runCatching {
-            mapper.readValue(response.body, ComponentsResponseWrapper::class.java).components
-        }.recoverCatching {
-            val type = mapper.typeFactory.constructCollectionType(List::class.java, ComponentResponse::class.java)
-            mapper.readValue(response.body, type)
-        }.onFailure {
-            VioLogger.error("Failed to decode components: ${it.message}", COMPONENT)
-        }.getOrNull() ?: return
-
-        val components = responses.map { Component.fromResponse(it) }
-        val active = components.filter { it.isActive }
-        allComponents = active
-        _activeComponents.value = active
-        VioLogger.debug("[CampaignManager] Found ${active.size} active components out of ${components.size} total for campaign $campaignId")
-        active.forEach { 
-            VioLogger.debug("[CampaignManager] Component: id=${it.id}, type=${it.type}, locationId=${it.locationId}")
-        }
-
-        scope.launch {
-            CacheManager.shared.saveComponents(active)
-        }
-
-        // Filtrar componentes por contexto si hay un matchContext actual
-        currentMatchContext?.let { context ->
-            filterComponentsByContext(context)
-        }
-    }
-
-    /**
-     * Fetches and aggregates components from all active campaigns.
-     * Used in auto-discovery mode to collect components from multiple campaigns.
-     */
     suspend fun fetchComponentsFromAllCampaigns() {
-        val campaigns = _activeCampaigns.value
-        if (campaigns.isEmpty()) {
-            VioLogger.warning("No active campaigns to fetch components from", COMPONENT)
-            _activeComponents.value = emptyList()
-            return
-        }
-
-        VioLogger.debug("Fetching components from ${campaigns.size} active campaigns", COMPONENT)
-        
-        val allComponents = mutableListOf<Component>()
-        
-        campaigns.forEach { campaign ->
-            val url = restApiBaseUrl.trimEnd('/') + "/api/campaigns/${campaign.id}/components"
-            val response = httpGet(url) ?: return@forEach
-
-            if (response.statusCode == 404) {
-                VioLogger.debug("No components found for campaign ${campaign.id}", COMPONENT)
-                return@forEach
-            }
-
-            if (response.statusCode !in 200..299) {
-                VioLogger.error("Components request failed for campaign ${campaign.id} with status ${response.statusCode}", COMPONENT)
-                return@forEach
-            }
-
-            if (response.body.trimStart().startsWith("<")) {
-                VioLogger.error("Received HTML instead of JSON from components endpoint for campaign ${campaign.id} from $url. Body: ${response.body}", COMPONENT)
-                return@forEach
-            }
-
-            val mapper = JsonUtils.mapper
-            val responses: List<ComponentResponse> = runCatching {
-                mapper.readValue(response.body, ComponentsResponseWrapper::class.java).components
-            }.recoverCatching {
-                val type = mapper.typeFactory.constructCollectionType(List::class.java, ComponentResponse::class.java)
-                mapper.readValue(response.body, type)
-            }.onFailure {
-                VioLogger.error("Failed to decode components for campaign ${campaign.id} from $url: ${it.message}. Body: ${response.body}", COMPONENT)
-            }.getOrElse { return@forEach }
-
-            val components = responses.map { Component.fromResponse(it) }
-            allComponents.addAll(components.filter { it.isActive })
-            VioLogger.debug("Added ${components.count { it.isActive }} active components from campaign ${campaign.id}", COMPONENT)
-        }
-
-        // Remove duplicates based on component ID, keeping the first occurrence
-        val uniqueComponents = allComponents.distinctBy { it.id }
-        this.allComponents = uniqueComponents
-        _activeComponents.value = uniqueComponents
-        VioLogger.success("Aggregated ${uniqueComponents.size} unique components from ${campaigns.size} campaigns", COMPONENT)
-
-        CacheManager.shared.saveComponents(uniqueComponents)
+        VioLogger.debug("Skipping component polling; WS is authoritative in v2", COMPONENT)
     }
 
 
@@ -852,8 +574,41 @@ class CampaignManager private constructor(
         manager.onPollReceived = { poll -> scope.launch { _events.emit(CampaignNotification.PollReceived(poll)) } }
         manager.onContestReceived = { contest -> scope.launch { _events.emit(CampaignNotification.ContestReceived(contest)) } }
         manager.onConnectionStatusChanged = { connected -> _isConnected.value = connected }
+        manager.onCartIntent = { event ->
+            publishCartIntentIfChanged(event, channel = "websocket")
+        }
         webSocketManager = manager
         manager.connect()
+    }
+
+    fun publishCartIntentIfChanged(event: CampaignWebSocketManager.CartIntentEvent, channel: String) {
+        val current = _activeCartIntentEvent.value
+
+        // Primary dedup: activationId match
+        if (event.activationId != null && current?.activationId == event.activationId) {
+            VioLogger.debug("cart_intent [$channel] dedup activationId=${event.activationId}", COMPONENT)
+            return
+        }
+
+        // Fallback for legacy events with no activationId
+        if (event.activationId == null &&
+            current != null &&
+            current.activationId == null &&
+            current.productId == event.productId &&
+            current.campaignId == event.campaignId
+        ) {
+            VioLogger.debug("cart_intent [$channel] dedup legacy (productId,campaignId)", COMPONENT)
+            return
+        }
+
+        _activeCartIntentEvent.value = event
+        scope.launch {
+            _events.emit(CampaignNotification.CartIntentReceived(event))
+        }
+        VioLogger.info(
+            "cart_intent applied [$channel] productId=${event.productId} activationId=${event.activationId} sponsorId=${event.sponsorId}",
+            COMPONENT,
+        )
     }
 
     private suspend fun handleCampaignStarted(event: CampaignStartedEvent) {
@@ -879,7 +634,6 @@ class CampaignManager private constructor(
         emitLogoChanged(oldLogoUrl, null) // Events don't include logo, typically clear it or wait for refresh
 
         _events.emit(CampaignNotification.CampaignStarted(event))
-        fetchActiveComponents(event.campaignId)
     }
 
     private suspend fun handleCampaignEnded(event: CampaignEndedEvent) {
@@ -929,7 +683,6 @@ class CampaignManager private constructor(
         CacheManager.shared.saveCampaignState(_campaignState.value, _isCampaignActive.value)
 
         _events.emit(CampaignNotification.CampaignResumed(event))
-        fetchActiveComponents(event.campaignId)
     }
 
     private suspend fun handleComponentStatusChanged(event: ComponentStatusChangedEvent) {
@@ -1127,4 +880,5 @@ sealed interface CampaignNotification {
     data class CommerceConfigChanged(val commerce: live.vio.VioCore.models.CommerceConfig) : CampaignNotification
     data class PollReceived(val poll: Poll) : CampaignNotification
     data class ContestReceived(val contest: Contest) : CampaignNotification
+    data class CartIntentReceived(val event: CampaignWebSocketManager.CartIntentEvent) : CampaignNotification
 }

@@ -64,8 +64,8 @@ internal suspend fun CartManager.loadMarkets() {
         markets = mapped
         isMarketReady = true
 
-        val currentCode = selectedMarket?.code ?: fallbackMarket.code
-        val target = mapped.firstOrNull { it.code == currentCode } ?: fallbackMarket
+        // Keep market fixed to Norway for this integration.
+        val target = fallbackMarket
         val shouldRefresh = (country != target.code) || (currency != target.currencyCode)
         applyMarket(target, refreshData = shouldRefresh)
     } catch (t: Throwable) {

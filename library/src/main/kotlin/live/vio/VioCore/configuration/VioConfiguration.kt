@@ -2,6 +2,7 @@ package live.vio.VioCore.configuration
 
 import live.vio.VioCore.analytics.AnalyticsManager
 import live.vio.VioCore.managers.CampaignManager
+import live.vio.VioCore.models.VioSponsor
 import live.vio.VioCore.models.VioPaymentMethod
 import live.vio.VioCore.utils.VioLogger
 import live.vio.sdk.domain.models.GetAvailableMarketsDto
@@ -46,6 +47,10 @@ class VioConfiguration private constructor() {
         val sponsor: live.vio.VioCore.models.SponsorConfig? = null,
         val commerce: live.vio.VioCore.models.CommerceConfig? = null,
         val checkout: live.vio.VioCore.models.CheckoutConfig? = null,
+        val primarySponsor: VioSponsor? = null,
+        val secondarySponsors: List<VioSponsor> = emptyList(),
+        val sdkBootstrapCommerceApiKey: String? = null,
+        val sdkBootstrapCommerceGraphQLURL: String? = null,
         val isRemoteConfigReady: Boolean = false,
         val userId: String? = null,
     )
@@ -188,6 +193,54 @@ class VioConfiguration private constructor() {
                 updateCheckoutConfig(updatedCheckout)
             }
             CampaignManager.shared.reinitialize()
+        }
+
+        fun sponsor(withId: Int): VioSponsor? {
+            val current = shared._state.value
+            val primary = current.primarySponsor
+            if (primary?.id == withId) return primary
+            return current.secondarySponsors.firstOrNull { it.id == withId }
+        }
+
+        fun commerce(forSponsorId: Int): VioSponsor.CommerceBlock? =
+            sponsor(withId = forSponsorId)?.commerce
+
+        fun applySdkBootstrapSponsors(primary: VioSponsor?, secondaries: List<VioSponsor>) {
+            val current = shared._state.value
+            shared._state.value = current.copy(
+                primarySponsor = primary,
+                secondarySponsors = secondaries,
+            )
+
+            // If primary sponsor has commerce payment methods, apply as checkout defaults.
+            val methods = primary?.commerce?.paymentMethods
+                ?.map { VioPaymentMethod.fromString(it) }
+                ?.filter { it != VioPaymentMethod.UNKNOWN }
+                ?.distinct()
+                .orEmpty()
+            if (methods.isNotEmpty()) {
+                updateCheckoutConfig(live.vio.VioCore.models.CheckoutConfig(paymentMethods = methods))
+            }
+        }
+
+        fun applySdkBootstrapCommerce(apiKey: String?, graphQLURL: String?) {
+            val current = shared._state.value
+            shared._state.value = current.copy(
+                sdkBootstrapCommerceApiKey = apiKey?.takeIf { it.isNotBlank() },
+                sdkBootstrapCommerceGraphQLURL = graphQLURL?.takeIf { it.isNotBlank() },
+                commerce = current.commerce?.copy(
+                    enabled = !apiKey.isNullOrBlank(),
+                    apiKey = apiKey,
+                    endpoint = graphQLURL ?: current.commerce?.endpoint,
+                ) ?: live.vio.VioCore.models.CommerceConfig(
+                    enabled = !apiKey.isNullOrBlank(),
+                    apiKey = apiKey,
+                    endpoint = graphQLURL,
+                    channelId = null,
+                ),
+            )
+
+            shared._state.value.commerce?.let { updateCommerce(it) }
         }
 
         fun markRemoteConfigReady() {

@@ -44,7 +44,7 @@ open class GraphQLHttpClient(
             "query" to query,
             "variables" to variables,
         )
-
+        println("****GraphQL**** apiKey: $apiKey")
         return withContext(Dispatchers.IO) {
             val connection = (URL(baseUrl).openConnection() as HttpURLConnection).apply {
                 connectTimeout = timeoutMillis
