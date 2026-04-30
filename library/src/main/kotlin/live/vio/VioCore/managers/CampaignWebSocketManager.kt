@@ -102,8 +102,7 @@ class CampaignWebSocketManager(
              */
             fun from(data: Map<String, Any>): CartIntentEvent? {
                 return runCatching {
-                    // Handle canonical format: vio_payload with nested data
-                    val vioPayload = data["vio_payload"] as? Map<String, Any>
+                    val vioPayload = parseVioPayload(data)
                     
                     // Extract fields from canonical payload or fallback to top-level keys
                     val productName = vioPayload?.get("product_name") as? String ?: data["productName"] as? String
@@ -135,6 +134,32 @@ class CampaignWebSocketManager(
                         sponsorId = sponsorId,
                     )
                 }.getOrNull()
+            }
+
+            private fun parseVioPayload(data: Map<String, Any>): Map<String, Any>? {
+                val rawPayload = data["vio_payload"] ?: return null
+                return when (rawPayload) {
+                    is Map<*, *> -> rawPayload.entries
+                        .filter { it.key is String }
+                        .associate { it.key as String to it.value as Any }
+                        .takeIf { it.isNotEmpty() }
+                    is String -> runCatching {
+                        val root = JsonUtils.mapper.readTree(rawPayload)
+                        root.fieldNames().asSequence().mapNotNull { field ->
+                            val valueNode = root.get(field) ?: return@mapNotNull null
+                            val value: Any = when {
+                                valueNode.isInt -> valueNode.asInt()
+                                valueNode.isLong -> valueNode.asLong()
+                                valueNode.isDouble -> valueNode.asDouble()
+                                valueNode.isBoolean -> valueNode.asBoolean()
+                                valueNode.isTextual -> valueNode.asText()
+                                else -> valueNode.toString()
+                            }
+                            field to value
+                        }.toMap()
+                    }.getOrNull()
+                    else -> null
+                }
             }
         }
     }
@@ -311,10 +336,6 @@ class CampaignWebSocketManager(
                         // This will be handled by the CampaignManager that owns this WebSocketManager
                         onCartIntent?.invoke(event)
                     }
-                }
-                "component_status_changed" -> {
-                    // Notify CampaignManager for activeComponents update
-                    onComponentStatusChanged?.invoke(mapper.treeToValue(node, ComponentStatusChangedEvent::class.java))
                 }
                 "shoppable_ad", "product" -> {
                     Log.d(COMPONENT, "Received $eventType event (mobile doesn't consume)")
